@@ -56,6 +56,22 @@ namespace Foro.Entities.Models
         [Required]
         public int Visibility { get; set; } = 0;
 
+        public int TotalComments { get; set; }
+        public int UpVotes { get; set; }
+
+        public int DownVotes { get; set; }
+
+        public class CommunityVote
+        {
+            public int Id { get; set; }
+            public int CommunityId { get; set; }
+            public string UserId { get; set; }
+            public bool IsUpvote { get; set; }
+
+            public virtual Community Community { get; set; }
+        }
+
+        public DateTime LastActivityAt { get; set; }
         // Relaciones
         public virtual ICollection<Post> Posts { get; set; }
         public virtual ICollection<UserCommunity> UserCommunities { get; set; }
