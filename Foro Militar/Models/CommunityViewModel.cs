@@ -30,6 +30,18 @@ namespace Foro_Militar.Models
 
         public List<CategoryInfo> Categories { get; set; }
 
+        public string RankName { get; set; }
+        public string RankOrderGroup { get; set; }
+        public string RankBorderColor { get; set; }
+        public string RankGlowColor { get; set; }
+        public bool RankHasAnimatedBorder { get; set; }
+        public bool RankHasParticleEffect { get; set; }
+
+        public double PowerScore { get; set; }
+
+        public int GlobalPosition { get; set; }
+        public int CountryPosition { get; set; }
+
         public class CategoryInfo
         {
             public string Name { get; set; }

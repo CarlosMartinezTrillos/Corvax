@@ -19,4 +19,7 @@ public class AppDbContext : DbContext
     public DbSet<Vote> Votes { get; set; }
 
     public DbSet<UserCommunity> UserCommunities { get; set; }
+
+    public DbSet<CommunityRank> CommunityRanks { get; set; }
+    public DbSet<CommunityRankHistory> CommunityRankHistories { get; set; }
 }

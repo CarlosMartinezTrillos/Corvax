@@ -13,6 +13,7 @@ namespace Foro.Entities.Models
             Posts = new HashSet<Post>();
             UserCommunities = new HashSet<UserCommunity>();
             Categories = new HashSet<Category>();
+            RankHistory = new HashSet<CommunityRankHistory>();
         }
 
         [Key]
@@ -61,6 +62,18 @@ namespace Foro.Entities.Models
 
         public int DownVotes { get; set; }
 
+        public int WeeklyNewFollowers { get; set; }
+        public int WeeklyPosts { get; set; }
+        public int WeeklyComments { get; set; }
+
+        public int PowerScore { get; set; }
+        public int? RankId { get; set; }
+
+        [ForeignKey("RankId")]
+        public virtual CommunityRank Rank { get; set; }
+
+        public virtual ICollection<CommunityRankHistory> RankHistory { get; set; }
+
         public class CommunityVote
         {
             public int Id { get; set; }
@@ -71,12 +84,14 @@ namespace Foro.Entities.Models
             public virtual Community Community { get; set; }
         }
 
-        public DateTime LastActivityAt { get; set; }
+        public DateTime? LastActivityAt { get; set; }
         // Relaciones
         public virtual ICollection<Post> Posts { get; set; }
         public virtual ICollection<UserCommunity> UserCommunities { get; set; }
 
         [InverseProperty("Community")]
         public virtual ICollection<Category> Categories { get; set; }
+
+
     }
 }

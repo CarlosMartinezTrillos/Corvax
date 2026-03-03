@@ -1,0 +1,16 @@
+﻿ALTER TABLE Communities
+ALTER COLUMN PowerScore FLOAT NOT NULL;
+GO
+
+ALTER TABLE Communities 
+DROP CONSTRAINT DF__Communiti__Power__6754599E;
+GO
+
+ALTER TABLE Communities
+ALTER COLUMN PowerScore FLOAT NOT NULL;
+GO
+
+ALTER TABLE Communities
+ADD CONSTRAINT DF_Communities_PowerScore
+DEFAULT 0 FOR PowerScore;
+GO

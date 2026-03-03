@@ -1,0 +1,8 @@
+﻿ALTER TABLE Communities ADD DownVotes INT NOT NULL DEFAULT 0;
+ALTER TABLE Communities ADD WeeklyNewFollowers INT NOT NULL DEFAULT 0;
+ALTER TABLE Communities ADD WeeklyPosts INT NOT NULL DEFAULT 0;
+ALTER TABLE Communities ADD WeeklyComments INT NOT NULL DEFAULT 0;
+ALTER TABLE Communities ADD PowerScore INT NOT NULL DEFAULT 0;
+ALTER TABLE Communities ADD RankId INT NULL;
+ALTER TABLE Communities ADD LastActivityAt DATETIME NULL;
+GO

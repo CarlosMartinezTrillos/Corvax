@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using Foro_Militar.Services;
 
 namespace Foro_Militar.Controllers
 {
@@ -14,14 +15,45 @@ namespace Foro_Militar.Controllers
         // GET: /Communities
         public ActionResult Index()
         {
-           var communities = _context.Communities
-            .Include(c => c.Posts)
-            .Include(c => c.UserCommunities)
-            .Include(c => c.Categories)
-            .Include(c => c.MainCategory)
-            .Include(c => c.CreatedByUser)
-            .ToList()
-            .Select(c => new CommunityViewModel
+            var rankService = new CommunityRankService(_context);
+
+            var communities = _context.Communities
+                .Include(c => c.Posts)
+                .Include(c => c.UserCommunities)
+                .Include(c => c.Categories)
+                .Include(c => c.MainCategory)
+                .Include(c => c.CreatedByUser)
+                .Include(c => c.Rank)
+                .ToList();
+
+            foreach (var c in communities)
+            {
+                rankService.RecalculateRank(c);
+            }
+
+            _context.SaveChanges();
+
+            var globalRanking = communities
+                .OrderByDescending(c => c.PowerScore)
+                .Select((c, index) => new
+                {
+                    CommunityId = c.Id,
+                    Position = index + 1
+                })
+                .ToDictionary(x => x.CommunityId, x => x.Position);
+
+            var countryRanking = communities
+                .GroupBy(c => c.Country)
+                .SelectMany(group =>
+                    group.OrderByDescending(c => c.PowerScore)
+                         .Select((c, index) => new
+                         {
+                             CommunityId = c.Id,
+                             Position = index + 1
+                         }))
+                .ToDictionary(x => x.CommunityId, x => x.Position);
+
+            var model = communities.Select(c => new CommunityViewModel
             {
                 Id = c.Id,
                 Name = c.Name,
@@ -36,18 +68,29 @@ namespace Foro_Militar.Controllers
 
                 TotalPosts = c.Posts.Count,
                 TotalFollowers = c.UserCommunities.Count,
+
+                RankName = c.Rank?.Name,
+                RankOrderGroup = c.Rank?.OrderGroup,
+                RankBorderColor = c.Rank?.BorderColor,
+                RankGlowColor = c.Rank?.GlowColor,
+                RankHasAnimatedBorder = c.Rank?.HasAnimatedBorder ?? false,
+                RankHasParticleEffect = c.Rank?.HasParticleEffect ?? false,
+                GlobalPosition = globalRanking.ContainsKey(c.Id) ? globalRanking[c.Id] : 0,
+                CountryPosition = countryRanking.ContainsKey(c.Id) ? countryRanking[c.Id] : 0,
+                PowerScore = c.PowerScore,
+
                 Categories = c.Categories.Select(cat => new CommunityViewModel.CategoryInfo
                 {
                     Name = cat.Name,
                     ColorHex = cat.ColorHex
                 }).ToList(),
+
                 ColorBaseCalculated = c.MainCategory != null
                     ? c.MainCategory.ColorHex
                     : "#7c3aed"
-            })
-            .ToList();
+            }).ToList();
 
-            return View(communities);
+            return View(model);
         }
 
         // GET: /Communities/Details/5
@@ -81,6 +124,15 @@ namespace Foro_Militar.Controllers
             };
 
             return View(model);
+
         }
+            public ActionResult RunWeeklyRankJob()
+        {
+            var job = new Foro_Militar.Services.Jobs.WeeklyCommunityRankJob(_context);
+            job.Execute();
+
+            return Content("Weekly rank recalculated successfully.");
+        }
+
     }
 }

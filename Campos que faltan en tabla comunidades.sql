@@ -1,0 +1,3 @@
+﻿ALTER TABLE Communities ADD TotalComments INT NOT NULL DEFAULT 0;
+ALTER TABLE Communities ADD UpVotes INT NOT NULL DEFAULT 0;
+GO
