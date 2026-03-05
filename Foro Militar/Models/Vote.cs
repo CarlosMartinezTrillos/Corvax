@@ -20,6 +20,9 @@ namespace Foro.Entities.Models
         public int? CommentId { get; set; }
         public virtual Comment Comment { get; set; }
 
+        public int? CommunityId { get; set; }
+        public virtual Community Community { get; set; }
+
         [Required]
         public int VoteType { get; set; } // 1 = Upvote, -1 = Downvote
 

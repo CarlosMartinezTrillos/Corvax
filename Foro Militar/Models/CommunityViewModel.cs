@@ -42,6 +42,27 @@ namespace Foro_Militar.Models
         public int GlobalPosition { get; set; }
         public int CountryPosition { get; set; }
 
+        public string DisplayGlobalPosition => GlobalPosition == 0 ? "-" : GlobalPosition.ToString();
+        public string DisplayCountryPosition => CountryPosition == 0 ? "-" : CountryPosition.ToString();
+
+        public string DisplayPowerScore =>
+            PowerScore.ToString("N0"); // Formatea el PowerScore sin decimales y con separadores de miles
+
+        public int Level { get; set; }
+        public double CurrentXP { get; set; }
+        public double NextLevelXP { get; set; }
+
+        public int LevelProgressPercent =>
+            NextLevelXP <= 0 ? 0 :
+            (int)((CurrentXP / NextLevelXP) * 100);
+
+        public bool IsNew { get; set; }
+        public bool IsTrending { get; set; }
+        public bool IsDominant => GlobalPosition == 1;
+
+        public int UpVotes { get; set; }
+        public int DownVotes { get; set; }
+        public int? CurrentUserVote { get; set; }
         public class CategoryInfo
         {
             public string Name { get; set; }

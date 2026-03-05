@@ -1,0 +1,58 @@
+﻿@model int?
+
+@{
+    var votes = Model ?? 0;
+
+    var tier = "tier-bronce";
+    var tierName = "Polluelo";
+    var icon = "fa-feather";
+
+    if (votes >= 1000)
+    {
+        tier = "tier-corvus";
+        tierName = "Corona de Corvax";
+        icon = "fa-crown";
+    }
+    else if (votes >= 500)
+    {
+        tier = "tier-amatista";
+        tierName = "Cuervo Arcano";
+        icon = "fa-crow";
+    }
+    else if (votes >= 250)
+    {
+        tier = "tier-diamante";
+        tierName = "Cuervo Ancestral";
+        icon = "fa-feather-pointed";
+    }
+    else if (votes >= 100)
+    {
+        tier = "tier-platino";
+        tierName = "Cuervo Mayor";
+        icon = "fa-feather";
+    }
+    else if (votes >= 50)
+    {
+        tier = "tier-oro";
+        tierName = "Cuervo Vigilante";
+        icon = "fa-dove";
+    }
+    else if (votes >= 10)
+    {
+        tier = "tier-plata";
+        tierName = "Cuervo Joven";
+        icon = "fa-feather";
+    }
+}
+<div class="vote-tier tooltip-container">
+
+    <span class="vote-number">@votes</span>
+
+    <div class="tooltip-content vote-tier-tooltip @tier">
+
+        <i class="fa-solid @icon"></i>
+        <span>@tierName</span>
+
+    </div>
+
+</div>

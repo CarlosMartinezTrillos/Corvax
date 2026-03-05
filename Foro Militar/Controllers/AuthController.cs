@@ -2,6 +2,7 @@
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Web.Mvc;
+using System.Web.Security;
 
 public class AuthController : Controller
 {
@@ -95,6 +96,8 @@ public class AuthController : Controller
         Session["Username"] = user.Username;
         Session["Role"] = user.Role;
 
+        FormsAuthentication.SetAuthCookie(user.Id.ToString(), false);
+
         return RedirectToAction("Index", "Dashboard");
     }
 
@@ -103,6 +106,7 @@ public class AuthController : Controller
     // =========================================
     public ActionResult Logout()
     {
+        FormsAuthentication.SignOut();
         Session.Clear();
         return RedirectToAction("Index", "Home");
     }

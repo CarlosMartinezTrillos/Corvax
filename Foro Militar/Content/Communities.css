@@ -1,215 +1,385 @@
-﻿/* ============================= */
-/* COMMUNITY CARD PRO */
-/* ============================= */
-
-.community-card-pro {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 26px;
-    overflow: hidden;
-    backdrop-filter: blur(16px);
-    transition: 0.4s ease;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+﻿.community-card-pro {
     position: relative;
+    border-radius: 22px;
+    overflow: visible;
+    padding: 0;
+    background: linear-gradient( 135deg, var(--main-color, #7c3aed), #2a0a4a );
 }
 
-    .community-card-pro:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 25px 90px rgba(124,58,237,0.35);
+    .community-card-pro::before {
+        content: "";
+        position: absolute;
+        inset: 1px;
+        border-radius: 21px;
+        backdrop-filter: blur(20px);
+        background: rgba(15,15,20,0.65);
+        border: 1px solid rgba(255,255,255,0.08);
+        z-index: 0;
     }
 
-/* Banner */
+    .community-card-pro > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    .community-card-pro:hover::before {
+        background: rgba(20,20,30,0.8);
+    }
+
+/* TOP LAYER */
+
+.card-top-layer {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 5;
+}
+
+.badge-dominant {
+    background: gold;
+    color: black;
+    padding: 6px 8px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+}
+
+.rank-cluster {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    background: rgba(0,0,0,0.65);
+    padding: 8px 16px;
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    font-size: 0.75rem;
+    color: white;
+}
+
+/* BANNER */
 
 .community-banner-pro {
-    height: 200px;
-    position: relative;
+    height: 160px;
     background-size: cover;
     background-position: center;
-    overflow: hidden;
+    position: relative;
+    border-top-left-radius: 21px;
+    border-top-right-radius: 21px;
 }
 
 .banner-overlay-pro {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.85));
+    background: linear-gradient(to bottom,transparent,rgba(0,0,0,0.75));
 }
 
-/* Crow animation */
+.community-avatar-pro {
+    position: absolute;
+    bottom: -35px;
+    left: 25px;
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    background-size: cover;
+    background-position: center;
+    border: 3px solid rgba(0,0,0,0.6);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.7rem;
+    color: white;
+}
 
-.banner-crow {
+.default-crow {
     position: absolute;
     inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 4rem;
-    color: rgba(255,255,255,0.07);
-    animation: floatCrow 6s ease-in-out infinite;
-}
-
-@keyframes floatCrow {
-    0%,100% {
-        transform: translateY(0px);
-    }
-
-    50% {
-        transform: translateY(-8px);
-    }
-}
-
-/* Avatar integrado */
-
-.community-avatar-pro {
-    position: absolute;
-    bottom: 20px;
-    left: 25px;
-    width: 95px;
-    height: 95px;
-    border-radius: 24px;
-    background-size: cover;
-    background-position: center;
-    border: 3px solid rgba(0,0,0,0.8);
-    box-shadow: 0 0 25px var(--mainColor);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2.2rem;
-    color: white;
-    animation: pulseGlow 3s infinite ease-in-out;
-}
-
-@keyframes pulseGlow {
-    0%,100% {
-        box-shadow: 0 0 15px var(--mainColor);
-    }
-
-    50% {
-        box-shadow: 0 0 35px var(--mainColor);
-    }
-}
-
-/* Banner Title */
-
-.banner-title {
-    position: absolute;
-    bottom: 30px;
-    left: 140px;
+    font-size: 80px;
+    opacity: 0.07;
     color: white;
 }
+.country-flag {
+    position: absolute;
+    background: rgba(0,0,0,0.6);
+    padding: 6px 8px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    color: white;
+    backdrop-filter: blur(6px);
+}
 
-    .banner-title h3 {
-        font-size: 1.4rem;
-        font-weight: 700;
-    }
+/* XP */
 
-.country-badge {
-    display: inline-block;
-    margin-top: 6px;
-    font-size: 0.75rem;
+.xp-wrapper {
+    height: 6px;
+    margin: 55px 25px 20px 25px;
+    border-radius: 10px;
+    overflow: hidden;
     background: rgba(255,255,255,0.08);
-    padding: 5px 12px;
-    border-radius: 20px;
 }
 
-/* Body */
-
-.community-body-pro {
-    padding: 25px;
+.xp-bar {
+    height: 100%;
+    background: linear-gradient(90deg,#7c3aed,#ec4899);
+    transition: width 0.6s ease;
 }
 
-/* Meta */
+/* HEADER ROW */
 
-.community-meta-pro {
-    font-size: 0.75rem;
-    color: var(--text-muted);
+.community-header-row {
     display: flex;
-    gap: 18px;
-}
-
-/* Description */
-
-.community-description-pro {
-    margin-top: 18px;
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    line-height: 1.6;
-}
-
-/* Stats Dashboard */
-
-.community-stats-pro {
-    display: grid;
-    gap: 14px;
-    margin-top: 22px;
-}
-
-.stat-box-pro {
-    display: flex;
-    gap: 14px;
+    justify-content: space-between;
     align-items: center;
-    background: rgba(255,255,255,0.05);
-    padding: 14px;
-    border-radius: 16px;
-    transition: 0.3s;
+    padding: 20px;
 }
 
-    .stat-box-pro:hover {
-        background: rgba(255,255,255,0.09);
-        transform: translateX(5px);
+.community-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-follow {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: transparent;
+    border: 2px solid var(--main-color,#7c3aed);
+    color: var(--main-color,#7c3aed);
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+    .btn-follow:hover {
+        background: var(--main-color,#7c3aed);
+        color: black;
     }
 
-    .stat-box-pro i {
-        font-size: 1.2rem;
-        color: var(--mainColor);
+    .btn-follow.active {
+        background: var(--main-color,#7c3aed);
+        color: black;
     }
 
-    .stat-box-pro span {
+.btn-vote {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #bbb;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+    .btn-vote:hover {
+        background: var(--main-color,#7c3aed);
+        color: black;
+    }
+
+    .btn-vote.up:hover {
+        background: #16a34a;
+        color: white;
+    }
+
+    .btn-vote.down:hover {
+        background: #dc2626;
+        color: white;
+    }
+/* STATS */
+
+.community-stats-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 30px 20px 30px;
+}
+
+.stat-box {
+    text-align: center;
+    color: white;
+}
+
+    .stat-box strong {
         display: block;
-        font-size: 0.75rem;
-        color: var(--text-muted);
-    }
-
-    .stat-box-pro strong {
         font-size: 1.1rem;
-        font-weight: 700;
     }
 
-/* Tags */
+/* TAGS */
 
 .community-tags-pro {
-    margin-top: 18px;
+    padding: 0 30px 15px 30px;
     display: flex;
-    flex-wrap: wrap;
     gap: 8px;
+    flex-wrap: wrap;
 }
 
     .community-tags-pro span {
         padding: 6px 12px;
-        border-radius: 20px;
-        font-size: 0.7rem;
-        font-weight: 600;
-        transition: 0.3s;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        color: white;
     }
 
-        .community-tags-pro span:hover {
-            transform: scale(1.08);
-        }
-
-/* Footer */
-
-.community-footer-pro {
-    margin-top: 22px;
-    text-align: right;
+.tag-more {
+    background: #222;
+    padding: 4px 8px;
+    border-radius: 8px;
 }
 
-.explore-btn-pro {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--mainColor);
-    text-decoration: none;
+/* DESCRIPTION */
+
+.description-container {
+    padding: 0 20px 20px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* TOOLTIP */
+
+.tooltip-container {
+    position: relative;
+}
+
+.tooltip-content {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100%);
+    background: rgba(20,20,25,0.95);
+    padding: 12px 14px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    opacity: 0;
+    transition: 0.25s;
+    z-index: 99999;
+    color: white;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+    white-space: nowrap;
+}
+
+    .tooltip-content.large {
+        white-space: normal;
+        width: 260px;
+    }
+
+.tooltip-container:hover .tooltip-content {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-105%);
+}
+
+/* GLOW HOVER RESTAURADO */
+
+.community-card-pro:hover {
+    box-shadow: 0 0 40px var(--main-color);
+    transform: translateY(-4px);
     transition: 0.3s;
 }
 
-    .explore-btn-pro:hover {
+/* TOP LEFT CLUSTER */
+
+.top-left-cluster {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.country-flag {
+    background: rgba(0,0,0,0.6);
+    padding: 6px 8px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: white;
+    backdrop-filter: blur(6px);
+}
+
+/* VOTE COUNTER */
+
+.vote-widget {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15);
+    backdrop-filter: blur(6px);
+}
+
+.vote-counter {
+    font-weight: bold;
+    min-width: 20px;
+    text-align: center;
+}
+
+.up-counter {
+    color: #22c55e;
+}
+
+.down-counter {
+    color: #ef4444;
+}
+
+.btn-vote {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.05);
+    color: #aaa;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+    .btn-vote i {
+        font-size: 16px;
+    }
+
+    .btn-vote:hover {
+        transform: translateY(-1px);
+    }
+
+    .btn-vote.up.active {
+        background: #16a34a;
         color: white;
     }
+
+    .btn-vote.down.active {
+        background: #dc2626;
+        color: white;
+    }
+
+/* ENTER BUTTON */
+
+.enter-row {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0 20px 20px 20px;
+}
+
+.btn-enter {
+    background: var(--main-color);
+    color: black;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.25s;
+}
+
+    .btn-enter:hover {
+        opacity: 0.85;
+        transform: translateX(4px);
+    }
+
+

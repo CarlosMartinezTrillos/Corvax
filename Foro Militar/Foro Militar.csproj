@@ -229,6 +229,7 @@
     <Compile Include="Services\CommunityRankService.cs" />
     <Compile Include="Services\DashboardService.cs" />
     <Compile Include="Services\Jobs\CommunityRankJob.cs" />
+    <Compile Include="Services\VoteService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\HelpPage\HelpPage.css" />
@@ -254,6 +255,7 @@
     <Content Include="Content\Home.css" />
     <Content Include="Content\Layout.css" />
     <Content Include="Content\TopCommunities.css" />
+    <Content Include="Content\vote-tiers.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Scripts\bootstrap.bundle.js" />
@@ -324,6 +326,7 @@
     <Content Include="Views\Communities\_CommunityCard.cshtml" />
     <Content Include="Views\Communities\Index.cshtml" />
     <Content Include="Views\Communities\Details.cshtml" />
+    <Content Include="Views\Shared\_VoteTier.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

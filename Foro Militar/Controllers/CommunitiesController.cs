@@ -1,21 +1,32 @@
 ﻿using Foro.Entities.Models;
 using Foro_Militar.Models;
+using Foro_Militar.Services;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Validation;
 using System.Linq;
 using System.Web.Mvc;
-using Foro_Militar.Services;
 
 namespace Foro_Militar.Controllers
 {
     public class CommunitiesController : Controller
     {
         private readonly AppDbContext _context = new AppDbContext();
+        private readonly VoteService _voteService;
+
+        public CommunitiesController()
+        {
+            _voteService = new VoteService(_context);
+        }
 
         // GET: /Communities
         public ActionResult Index()
         {
+            int userId = 0;
+            if (User.Identity.IsAuthenticated)
+                userId = int.Parse(User.Identity.Name);
             var rankService = new CommunityRankService(_context);
+
 
             var communities = _context.Communities
                 .Include(c => c.Posts)
@@ -24,14 +35,13 @@ namespace Foro_Militar.Controllers
                 .Include(c => c.MainCategory)
                 .Include(c => c.CreatedByUser)
                 .Include(c => c.Rank)
+                .Include(c => c.Votes)
                 .ToList();
 
             foreach (var c in communities)
             {
                 rankService.RecalculateRank(c);
             }
-
-            _context.SaveChanges();
 
             var globalRanking = communities
                 .OrderByDescending(c => c.PowerScore)
@@ -78,6 +88,15 @@ namespace Foro_Militar.Controllers
                 GlobalPosition = globalRanking.ContainsKey(c.Id) ? globalRanking[c.Id] : 0,
                 CountryPosition = countryRanking.ContainsKey(c.Id) ? countryRanking[c.Id] : 0,
                 PowerScore = c.PowerScore,
+
+                UpVotes = c.Votes.Count(v => v.VoteType == 1),
+
+                DownVotes = c.Votes.Count(v => v.VoteType == -1),
+
+                CurrentUserVote = c.Votes
+                    .Where(v => v.UserId == userId)
+                    .Select(v => (int?)v.VoteType)
+                    .FirstOrDefault(),
 
                 Categories = c.Categories.Select(cat => new CommunityViewModel.CategoryInfo
                 {
@@ -126,13 +145,34 @@ namespace Foro_Militar.Controllers
             return View(model);
 
         }
-            public ActionResult RunWeeklyRankJob()
+        public ActionResult RunWeeklyRankJob()
         {
             var job = new Foro_Militar.Services.Jobs.WeeklyCommunityRankJob(_context);
             job.Execute();
 
             return Content("Weekly rank recalculated successfully.");
         }
+        [HttpPost]
+        [Authorize]
+        public JsonResult VoteCommunity(int id, int voteType)
+        {
+            int userId = int.Parse(User.Identity.Name);
 
+            _voteService.VoteCommunity(id, userId, voteType);
+
+            var community = _context.Communities
+                .Include("Votes")
+                .First(c => c.Id == id);
+
+            var up = community.Votes.Count(v => v.VoteType == 1);
+            var down = community.Votes.Count(v => v.VoteType == -1);
+
+            return Json(new
+            {
+                success = true,
+                upVotes = up,
+                downVotes = down
+            });
+        }
     }
 }

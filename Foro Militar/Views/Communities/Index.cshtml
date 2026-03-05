@@ -13,3 +13,70 @@
         @Html.Partial("_CommunityCard", community)
     }
 </div>
+@section scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            document.querySelectorAll(".vote-widget").forEach(widget => {
+
+                const upBtn = widget.querySelector(".up");
+                const downBtn = widget.querySelector(".down");
+
+                const upCounter = widget.querySelector(".up-counter .vote-tier span");
+                const downCounter = widget.querySelector(".down-counter span");
+
+                function sendVote(type) {
+
+                    const id = widget.dataset.id;
+
+                    fetch("/Communities/VoteCommunity", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded"
+                        },
+                        body: "id=" + id + "&voteType=" + type
+                    })
+                        .then(r => r.json())
+                        .then(data => {
+
+                            if (!data.success) return;
+
+                            upCounter.innerText = data.upVotes;
+                            downCounter.innerText = data.downVotes;
+
+                            if (type === 1) {
+
+                                if (upBtn.classList.contains("active")) {
+                                    upBtn.classList.remove("active");
+                                }
+                                else {
+                                    upBtn.classList.add("active");
+                                    downBtn.classList.remove("active");
+                                }
+
+                            }
+
+                            if (type === -1) {
+
+                                if (downBtn.classList.contains("active")) {
+                                    downBtn.classList.remove("active");
+                                }
+                                else {
+                                    downBtn.classList.add("active");
+                                    upBtn.classList.remove("active");
+                                }
+
+                            }
+
+                        });
+
+                }
+
+                upBtn.addEventListener("click", () => sendVote(1));
+                downBtn.addEventListener("click", () => sendVote(-1));
+
+            });
+
+        });    
+    </script>
+}

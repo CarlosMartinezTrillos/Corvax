@@ -46,7 +46,8 @@ namespace Foro_Militar.Services
 
         private double CalculateActivityScore(Community c)
         {
-            var daysInactive = (DateTime.Now - c.LastActivityAt).TotalDays;
+            var lastActivity = c.LastActivityAt ?? DateTime.Now;
+            var daysInactive = (DateTime.Now - lastActivity).TotalDays;
 
             if (daysInactive <= 1) return 10;
             if (daysInactive <= 3) return 7;

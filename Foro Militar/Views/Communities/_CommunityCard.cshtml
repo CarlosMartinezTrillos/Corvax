@@ -1,132 +1,206 @@
 ﻿@model Foro_Militar.Models.CommunityViewModel
+@using System.Linq
+@using System.Collections.Generic
 
 @{
     var hasBanner = !string.IsNullOrEmpty(Model.BannerUrl);
     var hasImage = !string.IsNullOrEmpty(Model.ImageUrl);
-    var country = string.IsNullOrEmpty(Model.Country) ? "Global" : Model.Country;
+
+    var name = string.IsNullOrEmpty(Model.Name) ? "Comunidad sin nombre" : Model.Name;
+    var country = string.IsNullOrEmpty(Model.Country) ? "Global Elite" : Model.Country;
+
     var description = string.IsNullOrEmpty(Model.Description)
-        ? "Una comunidad lista para crear historia."
+        ? "Comunidad en expansión lista para dominar su categoría."
         : Model.Description;
-    var creator = string.IsNullOrEmpty(Model.CreatedByName)
-        ? "Sistema"
-        : Model.CreatedByName;
+
+    var rankName = string.IsNullOrEmpty(Model.RankName) ? "Recluta" : Model.RankName;
+    var rankClass = $"rank-{(string.IsNullOrEmpty(Model.RankOrderGroup) ? "1" : Model.RankOrderGroup)}";
+
+    var categories = Model.Categories ?? new List<Foro_Militar.Models.CommunityViewModel.CategoryInfo>();
+    var visibleCategories = categories.Take(3).ToList();
+
+    var mainColor = string.IsNullOrEmpty(Model.ColorBaseCalculated)
+        ? "#7c3aed"
+        : Model.ColorBaseCalculated;
 }
 
-<div class="community-card-pro reveal"
-     style="--mainColor:@Model.ColorBaseCalculated">
+<div class="community-card-pro reveal @rankClass"
+     style="--main-color:@mainColor"
+     data-id="@Model.Id">
 
-    <!-- Banner -->
-    <div class="community-banner-pro @(hasBanner ? "" : "default-banner-pro")"
-         style="@(hasBanner
-            ? $"background-image:url('{Model.BannerUrl}')"
-            : $"background: linear-gradient(135deg, {Model.ColorBaseCalculated}, #050505);")">
+    <!-- HEADER SUPERIOR -->
+    <div class="card-top-layer">
 
-        <!-- Overlay dinámico -->
-        <div class="banner-overlay-pro"></div>
+        <div class="top-left-cluster">
 
-        <!-- Icono animado Corvax -->
-        @if (!hasBanner)
-        {
-            <div class="banner-crow">
-                <i class="fa-solid fa-crow"></i>
-            </div>
-        }
-
-        <!-- Avatar integrado en banner -->
-        <div class="community-avatar-pro"
-             style="@(hasImage
-                ? $"background-image:url('{Model.ImageUrl}')"
-                : $"background: linear-gradient(135deg, {Model.ColorBaseCalculated}, #000);")">
-
-            @if (!hasImage)
+            @if (Model.IsDominant)
             {
-                <i class="fa-solid fa-crow"></i>
+                <div class="badge-dominant">
+                    <i class="fa-solid fa-crown"></i>
+                </div>
             }
+
+            <div class="country-flag tooltip-container">
+                <i class="fa-solid fa-flag"></i>
+                <div class="tooltip-content">
+                    @country
+                </div>
+            </div>
+
         </div>
 
-        <!-- Nombre encima del banner -->
-        <div class="banner-title">
-            <h3>@Model.Name</h3>
-            <span class="country-badge">
-                <i class="fa-solid fa-earth-americas"></i> @country
-            </span>
+        <div class="rank-cluster tooltip-container">
+
+            <div class="rank-name">
+                <i class="fa-solid fa-shield"></i>
+                @rankName
+            </div>
+
+            <div class="rank-position">
+                #@Model.DisplayGlobalPosition
+            </div>
+
+            <div class="tooltip-content">
+                Nivel @Model.Level <br />
+                País #@Model.DisplayCountryPosition <br />
+                PowerScore @Model.DisplayPowerScore
+            </div>
+
         </div>
 
     </div>
 
-    <!-- BODY -->
-    <div class="community-body-pro">
+    <!-- BANNER -->
+    <div class="community-banner-pro"
+         style="@(hasBanner
+            ? $"background-image:url('{Model.BannerUrl}')"
+            : $"background:linear-gradient(135deg,{mainColor},#050505);")">
 
-        <!-- Meta -->
-        <div class="community-meta-pro">
-            @if (!string.IsNullOrEmpty(Model.CreatedAtFormatted))
+        @if (!hasBanner)
+        {
+            <div class="default-crow">
+                <i class="fa-solid fa-crow"></i>
+            </div>
+        }
+
+        <div class="banner-overlay-pro"></div>
+
+        <div class="community-avatar-pro"
+             style="@(hasImage
+                ? $"background-image:url('{Model.ImageUrl}')"
+                : $"background:linear-gradient(135deg,{mainColor},#000);")">
+
+            @if (!hasImage)
             {
-                <span><i class="fa-solid fa-calendar"></i> @Model.CreatedAtFormatted</span>
+                <span class="avatar-initial">
+                    @name.Substring(0, 1).ToUpper()
+                </span>
             }
 
-            <span><i class="fa-solid fa-user"></i> @creator</span>
         </div>
 
-        <!-- Description -->
-        <p class="community-description-pro">
-            @(description.Length > 140
-              ? description.Substring(0, 140) + "..."
-              : description)
+    </div>
+
+    <!-- XP BAR -->
+    <div class="xp-wrapper">
+        <div class="xp-bar"
+             style="width:@Model.LevelProgressPercent%"></div>
+    </div>
+
+    <!-- NOMBRE + BOTONES -->
+    <div class="community-header-row">
+
+        <div class="community-name">
+            <h3>@name</h3>
+        </div>
+
+        <div class="community-actions">
+
+            <button class="btn-follow tooltip-container">
+                <i class="fa-solid fa-feather-pointed"></i>
+                <div class="tooltip-content">
+                    Seguir comunidad
+                </div>
+            </button>
+
+            <div class="vote-widget" data-id="@Model.Id">
+
+                <button class="btn-vote up @(Model.CurrentUserVote == 1 ? "active" : "")">
+                    <i class="fa-solid fa-caret-up"></i>
+                </button>
+
+                <div class="vote-counter up-counter">
+                    @Html.Partial("_VoteTier", Model.UpVotes)
+                </div>
+
+                <button class="btn-vote down @(Model.CurrentUserVote == -1 ? "active" : "")">
+                    <i class="fa-solid fa-caret-down"></i>
+                </button>
+
+                <div class="vote-counter down-counter">
+                    <span>@Model.DownVotes</span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- STATS -->
+    <div class="community-stats-row">
+
+        <div class="stat-box tooltip-container">
+            <i class="fa-solid fa-users"></i>
+            <strong>@Model.TotalFollowers</strong>
+            <span>Seguidores</span>
+            <div class="tooltip-content">Comunidad activa</div>
+        </div>
+
+        <div class="stat-box tooltip-container">
+            <i class="fa-solid fa-fire-flame-curved"></i>
+            <strong>@Model.TotalPosts</strong>
+            <span>Posts</span>
+            <div class="tooltip-content">Actividad acumulada</div>
+        </div>
+
+        <div class="stat-box tooltip-container">
+            <i class="fa-solid fa-layer-group"></i>
+            <strong>@categories.Count</strong>
+            <span>Categorías</span>
+        </div>
+
+    </div>
+
+    <!-- TAGS -->
+    <div class="community-tags-pro">
+        @foreach (var cat in visibleCategories)
+        {
+            <span style="background:@cat.ColorHexSoft; border:1px solid @cat.ColorHex">
+                @cat.Name
+            </span>
+        }
+    </div>
+
+    <!-- DESCRIPCIÓN -->
+    <div class="description-container tooltip-container">
+        <p>
+            @(description.Length > 120
+                ? description.Substring(0, 120) + "..."
+                : description)
         </p>
+    </div>
 
-        <!-- Stats Dashboard -->
-        <div class="community-stats-pro">
+    <!-- BOTÓN ENTRAR -->
+    <div class="enter-row">
 
-            <div class="stat-box-pro">
-                <i class="fa-solid fa-users"></i>
-                <div>
-                    <span>Seguidores</span>
-                    <strong>@Model.TotalFollowers</strong>
-                </div>
-            </div>
+        <a href="@Url.Action("Details","Communities", new { id = Model.Id })"
+           class="btn-enter">
 
-            <div class="stat-box-pro">
-                <i class="fa-solid fa-fire"></i>
-                <div>
-                    <span>Posts</span>
-                    <strong>@Model.TotalPosts</strong>
-                </div>
-            </div>
+            Entrar
+            <i class="fa-solid fa-arrow-right"></i>
 
-            <div class="stat-box-pro">
-                <i class="fa-solid fa-layer-group"></i>
-                <div>
-                    <span>Categorías</span>
-                    <strong>@(Model.Categories?.Count ?? 0)</strong>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- Categories -->
-        <div class="community-tags-pro">
-            @if (Model.Categories != null && Model.Categories.Any())
-            {
-                foreach (var cat in Model.Categories.Take(4))
-                {
-                    <span style="background:@(cat.ColorHex + "22"); border:1px solid @cat.ColorHex">
-                        @cat.Name
-                    </span>
-                }
-            }
-            else
-            {
-                <span class="tag-empty-pro">Sin categorías</span>
-            }
-        </div>
-
-        <!-- Footer -->
-        <div class="community-footer-pro">
-            <a href="@Url.Action("Details","Communities", new { id = Model.Id })"
-               class="explore-btn-pro">
-                Explorar →
-            </a>
-        </div>
+        </a>
 
     </div>
 

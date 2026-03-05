@@ -1,0 +1,345 @@
+﻿/* =========================================
+BASE TOOLTIP
+========================================= */
+
+.vote-tier-tooltip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .4px;
+    backdrop-filter: blur(6px);
+    transition: all .25s;
+    position: absolute;
+    bottom: 80%;
+    overflow: visible;
+    left: 50%;
+
+    margin-bottom: 6px;
+    z-index: 999;
+    /* Animación suave al aparecer */
+    transform: translateX(-50px) translate(-6px) scale(.98);
+    opacity: 0;
+    transition: transform .25s cubic-bezier(.22,1,.36,1), opacity .25s ease;
+}
+
+    .vote-tier-tooltip.show {
+        transform: translateX(-50%) translateY(-50%) scale(1);
+        opacity: 1;
+    }
+
+    .vote-tier-tooltip i {
+        font-size: 14px;
+        transition: all .25s;
+    }
+
+    /* =========================================
+AURA BASE
+========================================= */
+
+    .vote-tier-tooltip::before {
+        content: "";
+        position: absolute;
+        inset: -4px;
+        border-radius: 12px;
+        opacity: .4;
+        filter: blur(10px);
+        z-index: -1;
+        transition: all .4s ease;
+    }
+
+    /* =========================================
+BRONCE
+========================================= */
+
+    .vote-tier-tooltip.tier-bronce {
+        background: linear-gradient(145deg,#2b1a0e,#3a2a1a);
+        color: #d19a66;
+        border: 1px solid #7a4d1f;
+        box-shadow: 0 0 6px rgba(150,90,40,.4);
+    }
+
+        .vote-tier-tooltip.tier-bronce::before {
+            background: radial-gradient(circle, #a36b35, transparent);
+        }
+
+    /* =========================================
+PLATA
+========================================= */
+
+    .vote-tier-tooltip.tier-plata {
+        background: linear-gradient(145deg,#1e1e1e,#2b2b2b);
+        color: #e5e5e5;
+        border: 1px solid #9a9a9a;
+        box-shadow: 0 0 8px rgba(200,200,200,.35);
+    }
+
+        .vote-tier-tooltip.tier-plata i {
+            animation: silverShine 3s infinite linear;
+        }
+
+        .vote-tier-tooltip.tier-plata::before {
+            background: radial-gradient(circle, #d0d0d0, transparent);
+        }
+
+@keyframes silverShine {
+    0% {
+        opacity: .6
+    }
+
+    50% {
+        opacity: 1
+    }
+
+    100% {
+        opacity: .6
+    }
+}
+
+/* =========================================
+ORO
+========================================= */
+
+.vote-tier-tooltip.tier-oro {
+    background: linear-gradient(145deg,#3b2b00,#5a4400);
+    color: #ffd700;
+    border: 1px solid #d4af37;
+    box-shadow: 0 0 10px rgba(255,215,0,.45), inset 0 0 4px rgba(255,255,255,.2);
+}
+
+    .vote-tier-tooltip.tier-oro i {
+        animation: goldPulse 2.5s infinite alternate;
+    }
+
+    .vote-tier-tooltip.tier-oro::before {
+        background: radial-gradient(circle,#ffd700, transparent);
+        animation: goldAura 4s infinite linear;
+    }
+
+@keyframes goldPulse {
+    from {
+        transform: scale(1)
+    }
+
+    to {
+        transform: scale(1.2)
+    }
+}
+
+@keyframes goldAura {
+    from {
+        transform: scale(.9)
+    }
+
+    to {
+        transform: scale(1.1)
+    }
+}
+
+/* =========================================
+PLATINO
+========================================= */
+
+.vote-tier-tooltip.tier-platino {
+    background: linear-gradient(145deg,#0f1c20,#142c33);
+    color: #a8f0ff;
+    border: 1px solid #6de3ff;
+    box-shadow: 0 0 12px rgba(100,220,255,.45), inset 0 0 5px rgba(255,255,255,.2);
+}
+
+    .vote-tier-tooltip.tier-platino i {
+        animation: platinumGlow 2.5s infinite alternate;
+    }
+
+    .vote-tier-tooltip.tier-platino::before {
+        background: radial-gradient(circle,#6de3ff, transparent);
+        animation: platinumAura 3s infinite alternate;
+    }
+
+@keyframes platinumGlow {
+    from {
+        transform: scale(1);
+        filter: drop-shadow(0 0 2px #6de3ff);
+    }
+
+    to {
+        transform: scale(1.2);
+        filter: drop-shadow(0 0 8px #6de3ff);
+    }
+}
+
+@keyframes platinumAura {
+    from {
+        opacity: .3
+    }
+
+    to {
+        opacity: .6
+    }
+}
+
+/* =========================================
+DIAMANTE
+========================================= */
+
+.vote-tier-tooltip.tier-diamante {
+    background: linear-gradient(145deg,#09131a,#0d2029);
+    color: #7bdcff;
+    border: 1px solid #36cfff;
+    box-shadow: 0 0 14px rgba(0,200,255,.6), inset 0 0 6px rgba(255,255,255,.25);
+}
+
+    .vote-tier-tooltip.tier-diamante i {
+        animation: diamondShimmer 2s infinite alternate;
+    }
+
+    .vote-tier-tooltip.tier-diamante::before {
+        background: radial-gradient(circle,#36cfff, transparent);
+        animation: diamondAura 2s infinite alternate;
+    }
+
+@keyframes diamondShimmer {
+    from {
+        transform: scale(1);
+        filter: drop-shadow(0 0 3px #36cfff);
+    }
+
+    to {
+        transform: scale(1.3);
+        filter: drop-shadow(0 0 10px #36cfff);
+    }
+}
+
+@keyframes diamondAura {
+    from {
+        transform: scale(.9);
+        opacity: .4;
+    }
+
+    to {
+        transform: scale(1.15);
+        opacity: .7;
+    }
+}
+
+/* =========================================
+AMATISTA
+========================================= */
+
+.vote-tier-tooltip.tier-amatista {
+    background: linear-gradient(145deg,#1b1028,#2a1240);
+    color: #d7a5ff;
+    border: 1px solid #9a4dff;
+    box-shadow: 0 0 16px rgba(170,90,255,.65), inset 0 0 6px rgba(255,255,255,.15);
+}
+
+    .vote-tier-tooltip.tier-amatista i {
+        animation: amethystPulse 2s infinite alternate;
+    }
+
+    .vote-tier-tooltip.tier-amatista::before {
+        background: radial-gradient(circle,#9a4dff, transparent);
+        animation: amethystAura 3s infinite alternate;
+    }
+
+@keyframes amethystPulse {
+    from {
+        transform: scale(1);
+        filter: drop-shadow(0 0 4px #9a4dff);
+    }
+
+    to {
+        transform: scale(1.25);
+        filter: drop-shadow(0 0 12px #c77dff);
+    }
+}
+
+@keyframes amethystAura {
+    from {
+        transform: scale(.95);
+        opacity: .4;
+    }
+
+    to {
+        transform: scale(1.2);
+        opacity: .8;
+    }
+}
+
+/* =========================================
+CORVUS (LEGENDARIO)
+========================================= */
+
+.vote-tier-tooltip.tier-corvus {
+    background: linear-gradient(135deg,#12001f,#000000,#1a0033);
+    color: #f5d0ff;
+    border: 1px solid #7c3aed;
+    box-shadow: 0 0 12px #7c3aed, 0 0 30px rgba(124,58,237,.7), 0 0 50px rgba(255,215,0,.25);
+}
+
+    .vote-tier-tooltip.tier-corvus i {
+        color: #ffd700;
+        animation: corvusIcon 1.8s infinite alternate;
+    }
+
+    .vote-tier-tooltip.tier-corvus::before {
+        content: "";
+        position: absolute;
+        inset: -4px;
+        border-radius: 12px;
+        background: radial-gradient(circle at 50% 50%, gold, transparent);
+        opacity: .5;
+        filter: blur(6px);
+        z-index: -1;
+        animation: corvusShine 2.5s infinite alternate;
+    }
+
+@keyframes corvusAura {
+    from {
+        box-shadow: 0 0 12px #7c3aed, 0 0 25px rgba(124,58,237,.6), 0 0 40px rgba(255,215,0,.2);
+    }
+
+    to {
+        box-shadow: 0 0 18px #c084fc, 0 0 40px rgba(124,58,237,.8), 0 0 60px rgba(255,215,0,.4);
+    }
+}
+
+@keyframes corvusIcon {
+    from {
+        transform: scale(1);
+        filter: drop-shadow(0 0 4px gold);
+    }
+
+    to {
+        transform: scale(1.35);
+        filter: drop-shadow(0 0 14px gold);
+    }
+}
+
+@keyframes corvusShine {
+    0% {
+        transform: scale(.9);
+        opacity: .4;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: .7;
+    }
+
+    100% {
+        transform: scale(.9);
+        opacity: .4;
+    }
+}
+
+/* =========================================
+HOVER MICRO EFECTO
+========================================= */
+
+.vote-tier-tooltip:hover {
+    transform: scale(1.05);
+}
