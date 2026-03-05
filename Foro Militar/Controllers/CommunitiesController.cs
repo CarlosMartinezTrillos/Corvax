@@ -19,6 +19,8 @@ namespace Foro_Militar.Controllers
             _voteService = new VoteService(_context);
         }
 
+
+
         // GET: /Communities
         public ActionResult Index()
         {
@@ -98,6 +100,8 @@ namespace Foro_Militar.Controllers
                     .Select(v => (int?)v.VoteType)
                     .FirstOrDefault(),
 
+                IsFollowing = c.UserCommunities.Any(uc => uc.UserId == userId),
+
                 Categories = c.Categories.Select(cat => new CommunityViewModel.CategoryInfo
                 {
                     Name = cat.Name,
@@ -173,6 +177,46 @@ namespace Foro_Militar.Controllers
                 upVotes = up,
                 downVotes = down
             });
+
+
+        }
+        [HttpPost]
+        [Authorize]
+        public JsonResult ToggleFollowCommunity(int communityId)  // <-- cambia 'id' por 'communityId'
+        {
+            int currentUserId = int.Parse(User.Identity.Name); // <-- cambia 'userId' por 'currentUserId'
+
+            var existing = _context.UserCommunities
+                                   .FirstOrDefault(uc => uc.UserId == currentUserId && uc.CommunityId == communityId);
+
+            bool nowFollowing;
+
+            if (existing == null)
+            {
+                _context.UserCommunities.Add(new UserCommunity
+                {
+                    UserId = currentUserId,
+                    CommunityId = communityId
+                });
+                nowFollowing = true;
+            }
+            else
+            {
+                _context.UserCommunities.Remove(existing);
+                nowFollowing = false;
+            }
+
+            _context.SaveChanges();
+
+            var totalFollowers = _context.UserCommunities.Count(uc => uc.CommunityId == communityId);
+
+            return Json(new
+            {
+                success = true,
+                isFollowing = nowFollowing,
+                totalFollowers
+            });
+
         }
     }
 }

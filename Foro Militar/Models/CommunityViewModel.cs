@@ -52,6 +52,8 @@ namespace Foro_Militar.Models
         public double CurrentXP { get; set; }
         public double NextLevelXP { get; set; }
 
+
+
         public int LevelProgressPercent =>
             NextLevelXP <= 0 ? 0 :
             (int)((CurrentXP / NextLevelXP) * 100);
@@ -59,6 +61,8 @@ namespace Foro_Militar.Models
         public bool IsNew { get; set; }
         public bool IsTrending { get; set; }
         public bool IsDominant => GlobalPosition == 1;
+
+        public bool IsFollowing { get; set; }
 
         public int UpVotes { get; set; }
         public int DownVotes { get; set; }
