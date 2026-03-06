@@ -166,6 +166,11 @@
         color: black;
     }
 
+        .btn-follow.active:hover {
+            background: red;
+            color: white;
+        }
+
 .btn-vote {
     width: 40px;
     height: 40px;

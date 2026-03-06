@@ -116,10 +116,12 @@
 
         <div class="community-actions">
 
-            <button class="btn-follow tooltip-container">
+            <button class="btn-follow tooltip-container"
+                    data-id="@Model.Id"
+                    data-following="@(Model.IsFollowing.ToString().ToLower())">
                 <i class="fa-solid fa-feather-pointed"></i>
                 <div class="tooltip-content">
-                    Seguir comunidad
+                    @(Model.IsFollowing ? "Dejar de seguir" : "Seguir comunidad")
                 </div>
             </button>
 

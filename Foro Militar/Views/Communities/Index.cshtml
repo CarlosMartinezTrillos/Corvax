@@ -77,6 +77,39 @@
 
             });
 
+            document.querySelectorAll(".btn-follow").forEach(btn => {
+                // Inicializar estado visual
+                const isFollowing = btn.dataset.following === "true";
+                if (isFollowing) btn.classList.add("active");
+
+                btn.addEventListener("click", () => {
+                    const communityId = btn.dataset.id;
+
+                    fetch("/Communities/ToggleFollowCommunity", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                        body: "communityId=" + communityId
+                    })
+                        .then(r => r.json())
+                        .then(data => {
+                            if (!data.success) return;
+
+                            // Cambiar estado visual
+                            btn.classList.toggle("active", data.isFollowing);
+
+                            // Cambiar tooltip
+                            btn.querySelector(".tooltip-content").innerText = data.isFollowing
+                                ? "Dejar de seguir"
+                                : "Seguir comunidad";
+
+                            // Actualizar contador de seguidores
+                            const statBox = btn.closest(".community-card-pro").querySelector(".stat-box strong");
+                            statBox.innerText = data.totalFollowers;
+                        });
+                });
+            });
+
+
         });    
     </script>
 }
