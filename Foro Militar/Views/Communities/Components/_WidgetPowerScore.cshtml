@@ -1,0 +1,95 @@
+@* ================================================
+   _WidgetPowerScore.cshtml
+   Requiere: CommunityDashboardDto Model
+   Secciones del controller usadas:
+     - dto.PowerScore
+     - dto.RankName
+     - dto.WeeklyPosts, WeeklyComments, WeeklyNewFollowers
+     - dto.WeeklyPostChart  (gráfico de barras 7 días)
+   ================================================ *@
+
+@model Foro.API.DTOs.Community.CommunityDashboardDto
+
+
+
+<div class="cvx-card">
+    <div class="cvx-card-header">PowerScore</div>
+    <div class="cvx-card-body" style="text-align:center;">
+
+        <div class="cvx-ps-number">@Model.PowerScore.ToString("F1")</div>
+        <div class="cvx-ps-label">Puntuación de influencia</div>
+
+        @{
+            // Barra: asumimos que el siguiente tier es 1000, ajustar según CommunityRank
+            var pct = Math.Min(Model.PowerScore / 1000.0 * 100, 100);
+        }
+        <div class="cvx-ps-bar-wrap">
+            <div class="cvx-ps-bar" style="width:@pct.ToString("F1");"></div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.RankName))
+        {
+            <div class="cvx-ps-tier">🏆 @Model.RankName</div>
+        }
+
+        <div style="margin-top:10px; display:flex; justify-content:space-between; font-size:12px; color:var(--cvx-text-3);">
+            <span>Siguiente tier: 1000 pts</span>
+            @if (Model.WeeklyPosts + Model.WeeklyComments > 0)
+            {
+                <span class="cvx-delta-up">↑ activo esta semana</span>
+            }
+        </div>
+    </div>
+
+    <div style="height:1px; background:var(--cvx-border);"></div>
+
+    <div class="cvx-card-body">
+        <div class="cvx-weekly-grid">
+            <div class="cvx-w-stat">
+                <div class="cvx-w-val">+@Model.WeeklyNewFollowers</div>
+                <div class="cvx-w-lbl">Seguidores</div>
+            </div>
+            <div class="cvx-w-stat">
+                <div class="cvx-w-val">+@Model.WeeklyPosts</div>
+                <div class="cvx-w-lbl">Posts</div>
+            </div>
+            <div class="cvx-w-stat">
+                <div class="cvx-w-val">+@Model.WeeklyComments</div>
+                <div class="cvx-w-lbl">Coments.</div>
+            </div>
+        </div>
+
+        @* Gráfico de barras - WeeklyPostChart *@
+        @if (Model.WeeklyPostChart != null && Model.WeeklyPostChart.Any())
+        {
+            var maxVal = Model.WeeklyPostChart.Max(d => d.Count);
+            if (maxVal == 0) { maxVal = 1; } // evitar división por cero
+
+            <div style="font-size:11px; color:var(--cvx-text-3); margin-top:14px; margin-bottom:6px;">
+                Posts últimos 7 días
+            </div>
+            <div class="cvx-mini-chart">
+                @{
+                    var dayLabels = new[] { "L", "M", "X", "J", "V", "S", "H" };
+                    int idx = 0;
+                }
+                @foreach (var day in Model.WeeklyPostChart)
+                {
+                    var heightPct = (double)day.Count / maxVal * 100;
+                    var isToday   = idx == Model.WeeklyPostChart.Count - 1;
+                    <div class="cvx-bar-col @(isToday ? "cvx-bar-col--today" : "")"
+                         style="height:@heightPct.ToString("F0");"
+                         title="@day.Date.ToString("dd MMM"): @day.Count posts">
+                    </div>
+                    idx++;
+                }
+            </div>
+            <div class="cvx-chart-labels">
+                @foreach (var lbl in dayLabels)
+                {
+                    <span>@lbl</span>
+                }
+            </div>
+        }
+    </div>
+</div>

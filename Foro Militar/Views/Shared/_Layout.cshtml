@@ -10,6 +10,7 @@
 
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+    @RenderSection("Styles", required: false)
 
     <!-- Layout Base -->
     <link rel="stylesheet" href="~/Content/Layout.css" />
@@ -19,7 +20,7 @@
     <link href="~/Content/DashboardPlaceholders.css" rel="stylesheet" />
     <link href="~/Content/DashboardBoard.css" rel="stylesheet" />
     <link href="~/Content/Communities.css" rel="stylesheet" />
-    <link rel="stylesheet" 
+    <link rel="stylesheet"
           href="@Url.Content("~/Content/vote-tiers.css")" />
 
     <!-- Icons -->
@@ -102,8 +103,6 @@
         Sistema Corvax · Arquitectura Modular
     </div>
 
-    @RenderSection("scripts", required: false)
-
     <script>
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('active');
@@ -118,6 +117,7 @@
                 .classList.toggle('active');
         }
     </script>
+    @RenderSection("Scripts", required: false)   ← moverlo aquí
 
 </body>
 </html>

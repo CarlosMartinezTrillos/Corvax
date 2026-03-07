@@ -1,0 +1,51 @@
+@* ================================================
+   _WidgetTopMembers.cshtml
+   Requiere: CommunityDashboardDto Model
+   Controller: topMembers (Posts GroupBy UserId, ranked)
+   ================================================ *@
+@model Foro.API.DTOs.Community.CommunityDashboardDto
+
+
+@{
+    var avatarGradients = new[]
+    {
+        "linear-gradient(135deg,#7c3aed,#9d5cf5)",
+        "linear-gradient(135deg,#2563eb,#7c3aed)",
+        "linear-gradient(135deg,#16a34a,#0891b2)",
+        "linear-gradient(135deg,#dc2626,#d97706)",
+        "linear-gradient(135deg,#be185d,#9d5cf5)"
+    };
+    var rankClasses = new[] { "cvx-member-rank--gold", "cvx-member-rank--silver", "cvx-member-rank--bronze", "", "" };
+}
+
+<div class="cvx-card">
+    <div class="cvx-card-header">
+        Top miembros
+        <a href="#">Ver todos</a>
+    </div>
+    <div class="cvx-card-body" style="padding:8px 16px;">
+        @if (Model.TopMembers == null || !Model.TopMembers.Any())
+        {
+            <p style="font-size:13px; color:var(--cvx-text-3); padding:8px 0;">Aún no hay posts.</p>
+        }
+        else
+        {
+            for (int i = 0; i < Model.TopMembers.Count; i++)
+            {
+                var m = Model.TopMembers[i];
+                var gradient = avatarGradients[i % avatarGradients.Length];
+                var rankClass = i < rankClasses.Length ? rankClasses[i] : "";
+                <div class="cvx-member-row">
+                    <div class="cvx-member-rank @rankClass">@m.Rank</div>
+                    <div class="cvx-member-av" style="background:@gradient;">
+                        @m.Username.FirstOrDefault().ToString().ToUpper()
+                    </div>
+                    <div class="cvx-member-name">@m.Username</div>
+                    <div class="cvx-member-stat">
+                        @m.PostCount p · @m.CommentCount c
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>

@@ -1,0 +1,81 @@
+@* ================================================
+    _WidgetRecentActivity.cshtml
+    Controller: recentActivity (union de recentPosts
+    + recentComments + recentJoins, top 10)
+    ================================================ *@
+@model Foro.API.DTOs.Community.CommunityDashboardDto
+
+
+@{
+    Func<string, string> ActivityIcon = type =>
+    {
+        if (type == "post") return "📝";
+        if (type == "comment") return "💬";
+        if (type == "join") return "👤";
+        if (type == "vote") return "▲";
+        return "·";
+    };
+
+    Func<DateTime, string> TimeAgo = dt =>
+    {
+        var diff = DateTime.Now - dt;
+        if (diff.TotalMinutes < 1) return "ahora";
+        if (diff.TotalMinutes < 60) return ((int)diff.TotalMinutes) + "m";
+        if (diff.TotalHours < 24) return ((int)diff.TotalHours) + "h";
+        return ((int)diff.TotalDays) + "d";
+    };
+}
+
+<div class="cvx-card">
+    <div class="cvx-card-header">Actividad reciente</div>
+    <div class="cvx-card-body" style="padding:8px 16px;">
+        @if (Model.RecentActivity == null || !Model.RecentActivity.Any())
+        {
+            <p style="font-size:13px; color:var(--cvx-text-3); padding:8px 0;">Sin actividad aún.</p>
+        }
+        else
+        {
+            foreach (var item in Model.RecentActivity)
+            {
+                <div class="cvx-activity-item">
+                    <div class="cvx-activity-icon">@ActivityIcon(item.Type)</div>
+                    <div class="cvx-activity-text">
+                        <strong>@item.Username</strong> @item.Summary
+                    </div>
+                    <div class="cvx-activity-time">@TimeAgo(item.CreatedAt)</div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+
+@* ================================================
+    _WidgetRules.cshtml
+    Controller: community.Rules (string del modelo,
+    se parsea por líneas o newlines)
+    ================================================ *@
+
+
+<div class="cvx-card">
+    <div class="cvx-card-header">Reglas de la comunidad</div>
+    <div class="cvx-card-body" style="padding:8px 16px;">
+        @if (string.IsNullOrWhiteSpace(Model.Rules))
+        {
+            <p style="font-size:13px; color:var(--cvx-text-3); padding:8px 0;">
+                Esta comunidad no tiene reglas definidas.
+            </p>
+        }
+        else
+        {
+            var lines = Model.Rules.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+            for (int i = 0; i < lines.Length; i++)
+            {
+                <div class="cvx-rule-row">
+                    <div class="cvx-rule-num">@(i + 1)</div>
+                    <div class="cvx-rule-text">@lines[i].Trim()</div>
+                </div>
+            }
+        }
+    </div>
+</div>

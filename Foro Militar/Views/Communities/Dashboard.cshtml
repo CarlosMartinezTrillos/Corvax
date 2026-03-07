@@ -1,0 +1,25 @@
+@model Foro_Militar.Models.CommunityDashboardPageModel
+
+@{
+    ViewBag.Title = Model.Name + " — Corvax";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles{
+    <link href="~/Content/corvax-dashboard.css" rel="stylesheet" />
+}
+
+<div id="community-dashboard"
+     data-slug="@Model.Slug"
+     data-id="@Model.Id">
+
+    <div class="cvx-loading">
+        <span class="cvx-spinner"></span>
+        Cargando comunidad...
+    </div>
+
+</div>
+
+@section Scripts{
+    <script src="~/Scripts/corvax-dashboard.js"></script>
+}

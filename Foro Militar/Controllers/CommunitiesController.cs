@@ -5,18 +5,23 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Validation;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
+
+
 
 namespace Foro_Militar.Controllers
 {
     public class CommunitiesController : Controller
     {
+        private readonly CommunityService _communityService;
         private readonly AppDbContext _context = new AppDbContext();
         private readonly VoteService _voteService;
 
         public CommunitiesController()
         {
             _voteService = new VoteService(_context);
+            _communityService = new CommunityService(_context);
         }
 
 
@@ -218,5 +223,23 @@ namespace Foro_Militar.Controllers
             });
 
         }
+
+        public async Task<ActionResult> Dashboard(string slug)
+        {
+            int? userId = null;
+            if (User.Identity.IsAuthenticated)
+                userId = int.Parse(User.Identity.Name);
+
+            var service = new CommunityDashboardService(_context);
+            var dto = await service.BuildAsync(slug, userId);
+
+            if (dto == null)
+                return HttpNotFound();
+
+            return View("_CommunityDashboardContent", dto);
+        }
+
     }
 }
+    
+

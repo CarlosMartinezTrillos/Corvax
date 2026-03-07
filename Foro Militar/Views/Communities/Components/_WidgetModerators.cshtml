@@ -1,0 +1,48 @@
+@* ================================================
+    _WidgetModerators.cshtml
+    Controller: moderators (UserCommunities filtrado
+    por IsModerator o CreatedByUserId)
+    ================================================ *@
+@model Foro.API.DTOs.Community.CommunityDashboardDto
+
+
+@{
+    var modGradients = new[]
+    {
+        "linear-gradient(135deg,#7c3aed,#9d5cf5)",
+        "linear-gradient(135deg,#2563eb,#7c3aed)",
+        "linear-gradient(135deg,#16a34a,#0891b2)"
+    };
+}
+
+<div class="cvx-card">
+    <div class="cvx-card-header">Moderadores</div>
+    <div class="cvx-card-body" style="padding:8px 16px;">
+        @if (Model.Moderators == null || !Model.Moderators.Any())
+        {
+            <p style="font-size:13px; color:var(--cvx-text-3); padding:8px 0;">Sin moderadores asignados.</p>
+        }
+        else
+        {
+            for (int i = 0; i < Model.Moderators.Count; i++)
+            {
+                var mod = Model.Moderators[i];
+                var gradient = modGradients[i % modGradients.Length];
+                <div class="cvx-mod-row">
+                    <div class="cvx-mod-av" style="background:@gradient;">
+                        @mod.Username.FirstOrDefault().ToString().ToUpper()
+                    </div>
+                    <div class="cvx-mod-name">@mod.Username</div>
+                    @if (mod.IsOwner)
+                    {
+                        <span class="cvx-mod-badge cvx-mod-badge--owner">OWNER</span>
+                    }
+                    else
+                    {
+                        <span class="cvx-mod-badge cvx-mod-badge--mod">MOD</span>
+                    }
+                </div>
+            }
+        }
+    </div>
+</div>

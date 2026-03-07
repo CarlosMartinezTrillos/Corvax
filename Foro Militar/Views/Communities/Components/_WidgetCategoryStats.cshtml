@@ -1,0 +1,36 @@
+@* ================================================
+   _WidgetCategoryStats.cshtml
+   Controller: categoryStats (PostCategories GroupBy)
+   ================================================ *@
+@model Foro.API.DTOs.Community.CommunityDashboardDto
+
+
+<div class="cvx-card">
+    <div class="cvx-card-header">Categorías</div>
+    <div class="cvx-card-body" style="padding:8px 16px;">
+        @if (Model.CategoryStats == null || !Model.CategoryStats.Any())
+        {
+            <p style="font-size:13px; color:var(--cvx-text-3); padding:8px 0;">Sin categorías aún.</p>
+        }
+        else
+        {
+            foreach (var cat in Model.CategoryStats)
+            {
+                <div class="cvx-cat-row">
+                    <div class="cvx-cat-dot" style="background:@cat.ColorHex;"></div>
+                    <div class="cvx-cat-info">
+                        <div class="cvx-cat-top">
+                            <div class="cvx-cat-name">@cat.Name</div>
+                            <div class="cvx-cat-count">@cat.PostCount posts</div>
+                        </div>
+                        <div class="cvx-cat-bar">
+                            <div class="cvx-cat-bar-fill"
+                                 style="width:@cat.Percentage.ToString("F0"); background:@cat.ColorHex;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>

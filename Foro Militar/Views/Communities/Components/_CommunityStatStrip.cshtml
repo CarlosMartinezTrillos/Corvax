@@ -1,0 +1,95 @@
+@* ================================================
+   _CommunityStatStrip.cshtml
+   Requiere: CommunityDashboardDto Model
+   Secciones del controller usadas:
+     - dto.TotalFollowers, TotalPosts, TotalComments
+     - dto.UpVotes, PowerScore
+     - dto.WeeklyNewFollowers, WeeklyPosts, WeeklyComments
+     - dto.CreatedAt
+   ================================================ *@
+
+@model Foro.API.DTOs.Community.CommunityDashboardDto
+
+
+
+
+
+<div class="cvx-stat-strip">
+
+    @* Seguidores *@
+    <div class="cvx-stat-item">
+        <div class="cvx-stat-val">@Model.TotalFollowers</div>
+        <div class="cvx-stat-lbl">Seguidores</div>
+        @if (Model.WeeklyNewFollowers > 0)
+        {
+            <div class="cvx-stat-delta cvx-delta-up">+@Model.WeeklyNewFollowers esta semana</div>
+        }
+        else
+        {
+            <div class="cvx-stat-delta cvx-delta-flat">Sin cambios</div>
+        }
+    </div>
+
+    @* Posts *@
+    <div class="cvx-stat-item">
+        <div class="cvx-stat-val">@Model.TotalPosts</div>
+        <div class="cvx-stat-lbl">Posts</div>
+        @if (Model.WeeklyPosts > 0)
+        {
+            <div class="cvx-stat-delta cvx-delta-up">+@Model.WeeklyPosts esta semana</div>
+        }
+        else
+        {
+            <div class="cvx-stat-delta cvx-delta-flat">Sin posts nuevos</div>
+        }
+    </div>
+
+    @* Comentarios *@
+    <div class="cvx-stat-item">
+        <div class="cvx-stat-val">@Model.TotalComments</div>
+        <div class="cvx-stat-lbl">Comentarios</div>
+        @if (Model.WeeklyComments > 0)
+        {
+            <div class="cvx-stat-delta cvx-delta-up">+@Model.WeeklyComments esta semana</div>
+        }
+        else
+        {
+            <div class="cvx-stat-delta cvx-delta-flat">Sin actividad</div>
+        }
+    </div>
+
+    @* Upvotes *@
+    <div class="cvx-stat-item">
+        <div class="cvx-stat-val">@Model.UpVotes</div>
+        <div class="cvx-stat-lbl">Upvotes</div>
+        <div class="cvx-stat-delta cvx-delta-flat">
+            @Model.DownVotes downvotes
+        </div>
+    </div>
+
+    @* PowerScore *@
+    <div class="cvx-stat-item">
+        <div class="cvx-stat-val cvx-stat-val--accent">
+            @Model.PowerScore.ToString("F1")
+        </div>
+        <div class="cvx-stat-lbl">PowerScore</div>
+        <div class="cvx-stat-delta cvx-delta-up">
+            @if (!string.IsNullOrEmpty(Model.RankName))
+            {
+                @Model.RankName
+            }
+        </div>
+    </div>
+
+    @* Fecha de creación *@
+    <div class="cvx-stat-item">
+        <div class="cvx-stat-val" style="font-size:15px;">
+            @Model.CreatedAt.ToString("MMM yyyy")
+        </div>
+        <div class="cvx-stat-lbl">Creada</div>
+        <div class="cvx-stat-delta cvx-delta-flat">
+            hace @((int)(DateTime.Now - Model.CreatedAt).TotalDays) días
+        </div>
+    </div>
+
+</div>

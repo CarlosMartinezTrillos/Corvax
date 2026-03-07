@@ -1,170 +1,489 @@
-﻿/* ============================= */
-/* 🔥 TOP COMMUNITIES SECTION */
-/* ============================= */
+﻿/* ═══════════════════════════════════════════════════
+   CORVAX — TopCommunities.css
+   Concepto: "Leaderboard de Élite"
+   Estética: Dark Intel × Tactical RPG × Forum OS
+═══════════════════════════════════════════════════ */
 
+/* ══════════════════════════════════════════════════
+   SECTION HEADER
+══════════════════════════════════════════════════ */
 .top-communities-section {
-    margin-bottom: 60px;
+    margin-bottom: 72px;
+    position: relative;
 }
 
-.section-header h2 {
-    font-size: 1.4rem;
-    font-weight: 700;
+.section-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--cvx-border);
+    position: relative;
+}
+
+    /* Línea de acento debajo del header */
+    .section-header::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 120px;
+        height: 1px;
+        background: linear-gradient(90deg, var(--cvx-purple), transparent);
+    }
+
+    .section-header h2 {
+        font-size: 22px;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        color: var(--cvx-text);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        line-height: 1.2;
+    }
+
+        /* Etiqueta "LIVE" junto al título */
+        .section-header h2::after {
+            content: 'LIVE';
+            font-size: 9px;
+            font-weight: 700;
+            font-family: var(--cvx-mono);
+            letter-spacing: 0.15em;
+            color: #4ade80;
+            background: rgba(74,222,128,0.1);
+            border: 1px solid rgba(74,222,128,0.25);
+            padding: 2px 7px;
+            border-radius: 4px;
+            vertical-align: middle;
+            animation: blink-live 2s ease-in-out infinite;
+        }
+
+@keyframes blink-live {
+    0%, 100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
 }
 
 .section-header span {
-    font-size: 0.85rem;
-    color: var(--text-muted);
+    font-size: 12px;
+    color: var(--cvx-text-3);
+    font-family: var(--cvx-mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
 }
 
+/* ══════════════════════════════════════════════════
+   GRID
+══════════════════════════════════════════════════ */
 .top-communities-grid {
-    margin-top: 30px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 20px;
+    position: relative;
 }
 
-/* CARD */
-
+/* ══════════════════════════════════════════════════
+   CARD BASE
+══════════════════════════════════════════════════ */
 .community-card {
     position: relative;
-    background: var(--bg-card);
-    border-radius: 18px;
-    padding: 24px;
-    border: 1px solid var(--border-soft);
+    background: var(--cvx-bg-2);
+    border-radius: 16px;
+    padding: 0;
+    border: 1px solid var(--cvx-border);
     overflow: hidden;
-    transition: 0.4s ease;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.35s ease;
+    cursor: pointer;
 }
 
-    /* Glow Gradient */
-
+    /* Gradiente de fondo base */
     .community-card::before {
-        content: "";
+        content: '';
         position: absolute;
         inset: 0;
-        background: linear-gradient(135deg, #7c3aed, #a78bfa, #ec4899);
-        opacity: 0.08;
-        transition: 0.4s ease;
+        background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(124,58,237,0.1) 0%, transparent 70% );
+        pointer-events: none;
+        transition: opacity 0.35s ease;
+        opacity: 0.6;
+        z-index: 0;
     }
 
-    .community-card:hover::before {
-        opacity: 0.18;
+    /* Línea superior de color del rank */
+    .community-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--card-accent, var(--cvx-purple)) 0%, transparent 100% );
+        z-index: 2;
+        transition: opacity 0.3s ease;
     }
 
     .community-card:hover {
-        transform: translateY(-6px) scale(1.02);
-        box-shadow: 0 20px 60px rgba(124,58,237,0.25);
+        transform: translateY(-5px);
+        border-color: var(--cvx-border-2);
+        box-shadow: 0 0 0 1px rgba(124,58,237,0.15), 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(124,58,237,0.08);
     }
 
-/* Rank */
+        .community-card:hover::before {
+            opacity: 1;
+        }
 
+    /* ── RANK #1 — Oro ── */
+    .community-card:nth-child(1) {
+        --card-accent: #f59e0b;
+        border-color: rgba(245,158,11,0.2);
+    }
+
+        .community-card:nth-child(1):hover {
+            border-color: rgba(245,158,11,0.4);
+            box-shadow: 0 0 0 1px rgba(245,158,11,0.15), 0 20px 60px rgba(0,0,0,0.5), 0 0 50px rgba(245,158,11,0.08);
+        }
+
+        .community-card:nth-child(1)::before {
+            background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(245,158,11,0.1) 0%, transparent 70% );
+        }
+
+    /* ── RANK #2 — Plata ── */
+    .community-card:nth-child(2) {
+        --card-accent: #94a3b8;
+        border-color: rgba(148,163,184,0.15);
+    }
+
+    /* ── RANK #3 — Bronce ── */
+    .community-card:nth-child(3) {
+        --card-accent: #b45309;
+        border-color: rgba(180,83,9,0.2);
+    }
+
+/* ══════════════════════════════════════════════════
+   CONTENT WRAPPER
+══════════════════════════════════════════════════ */
+.community-content {
+    position: relative;
+    z-index: 1;
+    padding: 22px 24px 20px;
+}
+
+/* ══════════════════════════════════════════════════
+   RANK BADGE
+══════════════════════════════════════════════════ */
 .community-rank {
     position: absolute;
     top: 18px;
     right: 20px;
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: var(--primary-soft);
-}
-
-/* Header */
-
-.community-header {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-.community-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 14px;
-    background: linear-gradient(135deg,var(--primary),var(--primary-soft));
+    z-index: 3;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 700;
+}
+
+    .community-rank::before {
+        content: attr(data-rank);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+/* Rank badge genérico */
+.community-card:nth-child(1) .community-rank {
+    font-size: 20px;
+    line-height: 1;
+}
+
+    .community-card:nth-child(1) .community-rank::before {
+        content: '🥇';
+    }
+
+.community-card:nth-child(2) .community-rank::before {
+    content: '🥈';
+}
+
+.community-card:nth-child(3) .community-rank::before {
+    content: '🥉';
+}
+
+/* Ocultar el texto original del rank (lo reemplaza ::before) */
+.community-rank > * {
+    display: none;
+}
+
+/* Número de rank como fallback texto */
+.community-rank-number {
+    font-size: 11px;
+    font-weight: 800;
+    font-family: var(--cvx-mono);
+    color: var(--cvx-purple-2);
+    background: var(--cvx-purple-dim);
+    border: 1px solid var(--cvx-border-2);
+    padding: 3px 9px;
+    border-radius: 50px;
+}
+
+/* ══════════════════════════════════════════════════
+   CARD HEADER (Avatar + Info)
+══════════════════════════════════════════════════ */
+.community-header {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 18px;
+    align-items: flex-start;
+    padding-right: 44px; /* espacio para rank badge */
+}
+
+.community-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--cvx-purple), var(--cvx-purple-2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 20px;
     color: white;
+    flex-shrink: 0;
+    position: relative;
+    font-family: var(--cvx-font);
+    box-shadow: 0 4px 16px rgba(124,58,237,0.3);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.community-card:hover .community-avatar {
+    transform: scale(1.06);
+    box-shadow: 0 6px 24px rgba(124,58,237,0.4);
+}
+
+/* Anillo del avatar en #1 */
+.community-card:nth-child(1) .community-avatar {
+    background: linear-gradient(135deg, #92400e, #f59e0b);
+    box-shadow: 0 4px 16px rgba(245,158,11,0.35);
+}
+
+.community-card:nth-child(1):hover .community-avatar {
+    box-shadow: 0 6px 24px rgba(245,158,11,0.5);
 }
 
 .community-header h3 {
-    font-size: 1.05rem;
-    font-weight: 600;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--cvx-text);
+    margin-bottom: 5px;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
 }
 
 .community-header p {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    margin-top: 5px;
+    font-size: 12px;
+    color: var(--cvx-text-3);
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
-/* Stats */
+/* ══════════════════════════════════════════════════
+   DIVIDER TÁCTICO
+══════════════════════════════════════════════════ */
+.community-divider {
+    height: 1px;
+    background: var(--cvx-border);
+    margin: 0 0 16px;
+    position: relative;
+    overflow: hidden;
+}
 
+    .community-divider::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 60%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, var(--card-accent, var(--cvx-purple)), transparent );
+        animation: scan-line 3s ease-in-out infinite;
+        opacity: 0.5;
+    }
+
+@keyframes scan-line {
+    0% {
+        left: -60%;
+    }
+
+    100% {
+        left: 160%;
+    }
+}
+
+/* ══════════════════════════════════════════════════
+   STATS ROW
+══════════════════════════════════════════════════ */
 .community-stats {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin-top: 10px;
+    gap: 8px;
+    margin-bottom: 18px;
 }
 
 .stat-box {
-    background: var(--bg-elevated);
-    padding: 12px;
+    background: var(--cvx-bg-4);
+    border: 1px solid var(--cvx-border);
+    padding: 11px 10px;
     border-radius: 10px;
     text-align: center;
+    transition: border-color 0.2s ease, background 0.2s ease;
 }
 
-    .stat-box span {
-        display: block;
-        font-size: 0.7rem;
-        color: var(--text-muted);
-    }
+.community-card:hover .stat-box {
+    border-color: rgba(124,58,237,0.15);
+    background: var(--cvx-bg-5);
+}
 
-    .stat-box strong {
-        font-size: 1rem;
-        font-weight: 700;
-    }
+.stat-box span {
+    display: block;
+    font-size: 10px;
+    color: var(--cvx-text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-family: var(--cvx-mono);
+    margin-bottom: 5px;
+}
 
-/* Footer */
+.stat-box strong {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--cvx-text);
+    font-family: var(--cvx-mono);
+    display: block;
+    line-height: 1;
+}
 
+/* Valor destacado en card #1 */
+.community-card:nth-child(1) .stat-box strong {
+    color: #fbbf24;
+}
+
+/* ══════════════════════════════════════════════════
+   FOOTER — CTA
+══════════════════════════════════════════════════ */
 .community-footer {
-    margin-top: 18px;
-    text-align: right;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 4px;
 }
+
+    /* Power indicator */
+    .community-footer::before {
+        content: '⬡ ACTIVA';
+        font-size: 10px;
+        font-family: var(--cvx-mono);
+        font-weight: 600;
+        color: rgba(74,222,128,0.6);
+        letter-spacing: 0.1em;
+    }
 
 .explore-btn {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--primary);
+    font-size: 12px;
+    font-weight: 700;
+    font-family: var(--cvx-font);
+    color: var(--cvx-purple-2);
     text-decoration: none;
-    transition: 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 50px;
+    background: var(--cvx-purple-dim);
+    border: 1px solid var(--cvx-border-2);
+    transition: all 0.2s ease;
+    letter-spacing: 0.01em;
 }
 
     .explore-btn:hover {
-        color: var(--primary-soft);
+        background: rgba(124,58,237,0.22);
+        color: var(--cvx-purple-3);
+        border-color: rgba(124,58,237,0.5);
+        transform: translateX(3px);
+        box-shadow: 0 0 16px rgba(124,58,237,0.2);
     }
 
-/* ============================= */
-/* ✨ REVEAL ANIMATION */
-/* ============================= */
+    /* Flecha animada */
+    .explore-btn::after {
+        content: '→';
+        transition: transform 0.2s ease;
+    }
 
+    .explore-btn:hover::after {
+        transform: translateX(3px);
+    }
+
+/* ══════════════════════════════════════════════════
+   REVEAL ANIMATION — Stagger cinematográfico
+══════════════════════════════════════════════════ */
 .reveal {
     opacity: 0;
-    transform: translateY(40px);
-    animation: revealFade 0.8s ease forwards;
+    transform: translateY(32px) scale(0.98);
+    animation: reveal-up 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
+    .reveal:nth-child(1) {
+        animation-delay: 0.05s;
+    }
+
     .reveal:nth-child(2) {
-        animation-delay: 0.15s;
+        animation-delay: 0.18s;
     }
 
     .reveal:nth-child(3) {
-        animation-delay: 0.3s;
+        animation-delay: 0.31s;
     }
 
-@keyframes revealFade {
+    .reveal:nth-child(4) {
+        animation-delay: 0.44s;
+    }
+
+    .reveal:nth-child(5) {
+        animation-delay: 0.57s;
+    }
+
+    .reveal:nth-child(6) {
+        animation-delay: 0.70s;
+    }
+
+@keyframes reveal-up {
+    from {
+        opacity: 0;
+        transform: translateY(32px) scale(0.98);
+    }
+
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ══════════════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+    .top-communities-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
     }
 }

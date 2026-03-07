@@ -4,18 +4,35 @@
 
 <!-- HERO -->
 <section class="hero">
+    <div class="hero-badge">
+        <span class="hero-badge-dot"></span>
+        Plataforma de análisis
+    </div>
+
     <h1>Eleva la discusión en <span>Corvax</span></h1>
-    <p>Nido sin Filtro. Análisis estratégico, comunidades reales y debate sin ruido.</p>
-    <div style="margin-top:40px;">
-        <a class="btn-primary" href="@Url.Action("Register","Auth")">Comenzar ahora</a>
+
+    <p>
+        Nido sin Filtro. Análisis estratégico, comunidades reales
+        y debate sin ruido.
+    </p>
+
+    <div class="hero-cta">
+        <a class="btn-hero" href="@Url.Action("Register","Auth")">
+            Comenzar ahora
+        </a>
     </div>
 </section>
 
 <!-- QUÉ ES -->
 <section class="section reveal">
-    <div class="card">
+    <div class="card card-featured">
+        <div class="card-featured-icon">
+            <i class="fa-solid fa-feather"></i>
+        </div>
+
         <h2>Una plataforma para mentes críticas</h2>
-        <p style="margin-top:20px;">
+
+        <p>
             Corvax conecta comunidades enfocadas en análisis geopolítico,
             tecnología, estrategia y pensamiento estructurado.
         </p>
@@ -25,17 +42,23 @@
 <!-- CÓMO FUNCIONA -->
 <section class="section reveal">
     <h2 style="text-align:center; margin-bottom:60px;">Cómo funciona</h2>
+
     <div class="grid-3">
         <div class="card">
-            <h3>1. Únete</h3>
+            <div class="card-step-number">1</div>
+            <h3>Únete</h3>
             <p>Explora comunidades especializadas.</p>
         </div>
+
         <div class="card">
-            <h3>2. Analiza</h3>
+            <div class="card-step-number">2</div>
+            <h3>Analiza</h3>
             <p>Publica contenido con profundidad y contexto.</p>
         </div>
+
         <div class="card">
-            <h3>3. Debate</h3>
+            <div class="card-step-number">3</div>
+            <h3>Debate</h3>
             <p>Interactúa sin filtros superficiales.</p>
         </div>
     </div>
@@ -48,10 +71,12 @@
             <h3>Sin ruido</h3>
             <p>Menos viralidad, más calidad.</p>
         </div>
+
         <div class="card">
             <h3>Comunidades reales</h3>
             <p>Enfoque estructurado por temática.</p>
         </div>
+
         <div class="card">
             <h3>Arquitectura moderna</h3>
             <p>Construido con enfoque técnico y escalable.</p>
@@ -63,11 +88,13 @@
 <section class="section reveal">
     <div class="card" style="text-align:center;">
         <h2>Diseñado para profundidad</h2>
+
         <p style="margin:20px 0;">
             Una experiencia limpia, enfocada y moderna.
         </p>
-        <div style="height:200px; border-radius:12px; background:var(--bg-elevated); display:flex; align-items:center; justify-content:center;">
-            <span style="color:var(--primary); font-weight:600;">
+
+        <div class="showcase-preview">
+            <span class="showcase-preview-label">
                 Vista previa de comunidades
             </span>
         </div>
@@ -76,12 +103,15 @@
 
 <!-- CTA FINAL -->
 <section class="section reveal">
-    <div class="card" style="text-align:center;">
+    <div class="card card-cta">
         <h2>Únete al Nido</h2>
-        <p style="margin:20px 0;">
-            Forma parte de una nueva generación de discusión estratégica.
+
+        <p>
+            Forma parte de una nueva generación
+            de discusión estratégica.
         </p>
-        <a class="btn-primary" href="@Url.Action("Register","Auth")">
+
+        <a class="btn-hero" href="@Url.Action("Register","Auth")">
             Crear cuenta
         </a>
     </div>

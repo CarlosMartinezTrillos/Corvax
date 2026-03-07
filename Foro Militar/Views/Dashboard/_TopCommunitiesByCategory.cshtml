@@ -1,24 +1,22 @@
 ﻿@model Foro_Militar.Models.DashboardHomeViewModel
 
 <div class="top-communities-section">
-
     <div class="section-header">
-        <h2>🔥 Comunidades Destacadas</h2>
-        <span>Las más influyentes ahora mismo</span>
+        <h2>Comunidades Destacadas</h2>
+        <span>Ranking en tiempo real · Top @Model.MostFollowedCommunities.Take(3).Count()</span>
     </div>
 
     <div class="top-communities-grid">
-
         @{
             var ranking = 1;
+            var rankLabels = new[] { "Dominante", "Elite", "Vanguardia" };
         }
-
         @foreach (var community in Model.MostFollowedCommunities.Take(3))
         {
             <div class="community-card reveal">
 
                 <div class="community-rank">
-                    #@ranking
+                    <span class="community-rank-number">#@ranking</span>
                 </div>
 
                 <div class="community-content">
@@ -27,49 +25,44 @@
                         <div class="community-avatar">
                             @community.Name.Substring(0, 1).ToUpper()
                         </div>
-
                         <div>
                             <h3>@community.Name</h3>
                             <p>
-                                @(community.Description?.Length > 80
-                                ? community.Description.Substring(0,80) + "..."
-                                : community.Description)
+                                @(community.Description != null && community.Description.Length > 80
+                                    ? community.Description.Substring(0, 80) + "…"
+                                    : community.Description)
                             </p>
                         </div>
                     </div>
 
-                    <div class="community-stats">
+                    <div class="community-divider"></div>
 
+                    <div class="community-stats">
                         <div class="stat-box">
                             <span>Seguidores</span>
                             <strong>@community.UserCommunities.Count</strong>
                         </div>
-
                         <div class="stat-box">
                             <span>Posts</span>
                             <strong>@community.Posts.Count</strong>
                         </div>
-
                         <div class="stat-box">
-                            <span>Creada</span>
-                            <strong>@community.CreatedAt.ToString("MMM yyyy")</strong>
+                            <span>Desde</span>
+                            <strong>@community.CreatedAt.ToString("MMM yy")</strong>
                         </div>
-
                     </div>
 
                     <div class="community-footer">
-                        <a href="@Url.Action("Details","Community", new { id = community.Id })"
+                        <a href="@Url.Action("Dashboard", "Communities", new { slug = community.Slug })"
                            class="explore-btn">
-                            Explorar →
+                            Entrar
                         </a>
                     </div>
 
                 </div>
-
             </div>
 
             ranking++;
         }
-
     </div>
 </div>

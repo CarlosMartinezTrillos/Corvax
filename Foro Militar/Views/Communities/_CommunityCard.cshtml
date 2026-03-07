@@ -104,7 +104,7 @@
     <!-- XP BAR -->
     <div class="xp-wrapper">
         <div class="xp-bar"
-             style="width:@Model.LevelProgressPercent%"></div>
+             style="width:@Model.LevelProgressPercent"></div>
     </div>
 
     <!-- NOMBRE + BOTONES -->
@@ -196,7 +196,7 @@
     <!-- BOTÓN ENTRAR -->
     <div class="enter-row">
 
-        <a href="@Url.Action("Details","Communities", new { id = Model.Id })"
+        <a href="@Url.Action("Dashboard","Communities", new { slug = Model.Slug })"
            class="btn-enter">
 
             Entrar

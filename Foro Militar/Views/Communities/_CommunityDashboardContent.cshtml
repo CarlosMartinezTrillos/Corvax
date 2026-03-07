@@ -1,0 +1,45 @@
+﻿@model Foro.API.DTOs.Community.CommunityDashboardDto
+@{
+    ViewBag.Title = Model.Name + " — Corvax";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="~/Content/corvax-dashboard.css" rel="stylesheet" />
+}
+
+@Html.Partial("Components/_CommunityHeader", Model)
+@Html.Partial("Components/_CommunityStatStrip", Model)
+
+<div class="cvx-layout">
+    <section class="cvx-feed">
+        @* Sort tabs y feed se cargan aquí *@
+        <div id="post-feed-container" data-slug="@Model.Slug">
+            <div class="cvx-loading">
+                <span class="cvx-spinner"></span> Cargando posts...
+            </div>
+        </div>
+    </section>
+
+    <aside class="cvx-sidebar">
+        @Html.Partial("Components/_WidgetPowerScore", Model)
+        @Html.Partial("Components/_WidgetTopMembers", Model)
+        @Html.Partial("Components/_WidgetCategoryStats", Model)
+        @Html.Partial("Components/_WidgetModerators", Model)
+        @Html.Partial("Components/_WidgetRecentActivityAndRules", Model)
+    </aside>
+</div>
+
+@section Scripts {
+    <script src="~/Scripts/corvax-dashboard.js"></script>
+    <script>
+        window.CORVAX = {
+            slug:        '@Model.Slug',
+            communityId: @Model.Id,
+            isOwner:     @Model.IsOwner.ToString().ToLower(),
+            isMod:       @Model.IsModerator.ToString().ToLower(),
+            isFollowing: @Model.IsFollowing.ToString().ToLower()
+        };
+    </script>
+}

@@ -1,0 +1,65 @@
+@model Foro.API.DTOs.Community.CommunityDashboardDto
+@*
+    _CommunityHeader.cshtml
+    Usa: Name, ImageUrl, Description, CategoryStats (tags),
+         IsFollowing, IsModerator, IsOwner, Id, Slug
+*@
+<div class="cvx-comm-header">
+
+    @* Ícono *@
+    <div class="cvx-comm-icon">
+        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+        {
+            <img src="@Model.ImageUrl" alt="@Model.Name" />
+        }
+        else
+        {
+            @Model.Name[0].ToString().ToUpper()
+        }
+    </div>
+
+    @* Meta *@
+    <div class="cvx-comm-meta">
+        <h1 class="cvx-comm-name">@Model.Name</h1>
+
+        @if (!string.IsNullOrEmpty(Model.Description))
+        {
+            <p class="cvx-comm-desc">@Model.Description</p>
+        }
+
+        @* Tags de categorías *@
+        @if (Model.CategoryStats != null && Model.CategoryStats.Any())
+        {
+            <div class="cvx-comm-tags">
+                @foreach (var cat in Model.CategoryStats.Take(4))
+                {
+                    <span class="cvx-tag" style="--tag-color: @cat.ColorHex;">
+                        @cat.Name
+                    </span>
+                }
+            </div>
+        }
+    </div>
+
+    @* Acciones *@
+    <div class="cvx-comm-actions">
+        @if (Model.IsOwner || Model.IsModerator)
+        {
+            @Html.ActionLink("⚙ Editar comunidad", "Edit", "Community",
+                new { slug = Model.Slug }, new { @class = "cvx-btn-outline" })
+        }
+        else
+        {
+            <button class="cvx-btn-follow @(Model.IsFollowing ? "is-following" : "")"
+                    data-community-id="@Model.Id"
+                    data-action="@Url.Action("ToggleFollow", "CommunityDashboard", new { id = Model.Id })">
+                @(Model.IsFollowing ? "✓ Siguiendo" : "+ Seguir")
+            </button>
+        }
+
+        <button class="cvx-btn-outline" onclick="CorvaxDashboard.share('@Model.Slug')">
+            🔗 Compartir
+        </button>
+    </div>
+
+</div>

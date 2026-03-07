@@ -1,0 +1,120 @@
+/* ==============================================
+   _CorvaxBase.css
+   Variables y estilos base compartidos por todos
+   los componentes Razor del dashboard Corvax
+   ============================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+    --cvx-bg:           #08080e;
+    --cvx-bg-2:         #0f0f1a;
+    --cvx-bg-3:         #14141f;
+    --cvx-bg-4:         #1a1a28;
+    --cvx-bg-5:         #202030;
+    --cvx-border:       rgba(255,255,255,0.07);
+    --cvx-border-2:     rgba(255,255,255,0.12);
+    --cvx-purple:       #7c3aed;
+    --cvx-purple-2:     #9d5cf5;
+    --cvx-purple-3:     #6025c9;
+    --cvx-purple-glow:  rgba(124,58,237,0.20);
+    --cvx-purple-glow2: rgba(124,58,237,0.08);
+    --cvx-text:         #eeeef8;
+    --cvx-text-2:       #9999bb;
+    --cvx-text-3:       #55556e;
+    --cvx-green:        #22c55e;
+    --cvx-green-dim:    rgba(34,197,94,0.15);
+    --cvx-red:          #ef4444;
+    --cvx-red-dim:      rgba(239,68,68,0.15);
+    --cvx-amber:        #f59e0b;
+    --cvx-amber-dim:    rgba(245,158,11,0.15);
+    --cvx-blue:         #3b82f6;
+    --cvx-blue-dim:     rgba(59,130,246,0.15);
+    --cvx-r:            14px;
+    --cvx-r-sm:         8px;
+    --cvx-r-xs:         6px;
+    --cvx-font:         'Sora', sans-serif;
+    --cvx-mono:         'JetBrains Mono', monospace;
+}
+
+/* Animación de entrada estándar para todos los componentes */
+@keyframes cvx-fade-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: none; }
+}
+
+/* Sidebar card base — compartida por todos los widgets */
+.cvx-card {
+    background: var(--cvx-bg-3);
+    border: 1px solid var(--cvx-border);
+    border-radius: var(--cvx-r);
+    overflow: hidden;
+    animation: cvx-fade-in 0.3s ease both;
+}
+
+.cvx-card-header {
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--cvx-border);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--cvx-text-3);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--cvx-font);
+}
+
+.cvx-card-header a {
+    font-size: 11px;
+    color: var(--cvx-purple-2);
+    text-transform: none;
+    letter-spacing: 0;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.cvx-card-body {
+    padding: 14px 16px;
+}
+
+/* Botones globales */
+.cvx-btn-primary {
+    background: var(--cvx-purple);
+    color: white;
+    border: none;
+    border-radius: var(--cvx-r-sm);
+    padding: 9px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--cvx-font);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.cvx-btn-primary:hover {
+    background: var(--cvx-purple-2);
+    box-shadow: 0 4px 16px rgba(124,58,237,0.4);
+}
+
+.cvx-btn-outline {
+    background: transparent;
+    color: var(--cvx-text-2);
+    border: 1px solid var(--cvx-border-2);
+    padding: 9px 16px;
+    border-radius: var(--cvx-r-sm);
+    font-size: 13px;
+    font-weight: 500;
+    font-family: var(--cvx-font);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.cvx-btn-outline:hover {
+    border-color: var(--cvx-purple);
+    color: var(--cvx-text);
+}
+
+/* Delta badges */
+.cvx-delta-up   { color: var(--cvx-green); font-family: var(--cvx-mono); font-size: 11px; }
+.cvx-delta-down { color: var(--cvx-red);   font-family: var(--cvx-mono); font-size: 11px; }
+.cvx-delta-flat { color: var(--cvx-text-3);font-family: var(--cvx-mono); font-size: 11px; }
