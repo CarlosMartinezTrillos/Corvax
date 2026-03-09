@@ -29,6 +29,7 @@ namespace Foro.API.DTOs.Community
         public int TotalComments { get; set; }
         public int UpVotes { get; set; }
         public int DownVotes { get; set; }
+        public int? CurrentUserVote { get; set; } // 1, -1 o null
         public double PowerScore { get; set; }
 
         // Weekly deltas (para los "+N esta semana")
@@ -130,6 +131,9 @@ namespace Foro.API.DTOs.Community
         public int DownVotes { get; set; }
         public int Score { get; set; }       // upvotes - downvotes
         public int CommentCount { get; set; }
+
+        // Ranking visual
+        public bool IsDominant { get; set; }
 
         public string MainCategoryName { get; set; }
         public string MainCategoryColor { get; set; }

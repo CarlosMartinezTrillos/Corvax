@@ -280,6 +280,9 @@
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="Content\Communities.css" />
+    <Content Include="Content\community-feed.css" />
+    <Content Include="Content\community-header.css" />
+    <Content Include="Content\community-stat-strip.css" />
     <Content Include="Content\corvax-dashboard.css" />
     <Content Include="Content\DashboardBoard.css" />
     <Content Include="Content\DashboardPlaceholders.css" />

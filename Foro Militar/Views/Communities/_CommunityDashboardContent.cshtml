@@ -7,39 +7,95 @@
 @section Styles {
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="~/Content/corvax-dashboard.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/Content/community-header.css" />
+    <link rel="stylesheet" href="~/Content/community-stat-strip.css" />
+    <link rel="stylesheet" href="~/Content/community-feed.css" />
 }
 
-@Html.Partial("Components/_CommunityHeader", Model)
-@Html.Partial("Components/_CommunityStatStrip", Model)
+<!-- COMMUNITY HEADER -->
+<div class="cvx-comm-header">
 
-<div class="cvx-layout">
-    <section class="cvx-feed">
-        @* Sort tabs y feed se cargan aquí *@
-        <div id="post-feed-container" data-slug="@Model.Slug">
-            <div class="cvx-loading">
-                <span class="cvx-spinner"></span> Cargando posts...
-            </div>
-        </div>
-    </section>
+    <div class="cvx-comm-banner @(string.IsNullOrEmpty(Model.BannerUrl) ? "no-banner" : "")">
 
-    <aside class="cvx-sidebar">
-        @Html.Partial("Components/_WidgetPowerScore", Model)
-        @Html.Partial("Components/_WidgetTopMembers", Model)
-        @Html.Partial("Components/_WidgetCategoryStats", Model)
-        @Html.Partial("Components/_WidgetModerators", Model)
-        @Html.Partial("Components/_WidgetRecentActivityAndRules", Model)
-    </aside>
+        @if (!string.IsNullOrEmpty(Model.BannerUrl))
+        {
+            <img src="@Model.BannerUrl" alt="Banner comunidad" />
+        }
+
+        <div class="cvx-banner-overlay"></div>
+
+    </div>
+
+    <div class="cvx-comm-body">
+
+        @Html.Partial("Components/_CommunityHeader", Model)
+
+        @Html.Partial("Components/_CommunityStatStrip", Model)
+
+    </div>
+
 </div>
 
+
+<!-- COMMUNITY DASHBOARD -->
+<div class="cvx-community-dashboard">
+
+    <!-- MAIN -->
+    <main class="cvx-community-main">
+
+        <div class="cvx-feed-header">
+
+            <h2 class="cvx-section-title">
+                <i class="fa-solid fa-fire"></i>
+                Posts de la comunidad
+            </h2>
+
+            <a href="#" class="cvx-new-post-btn">
+                <i class="fa-solid fa-pen"></i>
+                Crear post
+            </a>
+
+        </div>
+
+        <div id="post-feed-container" data-slug="@Model.Slug">
+
+            <div class="cvx-loading">
+                <span class="cvx-spinner"></span>
+                Cargando posts...
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- SIDEBAR -->
+    <aside class="cvx-community-sidebar">
+
+        <!-- Reglas arriba -->
+        @Html.Partial("Components/_WidgetRecentActivityAndRules", Model)
+
+        @Html.Partial("Components/_WidgetPowerScore", Model)
+
+        @Html.Partial("Components/_WidgetTopMembers", Model)
+
+        @Html.Partial("Components/_WidgetCategoryStats", Model)
+
+        @Html.Partial("Components/_WidgetModerators", Model)
+
+    </aside>
+
+</div>
 @section Scripts {
     <script src="~/Scripts/corvax-dashboard.js"></script>
+
     <script>
         window.CORVAX = {
-            slug:        '@Model.Slug',
+            slug: '@Model.Slug',
             communityId: @Model.Id,
-            isOwner:     @Model.IsOwner.ToString().ToLower(),
-            isMod:       @Model.IsModerator.ToString().ToLower(),
-            isFollowing: @Model.IsFollowing.ToString().ToLower()
+            isOwner: '@Model.IsOwner.ToString().ToLower()',
+            isMod: '@Model.IsModerator.ToString().ToLower()',
+            isFollowing: '@Model.IsFollowing.ToString().ToLower()'
         };
     </script>
 }

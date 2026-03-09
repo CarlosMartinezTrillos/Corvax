@@ -59,12 +59,24 @@
     </div>
 
     @* Upvotes *@
-    <div class="cvx-stat-item">
-        <div class="cvx-stat-val">@Model.UpVotes</div>
-        <div class="cvx-stat-lbl">Upvotes</div>
-        <div class="cvx-stat-delta cvx-delta-flat">
-            @Model.DownVotes downvotes
+    <div class="vote-widget" data-id="@Model.Id">
+
+        <button class="btn-vote up @(Model.CurrentUserVote == 1 ? "active" : "")">
+            <i class="fa-solid fa-caret-up"></i>
+        </button>
+
+        <div class="vote-counter up-counter">
+            @Html.Partial("_VoteTier", Model.UpVotes)
         </div>
+
+        <button class="btn-vote down @(Model.CurrentUserVote == -1 ? "active" : "")">
+            <i class="fa-solid fa-caret-down"></i>
+        </button>
+
+        <div class="vote-counter down-counter">
+            <span>@Model.DownVotes</span>
+        </div>
+
     </div>
 
     @* PowerScore *@

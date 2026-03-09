@@ -1,0 +1,408 @@
+﻿/* ═══════════════════════════════════════════════════════════════
+   CORVAX — Community Feed
+   Archivo: community-feed.css
+   Controla: _PostFeed.cshtml
+   ═══════════════════════════════════════════════════════════════ */
+
+
+/* ─────────────────────────────────────────
+   FEED HEADER
+───────────────────────────────────────── */
+
+.cvx-feed-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px 0 18px 0;
+    gap: 10px;
+}
+
+.cvx-sort-group {
+    display: flex;
+    gap: 6px;
+}
+
+/* botones de orden */
+
+.cvx-sort-btn {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    color: rgba(255,255,255,0.45);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    transition: all .18s ease;
+}
+
+    .cvx-sort-btn:hover {
+        color: #fff;
+        background: rgba(124,58,237,0.18);
+        border-color: rgba(124,58,237,0.35);
+    }
+
+.cvx-sort-btn--active {
+    color: #fff;
+    background: #7c3aed;
+    border-color: #7c3aed;
+}
+
+
+/* nuevo post */
+
+.cvx-new-post-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    color: #fff;
+    background: #7c3aed;
+    border: 1px solid #7c3aed;
+    transition: all .18s ease;
+    box-shadow: 0 4px 14px rgba(124,58,237,0.35);
+}
+
+    .cvx-new-post-btn:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.1);
+    }
+
+
+
+/* ─────────────────────────────────────────
+   EMPTY FEED
+───────────────────────────────────────── */
+
+.cvx-empty-feed {
+    background: #0d0d1a;
+    border: 1px solid rgba(124,58,237,0.18);
+    border-radius: 14px;
+    padding: 38px;
+    text-align: center;
+    color: rgba(255,255,255,0.45);
+}
+
+.cvx-empty-feed__icon {
+    font-size: 34px;
+    color: #7c3aed;
+    margin-bottom: 10px;
+}
+
+.cvx-empty-feed__title {
+    font-family: 'Rajdhani',sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #e8e8f0;
+}
+
+
+
+/* ─────────────────────────────────────────
+   POST CARD
+───────────────────────────────────────── */
+
+.cvx-post-card {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    margin-bottom: 14px;
+    background: #0d0d1a;
+    border: 1px solid rgba(124,58,237,0.16);
+    border-radius: 14px;
+    cursor: pointer;
+    position: relative;
+    transition: all .22s ease;
+}
+
+    .cvx-post-card:hover {
+        border-color: rgba(124,58,237,0.40);
+        box-shadow: 0 6px 26px rgba(0,0,0,0.65), 0 0 14px rgba(124,58,237,0.15);
+        transform: translateY(-2px);
+    }
+
+
+/* ─────────────────────────────────────────
+   VOTES
+───────────────────────────────────────── */
+
+.cvx-post-vote {
+    width: 42px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.cvx-vote-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.40);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: .15s;
+}
+
+    .cvx-vote-btn:hover {
+        color: #fff;
+    }
+
+.cvx-vote-btn--up {
+    color: #a78bfa;
+}
+
+.cvx-vote-btn--down {
+    color: #f87171;
+}
+
+.cvx-vote-score {
+    font-family: 'Rajdhani',sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.55);
+}
+
+.cvx-vote-score--pos {
+    color: #a78bfa;
+}
+
+.cvx-vote-score--neg {
+    color: #f87171;
+}
+
+
+
+/* ─────────────────────────────────────────
+   POST BODY
+───────────────────────────────────────── */
+
+.cvx-post-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+
+
+/* meta */
+
+.cvx-post-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: .72rem;
+    color: rgba(255,255,255,0.42);
+    flex-wrap: wrap;
+}
+
+.cvx-post-author {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #a78bfa;
+    font-weight: 600;
+}
+
+.cvx-post-sep {
+    opacity: .4;
+}
+
+.cvx-post-time {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+
+
+/* ─────────────────────────────────────────
+   FLAIRS
+───────────────────────────────────────── */
+
+.cvx-post-flair {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: .65rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.cvx-post-flair--extra {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.45);
+}
+
+
+
+/* ─────────────────────────────────────────
+   TITLE
+───────────────────────────────────────── */
+
+.cvx-post-title {
+    font-family: 'Rajdhani',sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #e8e8f0;
+    line-height: 1.35;
+}
+
+
+
+/* excerpt */
+
+.cvx-post-excerpt {
+    font-size: .82rem;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.5;
+}
+
+
+
+/* ─────────────────────────────────────────
+   FOOTER
+───────────────────────────────────────── */
+
+.cvx-post-footer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+.cvx-post-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: .72rem;
+    color: rgba(255,255,255,0.45);
+    padding: 4px 6px;
+    border-radius: 6px;
+    transition: .15s;
+}
+
+    .cvx-post-action:hover {
+        color: #fff;
+        background: rgba(124,58,237,0.18);
+    }
+
+
+
+/* ─────────────────────────────────────────
+   THUMBNAIL
+───────────────────────────────────────── */
+
+.cvx-post-thumb {
+    width: 84px;
+    height: 84px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+
+
+/* ─────────────────────────────────────────
+   PAGINATION
+───────────────────────────────────────── */
+
+.cvx-feed-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 18px 0;
+}
+
+/* HEADER */
+
+.cvx-feed-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.cvx-feed-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--corvax-text);
+}
+
+.cvx-feed-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+/* SORT BUTTONS */
+
+.cvx-sort-group {
+    display: flex;
+    gap: 8px;
+}
+
+.cvx-sort-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    border-radius: 8px;
+    font-size: .8rem;
+    text-decoration: none;
+    color: var(--corvax-text-muted);
+    border: 1px solid transparent;
+    transition: .2s;
+}
+
+    .cvx-sort-btn:hover {
+        background: var(--corvax-bg-surface);
+        border-color: var(--corvax-border);
+        color: var(--corvax-text);
+    }
+
+    .cvx-sort-btn.active {
+        background: var(--corvax-purple-soft);
+        border: 1px solid var(--corvax-purple);
+        color: #fff;
+    }
+
+/* CREATE POST */
+
+.cvx-create-post {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    background: var(--corvax-purple);
+    color: white;
+    font-family: var(--font-label);
+    font-size: .75rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: .2s;
+}
+
+    .cvx-create-post:hover {
+        box-shadow: 0 0 14px var(--corvax-purple-glow);
+        transform: translateY(-1px);
+    }

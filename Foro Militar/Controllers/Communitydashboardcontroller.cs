@@ -43,6 +43,7 @@ namespace Foro.API.Controllers
                 var community = await _context.Communities
                     .Include(c => c.CreatedByUser)
                     .Include(c => c.Rank)
+                    .Include(c => c.Votes)
                     .Include(c => c.UserCommunities.Select(uc => uc.User))
                     .Include(c => c.Categories)
                     .FirstOrDefaultAsync(c => c.Slug == slug && c.IsActive);
@@ -271,6 +272,13 @@ namespace Foro.API.Controllers
                     UpVotes = community.UpVotes,
                     DownVotes = community.DownVotes,
                     PowerScore = community.PowerScore,
+
+                    CurrentUserVote = currentUserId == null
+                    ? null
+                    : _context.Votes
+                        .Where(v => v.CommunityId == community.Id && v.UserId == currentUserId)
+                        .Select(v => (int?)v.VoteType)
+                        .FirstOrDefault(),
 
                     WeeklyNewFollowers = community.WeeklyNewFollowers,
                     WeeklyPosts = community.WeeklyPosts,

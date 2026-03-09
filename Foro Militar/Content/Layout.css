@@ -329,14 +329,12 @@ body {
     }
 
 .topbar-icon {
+    padding: 12px 12px 12px 12px;
     cursor: pointer;
     color: var(--cvx-text-3);
     font-size: 15px;
     width: 38px;
-    height: 38px;
-    display: flex;
     align-items: center;
-    justify-content: center;
     border-radius: var(--cvx-r-sm);
     border: 1px solid transparent;
     transition: var(--transition);

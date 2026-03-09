@@ -1,0 +1,120 @@
+﻿/* ═══════════════════════════════════════════════
+   CORVAX — Community Stat Strip
+   Concepto: Tactical Info Row
+   ═══════════════════════════════════════════════ */
+
+.cvx-stat-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px;
+    padding: 18px 28px 22px;
+    border-top: 1px solid var(--cvx-border);
+    border-bottom: 1px solid var(--cvx-border);
+    position: relative;
+}
+
+    /* línea escáner */
+    .cvx-stat-strip::after {
+        content: "";
+        position: absolute;
+        bottom: -1px;
+        left: -40%;
+        width: 40%;
+        height: 1px;
+        background: linear-gradient( 90deg, transparent, var(--cvx-purple), transparent );
+        opacity: .35;
+        animation: cvx-stat-scan 4s linear infinite;
+    }
+
+@keyframes cvx-stat-scan {
+    0% {
+        left: -40%;
+    }
+
+    100% {
+        left: 140%;
+    }
+}
+
+/* ═══════════════════════════════════════════════
+   ITEM
+   ═══════════════════════════════════════════════ */
+
+.cvx-stat-item {
+    display: flex;
+    flex-direction: column;
+    min-width: 110px;
+    padding-right: 24px;
+    margin-right: 12px;
+    border-right: 1px solid var(--cvx-border);
+}
+
+    .cvx-stat-item:last-child {
+        border-right: none;
+    }
+
+
+/* ═══════════════════════════════════════════════
+   VALUE
+   ═══════════════════════════════════════════════ */
+
+.cvx-stat-val {
+    font-size: 20px;
+    font-weight: 700;
+    font-family: var(--cvx-mono);
+    color: var(--cvx-text);
+    line-height: 1.1;
+}
+
+.cvx-stat-val--accent {
+    color: var(--cvx-purple-2);
+}
+
+
+/* ═══════════════════════════════════════════════
+   LABEL
+   ═══════════════════════════════════════════════ */
+
+.cvx-stat-lbl {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--cvx-text-3);
+    font-family: var(--cvx-mono);
+    margin-top: 3px;
+}
+
+
+/* ═══════════════════════════════════════════════
+   DELTA
+   ═══════════════════════════════════════════════ */
+
+.cvx-stat-delta {
+    font-size: 10px;
+    margin-top: 4px;
+    font-family: var(--cvx-mono);
+    letter-spacing: .05em;
+}
+
+.cvx-delta-up {
+    color: #4ade80;
+}
+
+.cvx-delta-flat {
+    color: var(--cvx-text-3);
+}
+
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════ */
+
+@media (max-width:900px) {
+
+    .cvx-stat-strip {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        gap: 20px;
+        padding-bottom: 16px;
+    }
+}

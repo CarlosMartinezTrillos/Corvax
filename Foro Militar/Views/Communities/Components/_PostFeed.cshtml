@@ -1,80 +1,193 @@
-@* ================================================
-   _PostFeed.cshtml
-   Requiere: IEnumerable<PostFeedDto> Model
-   Llama a: GET /api/communities/{slug}/posts
-             ?sort=hot&page=1&categoryId=
-   ================================================ *@
-
 @model IEnumerable<Foro.API.DTOs.Community.PostFeedDto>
 
 @{
-    var slug       = ViewBag.CommunitySlug as string ?? "";
-    var sort       = ViewBag.CurrentSort   as string ?? "hot";
-    var page       = (int)(ViewBag.CurrentPage ?? 1);
-    var totalCount = (int)(ViewBag.TotalCount  ?? 0);
-    var pageSize   = (int)(ViewBag.PageSize    ?? 20);
-    var hasMore    = page * pageSize < totalCount;
+    var slug = ViewBag.CommunitySlug as string ?? "";
+    var sort = ViewBag.CurrentSort as string ?? "hot";
+    var page = (int)(ViewBag.CurrentPage ?? 1);
+    var totalCount = (int)(ViewBag.TotalCount ?? 0);
+    var pageSize = (int)(ViewBag.PageSize ?? 20);
+    var hasMore = page * pageSize < totalCount;
+}
+
+@functions {
+
+    public string TimeAgoPost(DateTime date)
+    {
+        var span = DateTime.UtcNow - date;
+
+        if (span.TotalMinutes < 1)
+            return "justo ahora";
+
+        if (span.TotalMinutes < 60)
+            return $"{(int)span.TotalMinutes} min";
+
+        if (span.TotalHours < 24)
+            return $"{(int)span.TotalHours} h";
+
+        if (span.TotalDays < 7)
+            return $"{(int)span.TotalDays} d";
+
+        if (span.TotalDays < 30)
+            return $"{(int)(span.TotalDays / 7)} sem";
+
+        if (span.TotalDays < 365)
+            return $"{(int)(span.TotalDays / 30)} mes";
+
+        return $"{(int)(span.TotalDays / 365)} año";
+    }
+
 }
 
 
+<!-- =========================================
+FEED HEADER
+========================================= -->
 
 <div class="cvx-feed-header">
-    @foreach (var s in new[] { ("hot","🔥 Destacados"), ("new","🆕 Nuevo"), ("top","📈 Top"), ("comments","💬 Comentados") })
-    {
-        <a href="?sort=@s.Item1"
-           class="cvx-sort-btn @(sort == s.Item1 ? "cvx-sort-btn--active" : "")">
-            @s.Item2
+
+    <div class="cvx-feed-title">
+        <i class="fa-solid fa-layer-group"></i>
+        <span>Posts de la comunidad</span>
+    </div>
+
+    <div class="cvx-feed-controls">
+
+        <div class="cvx-sort-group">
+
+            <a href="?sort=hot" class="cvx-sort-btn active">
+                <i class="fa-solid fa-fire"></i>
+                Destacados
+            </a>
+
+            <a href="?sort=new" class="cvx-sort-btn">
+                <i class="fa-solid fa-bolt"></i>
+                Nuevo
+            </a>
+
+            <a href="?sort=top" class="cvx-sort-btn">
+                <i class="fa-solid fa-arrow-trend-up"></i>
+                Top
+            </a>
+
+            <a href="?sort=comments" class="cvx-sort-btn">
+                <i class="fa-solid fa-comments"></i>
+                Comentados
+            </a>
+
+        </div>
+
+        <a href="/communities/@slug/create-post" class="cvx-create-post">
+            <i class="fa-solid fa-pen"></i>
+            Crear post
         </a>
-    }
-    <a href="/communities/@slug/create-post" class="cvx-new-post-btn">
-        ✏️ Nuevo post
-    </a>
+
+    </div>
+
 </div>
 
+
+<!-- =========================================
+EMPTY STATE
+========================================= -->
 
 @if (Model == null || !Model.Any())
 {
     <div class="cvx-empty-feed">
-        <div class="cvx-empty-feed__icon">📭</div>
-        <div class="cvx-empty-feed__title">Aún no hay posts</div>
+
+        <div class="cvx-empty-feed__icon">
+            <i class="fa-regular fa-envelope-open"></i>
+        </div>
+
+        <div class="cvx-empty-feed__title">
+            Aún no hay posts
+        </div>
+
         <p>¡Sé el primero en publicar algo!</p>
+
     </div>
 }
+
 else
 {
+
+    <!-- =========================================
+    POST LOOP
+    ========================================= -->
+
     foreach (var post in Model)
     {
-        var upClass   = post.CurrentUserVote == 1  ? "cvx-vote-btn--up"   : "";
+        var upClass = post.CurrentUserVote == 1 ? "cvx-vote-btn--up" : "";
         var downClass = post.CurrentUserVote == -1 ? "cvx-vote-btn--down" : "";
         var scoreClass = post.Score > 0 ? "cvx-vote-score--pos"
                        : post.Score < 0 ? "cvx-vote-score--neg" : "";
 
-        <div class="cvx-post-card" onclick="window.location='/posts/@post.Id'">
-       
+        <div class="cvx-post-card"
+             onclick="window.location='/posts/@post.Id'">
+
+            <!-- =========================
+            VOTE COLUMN
+            ========================= -->
+
             <div class="cvx-post-vote">
+
                 <button class="cvx-vote-btn @upClass"
                         onclick="event.stopPropagation(); vote(@post.Id, 1, this)"
-                        title="Upvote">▲</button>
-                <div class="cvx-vote-score @scoreClass">@post.Score</div>
+                        title="Upvote">
+
+                    <i class="fa-solid fa-chevron-up"></i>
+
+                </button>
+
+                <div class="cvx-vote-score @scoreClass">
+                    @post.Score
+                </div>
+
                 <button class="cvx-vote-btn @downClass"
                         onclick="event.stopPropagation(); vote(@post.Id, -1, this)"
-                        title="Downvote">▼</button>
+                        title="Downvote">
+
+                    <i class="fa-solid fa-chevron-down"></i>
+
+                </button>
+
             </div>
 
+            <!-- =========================
+            POST BODY
+            ========================= -->
 
             <div class="cvx-post-body">
+
+                <!-- META -->
+
                 <div class="cvx-post-meta">
-                    <span class="cvx-post-author">@post.Username</span>
-                    <span>·</span>
-                    <span>@TimeAgoPost(post.CreatedAt)</span>
+
+                    <span class="cvx-post-author">
+
+                        <i class="fa-solid fa-user"></i>
+                        @post.Username
+
+                    </span>
+
+                    <span class="cvx-post-sep">•</span>
+
+                    <span class="cvx-post-time">
+
+                        <i class="fa-regular fa-clock"></i>
+                        @TimeAgoPost(post.CreatedAt)
+
+                    </span>
 
                     @if (!string.IsNullOrEmpty(post.MainCategoryName))
                     {
                         <span class="cvx-post-flair"
                               style="background:@(post.MainCategoryColor ?? "#7c3aed")22;
-                                     color:@(post.MainCategoryColor ?? "#9d5cf5");
-                                     border:1px solid @(post.MainCategoryColor ?? "#7c3aed")44;">
+             color:@(post.MainCategoryColor ?? "#9d5cf5");
+             border:1px solid @(post.MainCategoryColor ?? "#7c3aed")44;">
+
+                            <i class="fa-solid fa-tag"></i>
                             @post.MainCategoryName
+
                         </span>
                     }
 
@@ -82,81 +195,105 @@ else
                     {
                         foreach (var extra in post.ExtraCategories.Take(2))
                         {
-                            <span class="cvx-post-flair" style="background:var(--cvx-bg-5); color:var(--cvx-text-3); border:1px solid var(--cvx-border);">
+                            <span class="cvx-post-flair cvx-post-flair--extra">
+
                                 @extra
+
                             </span>
                         }
                     }
+
                 </div>
 
-                <div class="cvx-post-title">@post.Title</div>
+                <!-- TITLE -->
+
+                <div class="cvx-post-title">
+                    @post.Title
+                </div>
+
+                <!-- EXCERPT -->
 
                 @if (!string.IsNullOrEmpty(post.ContentExcerpt))
                 {
-                    <div class="cvx-post-excerpt">@post.ContentExcerpt</div>
+                    <div class="cvx-post-excerpt">
+                        @post.ContentExcerpt
+                    </div>
                 }
 
+                <!-- FOOTER -->
+
                 <div class="cvx-post-footer">
-                    <a class="cvx-post-action" href="/posts/@post.Id#comments"
-                       onclick="event.stopPropagation()">
-                        💬 @post.CommentCount comentarios
+
+                    <a class="cvx-post-action"
+                       href="/posts/@post.Id#comments"
+                       onclick="event.stopPropagation()"
+                       title="Comentarios">
+
+                        <i class="fa-regular fa-comment"></i>
+                        <span>@post.CommentCount</span>
+
                     </a>
+
                     <button class="cvx-post-action"
-                            onclick="event.stopPropagation(); copyLink('@post.Id')">
-                        🔗 Compartir
+                            onclick="event.stopPropagation(); copyLink('@post.Id')"
+                            title="Compartir">
+
+                        <i class="fa-solid fa-share-nodes"></i>
+
                     </button>
-                    <button class="cvx-post-action" onclick="event.stopPropagation()">
-                        🔖 Guardar
+
+                    <button class="cvx-post-action"
+                            onclick="event.stopPropagation()"
+                            title="Guardar">
+
+                        <i class="fa-regular fa-bookmark"></i>
+
                     </button>
+
                 </div>
+
             </div>
 
             @if (!string.IsNullOrEmpty(post.Image))
             {
-                <img class="cvx-post-thumb" src="@post.Image" alt="@post.Title" />
+                <img class="cvx-post-thumb"
+                     src="@post.Image"
+                     alt="@post.Title" />
             }
+
         </div>
+
     }
 
+    <!-- =========================================
+    PAGINATION
+    ========================================= -->
 
     if (hasMore || page > 1)
     {
-        <div style="display:flex; justify-content:center; gap:10px; padding:20px 0;">
+        <div class="cvx-feed-pagination">
+
             @if (page > 1)
             {
-                <a href="?sort=@sort&page=@(page-1)" class="cvx-btn-outline">← Anterior</a>
+                <a href="?sort=@sort&page=@(page-1)"
+                   class="cvx-btn-outline">
+
+                    <i class="fa-solid fa-chevron-left"></i>
+
+                </a>
             }
+
             @if (hasMore)
             {
-                <a href="?sort=@sort&page=@(page+1)" class="cvx-btn-outline">Siguiente →</a>
+                <a href="?sort=@sort&page=@(page+1)"
+                   class="cvx-btn-outline">
+
+                    <i class="fa-solid fa-chevron-right"></i>
+
+                </a>
             }
+
         </div>
     }
+
 }
-
-@functions {
-    string TimeAgoPost(DateTime dt)
-    {
-        var d = DateTime.Now - dt;
-        if (d.TotalMinutes < 1)  return "ahora";
-        if (d.TotalMinutes < 60) return $"hace {(int)d.TotalMinutes}m";
-        if (d.TotalHours < 24)   return $"hace {(int)d.TotalHours}h";
-        return $"hace {(int)d.TotalDays}d";
-    }
-}
-
-<script>
-    async function vote(postId, type, btn) {
-        const res = await fetch(`/api/posts/${postId}/vote`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ voteType: type })
-        });
-        if (res.status === 401) { window.location = '/login'; return; }
-        if (res.ok) window.location.reload();
-    }
-
-    function copyLink(postId) {
-        navigator.clipboard.writeText(window.location.origin + '/posts/' + postId);
-    }
-</script>
