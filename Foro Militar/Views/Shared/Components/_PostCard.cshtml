@@ -1,0 +1,166 @@
+﻿@model Foro.API.DTOs.Community.PostFeedDto
+
+<article class="cvx-post-card"
+         data-post-id="@Model.Id">
+
+    <aside class="cvx-post-vote">
+
+        <button class="cvx-vote-btn cvx-vote-btn-up @(Model.CurrentUserVote == 1 ? "is-active" : "")"
+                data-vote="up">
+
+            <i class="fa-solid fa-chevron-up"></i>
+
+        </button>
+
+        <div class="cvx-vote-counters">
+
+            <span class="cvx-upvote-count">
+                @Model.UpVotes
+            </span>
+
+            <span class="cvx-vote-divider"></span>
+
+            <span class="cvx-downvote-count">
+                @Model.DownVotes
+            </span>
+
+        </div>
+
+        <button class="cvx-vote-btn cvx-vote-btn-down @(Model.CurrentUserVote == -1 ? "is-active" : "")"
+                data-vote="down">
+
+            <i class="fa-solid fa-chevron-down"></i>
+
+        </button>
+
+    </aside>
+
+    <div class="cvx-post-body">
+
+        <header class="cvx-post-meta">
+
+            <div class="cvx-post-author">
+
+                @if (!string.IsNullOrEmpty(Model.UserAvatar))
+                {
+                    <img class="cvx-post-avatar"
+                         src="@Model.UserAvatar"
+                         alt="avatar">
+                }
+                else
+                {
+                    <div class="cvx-post-avatar cvx-post-avatar-default">
+                        <!-- Icono del cuervo -->
+                        <svg class="cvx-icon-crow" viewBox="0 0 24 24">
+                            <!-- aquí iría tu SVG del cuervo -->
+                        </svg>
+                    </div>
+                }
+                <span class="cvx-post-username">
+                    @Model.Username
+                </span>
+
+            </div>
+
+            <span class="cvx-post-dot">•</span>
+
+            <time class="cvx-post-time">
+                @Model.CreatedAt.ToString("g")
+            </time>
+
+            <div class="cvx-post-tags">
+
+                <span class="cvx-post-tag cvx-post-tag-main"
+                      style="--tag-color:@Model.MainCategoryColor">
+
+                    <i class="fa-solid fa-tag"></i>
+                    @Model.MainCategoryName
+
+                </span>
+
+                @if (Model.ExtraCategories != null)
+                {
+                    foreach (var cat in Model.ExtraCategories.Take(2))
+                    {
+                        <span class="cvx-post-tag">
+                            @cat
+                        </span>
+                    }
+                }
+
+            </div>
+
+        </header>
+
+
+        <h2 class="cvx-post-title">
+            @Model.Title
+        </h2>
+
+
+        <div class="cvx-post-preview">
+
+            <p class="cvx-post-excerpt">
+                @(Model.ContentExcerpt ?? "")
+            </p>
+
+            <button class="cvx-expand-post">
+                Ver más
+            </button>
+
+        </div>
+
+
+        @if (!string.IsNullOrEmpty(Model.Image))
+        {
+            <figure class="cvx-post-thumbnail">
+                <img src="@Model.Image">
+            </figure>
+        }
+
+
+        <footer class="cvx-post-actions">
+
+            <a class="cvx-post-action"
+               href="/posts/@Model.Id">
+
+                <i class="fa-regular fa-comment"></i>
+
+                <span>
+                    @Model.CommentCount
+                </span>
+
+            </a>
+
+            <button class="cvx-post-action cvx-action-save @(Model.IsSaved ? "is-saved" : "")">
+
+                <i class="fa-regular fa-bookmark"></i>
+
+                <span>
+                    Guardar
+                </span>
+
+            </button>
+
+            <button class="cvx-post-action cvx-action-share">
+
+                <i class="fa-solid fa-share-nodes"></i>
+
+                <span>
+                    Compartir
+                </span>
+
+            </button>
+
+            <button class="cvx-post-action cvx-action-copy-link"
+                    data-link="/posts/@Model.Id">
+
+                <i class="fa-solid fa-link"></i>
+
+            </button>
+
+        </footer>
+
+    </div>
+
+</article>

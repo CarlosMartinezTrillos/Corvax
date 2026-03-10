@@ -38,6 +38,9 @@ namespace Foro.Entities.Models
         [Required]
         public bool IsActive { get; set; } = true;
 
+        [MaxLength(500)]
+        public string AvatarUrl { get; set; }
+
         // Relaciones
         public virtual ICollection<Post> Posts { get; set; }
         public virtual ICollection<Community> CommunitiesCreated { get; set; }

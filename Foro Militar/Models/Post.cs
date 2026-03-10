@@ -48,6 +48,9 @@ namespace Foro.Entities.Models
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         public DateTime? UpdatedAt { get; set; }
+        
+        [MaxLength(300)]
+        public string Slug { get; set; }
 
         [Required]
         public bool IsDeleted { get; set; } = false;

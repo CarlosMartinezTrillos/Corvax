@@ -46,7 +46,7 @@ FEED HEADER
 <div class="cvx-feed-header">
 
     <div class="cvx-feed-title">
-        <i class="fa-solid fa-layer-group"></i>
+        <i class="fa-solid fa-list"></i>
         <span>Posts de la comunidad</span>
     </div>
 
@@ -54,32 +54,27 @@ FEED HEADER
 
         <div class="cvx-sort-group">
 
-            <a href="?sort=hot" class="cvx-sort-btn active">
-                <i class="fa-solid fa-fire"></i>
+            <a href="?sort=hot" class="cvx-sort-btn @(sort=="hot"?"active":"")">
+                <i class="fa-solid fa-crown"></i>
                 Destacados
             </a>
 
-            <a href="?sort=new" class="cvx-sort-btn">
-                <i class="fa-solid fa-bolt"></i>
+            <a href="?sort=new" class="cvx-sort-btn @(sort=="new"?"active":"")">
+                <i class="fa-solid fa-circle-plus"></i>
                 Nuevo
             </a>
 
-            <a href="?sort=top" class="cvx-sort-btn">
-                <i class="fa-solid fa-arrow-trend-up"></i>
+            <a href="?sort=top" class="cvx-sort-btn @(sort=="top"?"active":"")">
+                <i class="fa-solid fa-chart-line"></i>
                 Top
             </a>
 
-            <a href="?sort=comments" class="cvx-sort-btn">
-                <i class="fa-solid fa-comments"></i>
+            <a href="?sort=comments" class="cvx-sort-btn @(sort=="comments"?"active":"")">
+                <i class="fa-solid fa-message"></i>
                 Comentados
             </a>
 
         </div>
-
-        <a href="/communities/@slug/create-post" class="cvx-create-post">
-            <i class="fa-solid fa-pen"></i>
-            Crear post
-        </a>
 
     </div>
 

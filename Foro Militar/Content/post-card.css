@@ -1,0 +1,193 @@
+﻿/* ============================================================
+   CORVAX — Post Card
+   ============================================================ */
+
+.cvx-post-card {
+    display: flex;
+    gap: 18px;
+    padding: 18px;
+    background: #0d0d1a;
+    border: 1px solid rgba(124,58,237,.18);
+    border-radius: 14px;
+    transition: .2s;
+    position: relative;
+    cursor: pointer;
+    user-select:none;
+}
+
+    .cvx-post-card:hover {
+        border-color: rgba(124,58,237,.45);
+        transform: translateY(-3px);
+        box-shadow: 0 14px 32px rgba(0,0,0,.7), 0 0 22px rgba(124,58,237,.18);
+    }
+
+/* ─────────────────────────────
+   VOTE COLUMN
+──────────────────────────── */
+
+.cvx-post-vote {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 50px;
+    padding: 8px 6px;
+    background: rgba(255,255,255,.02);
+    border-radius: 10px;
+}
+
+.cvx-vote-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,.08);
+    background: rgba(255,255,255,.04);
+    color: #7070a0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: .18s ease;
+}
+    .cvx-vote-btn.is-active {
+        transform: scale(1.05);
+    }
+
+    .cvx-vote-btn:hover {
+        transform: translateY(-1px);
+    }
+
+.cvx-vote-btn-up:hover,
+.cvx-vote-btn-up.is-active {
+    color: #22c55e;
+    border-color: #22c55e;
+    background: rgba(34,197,94,.15);
+}
+
+.cvx-vote-btn-down:hover,
+.cvx-vote-btn-down.is-active {
+    color: #ef4444;
+    border-color: #ef4444;
+    background: rgba(239,68,68,.15);
+}
+
+.cvx-vote-counters {
+    display: flex;
+    flex-direction: column;
+    font-size: 12px;
+    font-weight: 600;
+    align-items: center;
+}
+
+.cvx-upvote-count {
+    color: #22c55e;
+}
+
+.cvx-downvote-count {
+    color: #ef4444;
+}
+
+.cvx-vote-divider {
+    height: 1px;
+    width: 16px;
+    background: rgba(255,255,255,.1);
+}
+
+/* ─────────────────────────────
+   BODY
+──────────────────────────── */
+
+.cvx-post-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* meta */
+
+.cvx-post-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: #7070a0;
+}
+
+.cvx-post-author {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cvx-post-avatar {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+
+/* title */
+
+.cvx-post-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: #e8e8f0;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* excerpt */
+
+.cvx-post-excerpt {
+    font-size: 14px;
+    color: #9090b0;
+    line-height: 1.45;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* image */
+
+.cvx-post-thumbnail {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+    .cvx-post-thumbnail img {
+        width: 100%;
+    }
+
+.cvx-post-image {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+    .cvx-post-image img {
+        width: 100%;
+        display: block;
+    }
+
+/* actions */
+
+.cvx-post-action {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #7070a0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: .15s;
+}
+
+    .cvx-post-action:hover {
+        color: #e8e8f0;
+        transform: translateY(-1px);
+    }

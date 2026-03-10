@@ -52,6 +52,9 @@ namespace Foro.API.DTOs.Community
         public bool IsFollowing { get; set; }
         public bool IsModerator { get; set; }
         public bool IsOwner { get; set; }
+        // Feed inicial de posts
+        public PagedResult<PostFeedDto> Posts { get; set; }
+
     }
 
     // ─────────────────────────────────────────
@@ -127,6 +130,8 @@ namespace Foro.API.DTOs.Community
         public int UserId { get; set; }
         public string Username { get; set; }
 
+        public string UserAvatar { get; set; }
+
         public int UpVotes { get; set; }
         public int DownVotes { get; set; }
         public int Score { get; set; }       // upvotes - downvotes
@@ -141,9 +146,12 @@ namespace Foro.API.DTOs.Community
 
         public bool IsPinned { get; set; }
         public int? CurrentUserVote { get; set; } // 1, -1 o null
+        public bool IsSaved { get; set; }
 
         public DateTime CreatedAt { get; set; }
         public double HotScore { get; set; }
+
+        public string TimeAgo { get; set; }
     }
 
     public class PagedResult<T>

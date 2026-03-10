@@ -185,6 +185,65 @@ namespace Foro_Militar.Controllers
 
 
         }
+
+        [HttpPost]
+        [Authorize]
+        [Route("api/posts/{postId}/vote")]
+        public JsonResult VotePost(int postId, int voteType)
+        {
+            int userId = int.Parse(User.Identity.Name);
+
+            var existingVote = _context.Votes
+                .FirstOrDefault(v => v.PostId == postId && v.UserId == userId);
+
+            int currentUserVote;
+
+            if (existingVote != null)
+            {
+                if (existingVote.VoteType == voteType)
+                {
+                    // quitar voto
+                    _context.Votes.Remove(existingVote);
+                    currentUserVote = 0;
+                }
+                else
+                {
+                    // cambiar voto
+                    existingVote.VoteType = voteType;
+                    currentUserVote = voteType;
+                }
+            }
+            else
+            {
+                // crear voto
+                _context.Votes.Add(new Vote
+                {
+                    PostId = postId,
+                    UserId = userId,
+                    VoteType = voteType
+                });
+
+                currentUserVote = voteType;
+            }
+
+            _context.SaveChanges();
+
+            var post = _context.Posts
+                .Include("Votes")
+                .First(p => p.Id == postId);
+
+            var up = post.Votes.Count(v => v.VoteType == 1);
+            var down = post.Votes.Count(v => v.VoteType == -1);
+
+            return Json(new
+            {
+                success = true,
+                upVotes = up,
+                downVotes = down,
+                currentUserVote = currentUserVote
+            });
+        }
+
         [HttpPost]
         [Authorize]
         public JsonResult ToggleFollowCommunity(int communityId)  // <-- cambia 'id' por 'communityId'
@@ -239,7 +298,9 @@ namespace Foro_Militar.Controllers
             return View("_CommunityDashboardContent", dto);
         }
 
+
+
     }
 }
-    
+
 

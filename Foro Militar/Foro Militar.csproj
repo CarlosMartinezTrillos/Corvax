@@ -288,6 +288,7 @@
     <Content Include="Content\DashboardPlaceholders.css" />
     <Content Include="Content\Home.css" />
     <Content Include="Content\Layout.css" />
+    <Content Include="Content\post-card.css" />
     <Content Include="Content\TopCommunities.css" />
     <Content Include="Content\vote-tiers.css" />
     <Content Include="Content\_CorvaxBase.css" />
@@ -373,6 +374,7 @@
     <Content Include="Views\Communities\Components\_CommunityStatStrip.cshtml" />
     <Content Include="Views\Communities\Components\_CommunityHeader.cshtml" />
     <Content Include="Views\Communities\_CommunityDashboardContent.cshtml" />
+    <Content Include="Views\Shared\Components\_PostCard.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

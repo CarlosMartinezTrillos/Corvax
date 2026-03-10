@@ -33,7 +33,7 @@
     grid-template-columns: minmax(0,1fr) 320px;
     gap: 26px;
     max-width: 1200px;
-    margin: auto;
+    margin: 0px 15px 0px 5px;
     padding: 26px 18px 40px;
 }
 

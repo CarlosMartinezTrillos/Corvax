@@ -1,6 +1,6 @@
 ﻿(function () {
     "use strict";
-
+    window.CorvaxDashboard = {};
     function init() {
         var cfg = window.CORVAX;
         if (!cfg) return;
@@ -73,46 +73,178 @@
     }
 
     function renderFeedControls(slug, sort) {
-        var sorts = [["hot", "🔥 Destacados"], ["new", "🆕 Nuevo"], ["top", "📈 Top"], ["comments", "💬 Comentados"]];
+        var sorts = [
+            ["hot", '<i class="fa-solid fa-fire"></i> Destacados'],
+            ["new", '<i class="fa-solid fa-clock"></i> Nuevo'],
+            ["top", '<i class="fa-solid fa-chart-line"></i> Top'],
+            ["comments", '<i class="fa-regular fa-comment"></i> Comentados']
+        ];
         var tabs = sorts.map(function (s) {
             return '<a href="?sort=' + s[0] + '" class="cvx-sort-btn ' + (s[0] === sort ? "cvx-sort-btn--active" : "") + '">' + s[1] + '</a>';
         }).join("");
         return '<div class="cvx-feed-header">'
             + tabs
-            + '<a href="/communities/' + slug + '/create-post" class="cvx-new-post-btn">✏️ Nuevo post</a>'
+            + '<a href="/communities/' + slug + '/create-post" class="cvx-new-post-btn cvx-btn-outline">'
+            + '<i class="fa-solid fa-pen"></i> Nuevo post</a>'
             + '</div>';
     }
 
-    function renderPostCard(post) {
-        var scoreClass = post.Score > 0 ? "cvx-vote-score--pos" : post.Score < 0 ? "cvx-vote-score--neg" : "";
-        return '<div class="cvx-post-card" onclick="window.location=\'/posts/' + post.Id + '\'">'
-            + '<div class="cvx-post-vote">'
-            + '<button class="cvx-vote-btn" onclick="event.stopPropagation();CorvaxDashboard.votePost(' + post.Id + ',1)">▲</button>'
-            + '<div class="cvx-vote-score ' + scoreClass + '">' + post.Score + '</div>'
-            + '<button class="cvx-vote-btn" onclick="event.stopPropagation();CorvaxDashboard.votePost(' + post.Id + ',-1)">▼</button>'
-            + '</div>'
-            + '<div class="cvx-post-body">'
-            + '<div class="cvx-post-meta"><span class="cvx-post-author">' + (post.Username || "") + '</span></div>'
-            + '<div class="cvx-post-title">' + (post.Title || "") + '</div>'
-            + (post.ContentExcerpt ? '<div class="cvx-post-excerpt">' + post.ContentExcerpt + '</div>' : '')
-            + '<div class="cvx-post-footer">'
-            + '<a class="cvx-post-action" href="/posts/' + post.Id + '#comments" onclick="event.stopPropagation()">💬 ' + post.CommentCount + '</a>'
-            + '</div>'
-            + '</div>'
-            + '</div>';
-    }
+        function renderPostCard(post) {
 
-    window.CorvaxDashboard = {
-        votePost: function (postId, type) {
-            fetch("/api/posts/" + postId + "/vote", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ voteType: type })    
-            }).then(function (r) {
-                if (r.status === 401) { window.location = "/Auth/Login"; return; }
-                if (r.ok) window.location.reload();
-            });
+            const upActive = post.CurrentUserVote === 1 ? "is-active" : "";
+            const downActive = post.CurrentUserVote === -1 ? "is-active" : "";
+
+                    return `
+            <article class="cvx-post-card" data-post-id="${post.Id}">
+
+                <aside class="cvx-post-vote">
+
+                    <button class="cvx-vote-btn cvx-vote-btn-up ${upActive}"
+                        onclick="event.stopPropagation();CorvaxDashboard.votePost(${post.Id},1)">
+
+                        <i class="fa-solid fa-chevron-up"></i>
+
+                    </button>
+
+                    <div class="cvx-vote-counters">
+
+                        <span class="cvx-upvote-count">
+                            ${post.UpVotes ?? 0}
+                        </span>
+
+                        <span class="cvx-vote-divider"></span>
+
+                        <span class="cvx-downvote-count">
+                            ${post.DownVotes ?? 0}
+                        </span>
+
+                    </div>
+
+                    <button class="cvx-vote-btn cvx-vote-btn-down ${downActive}"
+                        onclick="event.stopPropagation();CorvaxDashboard.votePost(${post.Id},-1)">
+
+                        <i class="fa-solid fa-chevron-down"></i>
+
+                    </button>
+
+                </aside>
+
+
+                <div class="cvx-post-body">
+
+                    <header class="cvx-post-meta">
+
+                        <span class="cvx-post-author">
+                            ${post.Username ?? ""}
+                        </span>
+
+                        <span class="cvx-post-dot">•</span>
+
+                        <span class="cvx-post-time">
+                           ${post.CreatedAt ? new Date(post.CreatedAt).toLocaleDateString() : ""}
+                        </span>
+
+                    </header>
+
+
+                    <h2 class="cvx-post-title">
+                        ${post.Title ?? ""}
+                    </h2>
+
+
+                    ${post.ContentExcerpt ?
+                            `<p class="cvx-post-excerpt">${post.ContentExcerpt}</p>`
+                            : ""
+                        }
+
+
+                    ${post.Image ?
+                            `<div class="cvx-post-image">
+                            <img src="${post.Image}" loading="lazy" />
+                    </div>`
+                            : ""
+                        }
+
+
+                    <footer class="cvx-post-footer">
+
+                        <a class="cvx-post-action"
+                           href="/posts/${post.Id}#comments"
+                           onclick="event.stopPropagation()">
+
+                           <i class="fa-regular fa-comment"></i>
+                           ${post.CommentCount ?? 0}
+
+                        </a>
+
+                            <button class="cvx-post-action"
+                                onclick="event.stopPropagation();CorvaxDashboard.copyLink(${post.Id})">
+
+                                <i class="fa-solid fa-link"></i>
+
+                            </button>
+
+                    </footer>
+
+                </div>
+
+            </article>
+            `;
         }
+
+    CorvaxDashboard.votePost = function (postId, type) {
+
+        fetch("/api/posts/" + postId + "/vote", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ voteType: type })
+        })
+            .then(function (r) {
+                if (r.status === 401) {
+                    window.location = "/Auth/Login";
+                    return null;
+                }
+                return r.json();
+            })
+            .then(function (data) {
+
+                if (!data) return;
+
+                const card = document.querySelector(`[data-post-id="${postId}"]`);
+                if (!card) return;
+
+                const upCount = card.querySelector(".cvx-upvote-count");
+                const downCount = card.querySelector(".cvx-downvote-count");
+
+                const upBtn = card.querySelector(".cvx-vote-btn-up");
+                const downBtn = card.querySelector(".cvx-vote-btn-down");
+
+                upCount.textContent = data.upVotes;
+                downCount.textContent = data.downVotes;
+
+                upBtn.classList.remove("is-active");
+                downBtn.classList.remove("is-active");
+
+                const vote = Number(data.currentUserVote);
+
+                if (vote === 1) {
+                    upBtn.classList.add("is-active");
+                }
+
+                if (vote === -1) {
+                    downBtn.classList.add("is-active");
+                }
+            });
+    };
+
+    CorvaxDashboard.copyLink = function (postId) {
+
+        const url = window.location.origin + "/posts/" + postId;
+
+        navigator.clipboard.writeText(url).then(function () {
+            console.log("Link copiado");
+        });
+
     };
 
     if (document.readyState === "loading") {

@@ -410,8 +410,12 @@ namespace Foro.API.Controllers
             if (community == null)
                 return HttpNotFound();
 
+            var currentUserId = GetCurrentUserId();
+
             IQueryable<Post> query = _context.Posts
                 .Include(p => p.User)
+                .Include(p => p.MainCategory)
+                .Include(p => p.PostCategories.Select(pc => pc.Category))
                 .Where(p => p.CommunityId == community.Id && !p.IsDeleted);
 
             switch (sort)
@@ -426,8 +430,11 @@ namespace Foro.API.Controllers
                 case "comments":
                     query = query.OrderByDescending(p => p.Comments.Count);
                     break;
-                default: // hot
-                    query = query.OrderByDescending(p => p.CreatedAt);
+                default: //hot
+                    query = query.OrderByDescending(p =>
+                        (p.Votes.Count(v => v.VoteType == 1)
+                        - p.Votes.Count(v => v.VoteType == -1))
+                        + (p.Comments.Count() * 0.5));
                     break;
             }
 
@@ -436,23 +443,63 @@ namespace Foro.API.Controllers
             var posts = await query
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
-                .Select(p => new
-                {
-                    p.Id,
-                    p.Title,
-                    ContentExcerpt = p.Content != null
-                        ? p.Content.Substring(0, p.Content.Length > 150 ? 150 : p.Content.Length)
-                        : "",
-                    Username = p.User.Username,
-                    p.CreatedAt,
-                    UpVotes = p.Votes.Count(v => v.VoteType == 1),
-                    DownVotes = p.Votes.Count(v => v.VoteType == -1),
-                    Score = p.Votes.Count(v => v.VoteType == 1) - p.Votes.Count(v => v.VoteType == -1),
-                    CommentCount = p.Comments.Count(c => !c.IsDeleted)
-                })
-                .ToListAsync();
+            .Select(p => new PostFeedDto
+            {
+                Id = p.Id,
 
-            return Json(new
+                Title = p.Title,
+
+                Image = p.Image,
+
+                ContentExcerpt = p.Content != null
+                    ? p.Content.Substring(0, p.Content.Length > 150 ? 150 : p.Content.Length)
+                    : "",
+
+                UserId = p.UserId,
+
+                Username = p.User.Username,
+
+                UserAvatar = p.User.AvatarUrl,
+
+                CreatedAt = p.CreatedAt,
+
+                UpVotes = p.Votes.Count(v => v.VoteType == 1),
+
+                DownVotes = p.Votes.Count(v => v.VoteType == -1),
+
+                Score =
+                    p.Votes.Count(v => v.VoteType == 1)
+                    -
+                    p.Votes.Count(v => v.VoteType == -1),
+
+                CommentCount =
+                    p.Comments.Count(c => !c.IsDeleted),
+
+                MainCategoryName = p.MainCategory.Name,
+
+                MainCategoryColor = p.MainCategory.ColorHex,
+
+                ExtraCategories =
+                    p.PostCategories
+                    .Where(pc => pc.CategoryId != p.MainCategoryId)
+                    .Select(pc => pc.Category.Name)
+                    .Take(2)
+                    .ToList(),
+
+                CurrentUserVote = currentUserId == null
+                    ? 0
+                    : p.Votes
+                        .Where(v => v.UserId == currentUserId.Value)
+                        .Select(v => v.VoteType)
+                        .FirstOrDefault(),
+
+
+                TimeAgo = ""
+            })
+            .ToListAsync();
+
+
+            return Json(new PagedResult<PostFeedDto>
             {
                 Items = posts,
                 TotalCount = totalCount,
