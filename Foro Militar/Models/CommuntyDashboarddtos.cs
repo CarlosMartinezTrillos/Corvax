@@ -22,6 +22,8 @@ namespace Foro.API.DTOs.Community
         public string Rules { get; set; }
         public int Visibility { get; set; }
         public DateTime CreatedAt { get; set; }
+        public string Country { get; set; }
+        public bool IsDominant { get; set; }
 
         // Stats strip
         public int TotalFollowers { get; set; }

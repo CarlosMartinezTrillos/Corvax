@@ -26,14 +26,47 @@
 
             <div class="cvx-comm-actions">
 
+                <!-- 1. RANGO -->
+                <div class="cvx-rank-cluster">
+
+                    @if (Model.IsDominant)
+                    {
+                        <span class="cvx-badge-dominant">
+                            <i class="fa-solid fa-crown"></i>
+                        </span>
+                    }
+
+                    <span class="cvx-rank-name">
+                        <i class="fa-solid fa-shield"></i>
+                        @(!string.IsNullOrEmpty(Model.RankName) ? Model.RankName : "Recluta")
+                    </span>
+
+                    @if (Model.RankPosition.HasValue)
+                    {
+                        <span class="cvx-rank-position">#@Model.RankPosition</span>
+                    }
+                </div>
+
+                <!-- 2. BANDERA -->
+                <div class="cvx-country-flag">
+                    <i class="fa-solid fa-flag"></i>
+                    @(!string.IsNullOrEmpty(Model.Country) ? Model.Country : "Global")
+                </div>
+
+                <!-- 3. COMPARTIR -->
+                <button class="cvx-btn-outline"
+                        onclick="CorvaxDashboard.share('@Model.Slug')">
+                    <i class="fa-solid fa-share-nodes"></i>
+                    <span>Compartir</span>
+                </button>
+
+                <!-- 4. SEGUIR / EDITAR -->
                 @if (Model.IsOwner || Model.IsModerator)
                 {
                     <a href="@Url.Action("Edit", "Community", new { slug = Model.Slug })"
                        class="cvx-btn-outline">
-
                         <i class="fa-solid fa-gear"></i>
                         <span>Editar comunidad</span>
-
                     </a>
                 }
                 else
@@ -41,7 +74,6 @@
                     <button class="cvx-btn-follow @(Model.IsFollowing ? "is-following" : "")"
                             data-community-id="@Model.Id"
                             data-action="@Url.Action("ToggleFollow", "CommunityDashboard", new { id = Model.Id })">
-
                         @if (Model.IsFollowing)
                         {
                             <i class="fa-solid fa-check"></i>
@@ -52,21 +84,19 @@
                             <i class="fa-solid fa-plus"></i>
                             <span>Seguir</span>
                         }
-
                     </button>
                 }
 
-                <!-- BOTON COMPARTIR -->
-                <button class="cvx-btn-outline"
-                        onclick="CorvaxDashboard.share('@Model.Slug')">
-
-                    <i class="fa-solid fa-share-nodes"></i>
-                    <span>Compartir</span>
-
-                </button>
-
             </div>
 
+        </div>
+
+        @{
+            // PowerScore como proxy de progreso — ajusta el divisor según tu escala real
+            double progress = Math.Min(100, (Model.PowerScore / 1000.0) * 100);
+        }
+        <div class="cvx-xp-wrapper">
+            <div class="cvx-xp-bar" style="width:@progress.ToString("F1", System.Globalization.CultureInfo.InvariantCulture)"></div>
         </div>
 
         <!-- CATEGORIAS -->

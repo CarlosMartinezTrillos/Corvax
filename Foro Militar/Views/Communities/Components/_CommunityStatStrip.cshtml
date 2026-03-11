@@ -60,23 +60,20 @@
 
     @* Upvotes *@
     <div class="vote-widget" data-id="@Model.Id">
-
-        <button class="btn-vote up @(Model.CurrentUserVote == 1 ? "active" : "")">
+        <button class="btn-vote up @(Model.CurrentUserVote == 1 ? "active" : "")"
+                onclick="event.stopPropagation(); CorvaxDashboard.voteCommunity(@Model.Id, 1)">
             <i class="fa-solid fa-caret-up"></i>
         </button>
-
         <div class="vote-counter up-counter">
             @Html.Partial("_VoteTier", Model.UpVotes)
         </div>
-
-        <button class="btn-vote down @(Model.CurrentUserVote == -1 ? "active" : "")">
+        <button class="btn-vote down @(Model.CurrentUserVote == -1 ? "active" : "")"
+                onclick="event.stopPropagation(); CorvaxDashboard.voteCommunity(@Model.Id, -1)">
             <i class="fa-solid fa-caret-down"></i>
         </button>
-
         <div class="vote-counter down-counter">
             <span>@Model.DownVotes</span>
         </div>
-
     </div>
 
     @* PowerScore *@

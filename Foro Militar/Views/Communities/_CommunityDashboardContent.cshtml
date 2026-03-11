@@ -13,30 +13,19 @@
     <link rel="stylesheet" href="~/Content/post-card.css" />
 }
 
-<!-- COMMUNITY HEADER -->
 <div class="cvx-comm-header">
-
     <div class="cvx-comm-banner @(string.IsNullOrEmpty(Model.BannerUrl) ? "no-banner" : "")">
-
         @if (!string.IsNullOrEmpty(Model.BannerUrl))
         {
             <img src="@Model.BannerUrl" alt="Banner comunidad" />
         }
-
         <div class="cvx-banner-overlay"></div>
-
     </div>
-
     <div class="cvx-comm-body">
-
         @Html.Partial("Components/_CommunityHeader", Model)
-
         @Html.Partial("Components/_CommunityStatStrip", Model)
-
     </div>
-
 </div>
-
 
 <!-- COMMUNITY DASHBOARD -->
 <div class="cvx-community-dashboard">

@@ -49,6 +49,7 @@ namespace Foro_Militar.Controllers
             {
                 rankService.RecalculateRank(c);
             }
+            _context.SaveChanges();
 
             var globalRanking = communities
                 .OrderByDescending(c => c.PowerScore)
@@ -175,6 +176,11 @@ namespace Foro_Militar.Controllers
 
             var up = community.Votes.Count(v => v.VoteType == 1);
             var down = community.Votes.Count(v => v.VoteType == -1);
+
+            var currentVote = community.Votes
+                .Where(v => v.UserId == userId)
+                .Select(v => (int?)v.VoteType)
+                .FirstOrDefault();
 
             return Json(new
             {

@@ -54,6 +54,7 @@
         inset: 0;
         background: linear-gradient( to bottom, rgba(7,7,15,0.15) 0%, rgba(7,7,15,0.45) 55%, rgba(13,13,26,0.95) 100% );
         pointer-events: none;
+        z-index: 1; /* ← agregar esto */
     }
 
 /* Body del header */
@@ -241,7 +242,7 @@
 /* ── ACCIONES ────────────────────────────────────────────────── */
 .cvx-comm-actions {
     display: flex;
-    flex-direction: row-reverse;
+    flex-direction: row;
     gap: 9px;
     align-items: flex-end;
     flex-shrink: 0;
@@ -344,3 +345,91 @@
     font-size: 28px;
     color: var(--cvx-purple);
 }
+
+.cvx-rank-cluster {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(7, 7, 15, 0.88);
+    padding: 11px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    font-size: 0.72rem;
+    font-family: 'Barlow Condensed', sans-serif;
+    letter-spacing: 0.05em;
+    pointer-events: auto;
+}
+.cvx-country-flag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 14px;
+    border-radius: 10px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    white-space: nowrap;
+}
+.cvx-rank-name {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #a855f7; /* puedes pasar --main-color si lo tienes disponible */
+    font-weight: 700;
+}
+
+.cvx-rank-position {
+    color: rgba(255, 255, 255, 0.45);
+    font-weight: 700;
+}
+
+.cvx-badge-dominant {
+    display: inline-flex;
+    align-items: center;
+    background: linear-gradient(135deg, #b8860b, #f4b730, #b8860b);
+    color: #1a1000;
+    padding: 4px 5px;
+    border-radius: 6px;
+    font-size: 0.68rem;
+    box-shadow: 0 2px 10px rgba(244, 183, 48, 0.4);
+}
+
+/* ── BARRA DE XP ─────────────────────────────────────────── */
+.cvx-xp-wrapper {
+    margin: 5px;
+    height: 5px;
+    padding: 5px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.06);
+    /* se centra sola dentro del flex-column de cvx-comm-meta */
+}
+
+.cvx-xp-bar {
+    height: 100%;
+    background: linear-gradient( 90deg, #7c3aed, #c084fc, #7c3aed );
+    background-size: 200% 100%;
+    animation: cvx-xp-shimmer 3s ease infinite;
+    transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes cvx-xp-shimmer {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+

@@ -28,6 +28,18 @@ namespace Foro_Militar.Services
 
             if (community == null) return null;
 
+            var rankService = new CommunityRankService(_context);
+            rankService.RecalculateRank(community);
+            await _context.SaveChangesAsync();
+
+            // Recargar Rank si cambió
+            if (community.RankId.HasValue && community.Rank == null)
+            {
+                community.Rank = await _context.CommunityRanks
+                    .FirstOrDefaultAsync(r => r.Id == community.RankId.Value);
+            }
+
+
             var totalPosts = await _context.Posts
                 .CountAsync(p => p.CommunityId == community.Id && !p.IsDeleted);
 
@@ -150,6 +162,10 @@ namespace Foro_Militar.Services
                     ?? new DailyPostCountDto { Date = date, Count = 0 })
                 .ToList();
 
+            var globalPosition = await _context.Communities
+                .Where(c => c.IsActive && c.PowerScore > community.PowerScore)
+                .CountAsync() + 1;
+
             // ── DTO final ──
             var dto = new CommunityDashboardDto
             {
@@ -157,6 +173,7 @@ namespace Foro_Militar.Services
                 Name = community.Name,
                 Slug = community.Slug,
                 Description = community.Description,
+                Country = community.Country,
                 ImageUrl = community.ImageUrl,
                 BannerUrl = community.BannerUrl,
                 Rules = community.Rules,
@@ -175,15 +192,18 @@ namespace Foro_Militar.Services
                 WeeklyPosts = community.WeeklyPosts,
                 WeeklyComments = community.WeeklyComments,
 
-                RankName = community.Rank?.Name,
-                RankPosition = community.RankId,
 
                 TopMembers = topMembers,
                 CategoryStats = categoryStats,
                 Moderators = moderators,
                 RecentActivity = recentActivity,
-                WeeklyPostChart = weeklyChart
+                WeeklyPostChart = weeklyChart,
+
+                RankName = community.Rank != null ? community.Rank.Name : null,
+                RankPosition = globalPosition,  // ← posición real, no RankId
+                IsDominant = globalPosition == 1,
             };
+
 
             // ── Estado del usuario actual ──
             if (currentUserId.HasValue)
@@ -192,6 +212,11 @@ namespace Foro_Militar.Services
                     .AnyAsync(x => x.CommunityId == dto.Id && x.UserId == currentUserId.Value);
 
                 dto.IsOwner = community.CreatedByUserId == currentUserId.Value;
+
+                dto.CurrentUserVote = await _context.Votes
+                    .Where(v => v.CommunityId == community.Id && v.UserId == currentUserId.Value)
+                    .Select(v => (int?)v.VoteType)
+                    .FirstOrDefaultAsync();
             }
 
             return dto;

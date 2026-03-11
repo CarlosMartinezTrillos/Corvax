@@ -237,6 +237,45 @@
             });
     };
 
+    CorvaxDashboard.voteCommunity = function (communityId, voteType) {
+        fetch("/Communities/VoteCommunity", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: "id=" + communityId + "&voteType=" + voteType
+        })
+            .then(function (r) {
+                if (r.status === 401) { window.location = "/Auth/Login"; return null; }
+                if (!r.ok) { console.error("VoteCommunity error HTTP:", r.status); return null; }
+                return r.json();
+            })
+            .then(function (data) {
+                if (!data) return;
+
+                const widget = document.querySelector(".vote-widget[data-id='" + communityId + "']");
+                if (!widget) { console.error("Widget no encontrado para id:", communityId); return; }
+
+                const upBtn = widget.querySelector(".btn-vote.up");
+                const downBtn = widget.querySelector(".btn-vote.down");
+                const upCount = widget.querySelector(".up-counter");
+                const downCount = widget.querySelector(".down-counter span");
+
+                // leer ANTES de quitar la clase
+                const wasActive = (voteType === 1 && upBtn.classList.contains("active"))
+                    || (voteType === -1 && downBtn.classList.contains("active"));
+
+                upBtn.classList.remove("active");
+                downBtn.classList.remove("active");
+
+                upCount.innerHTML = data.upVotes;
+                if (downCount) downCount.textContent = data.downVotes;
+
+                if (!wasActive) {
+                    if (voteType === 1) upBtn.classList.add("active");
+                    if (voteType === -1) downBtn.classList.add("active");
+                }
+            });
+    };
+
     CorvaxDashboard.copyLink = function (postId) {
 
         const url = window.location.origin + "/posts/" + postId;

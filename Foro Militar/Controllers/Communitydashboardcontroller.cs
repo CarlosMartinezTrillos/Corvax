@@ -259,6 +259,7 @@ namespace Foro.API.Controllers
                     Name = community.Name,
                     Slug = community.Slug,
                     Description = community.Description,
+                    Country = community.Country,
                     ImageUrl = community.ImageUrl,
                     BannerUrl = community.BannerUrl,
                     Rules = community.Rules,
@@ -378,21 +379,14 @@ namespace Foro.API.Controllers
         // OBTENER USER ID
         // ══════════════════════════════════════════════════════════════
 
+        // CommunityDashboardController.cs
         private int? GetCurrentUserId()
         {
-            var identity = User.Identity as ClaimsIdentity;
-
-            if (identity == null)
-                return null;
-
-            var claim = identity.FindFirst(ClaimTypes.NameIdentifier);
-
-            if (claim == null)
+            if (!User.Identity.IsAuthenticated)
                 return null;
 
             int id;
-
-            if (int.TryParse(claim.Value, out id))
+            if (int.TryParse(User.Identity.Name, out id))
                 return id;
 
             return null;
