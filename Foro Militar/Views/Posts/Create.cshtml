@@ -1,0 +1,329 @@
+﻿@model Foro_Militar.Models.CreatePostViewModel
+@{
+    Layout = ViewBag.UseModalLayout == true
+             ? null
+             : "~/Views/Shared/_Layout.cshtml";
+}
+@* ── CSS solo cuando viene en modo modal (layout null) ── *@
+@if (ViewBag.UseModalLayout == true)
+{
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/Content/create-post.css" />
+}
+else
+{
+    @section Styles {
+        <link rel="stylesheet" href="~/Content/create-post.css" />
+    }
+}
+
+@* ── campos hidden para enviar con el form ── *@
+@* MainCategoryId y PostType se llenan por JS antes del submit *@
+
+<div class="cvx-cp-wrapper">
+
+    @* ── BREADCRUMB ──────────────────────────────────────── *@
+    <a href="@Url.Action("Dashboard", "Communities", new { slug = Model.CommunitySlug })"
+       class="cvx-cp-back">
+        <i class="fa-solid fa-chevron-left"></i>
+        @Model.CommunityName
+    </a>
+
+    @* ── FORMULARIO ──────────────────────────────────────── *@
+    @using (Html.BeginForm("Create", "Posts",
+                new { slug = Model.CommunitySlug, modal = ViewBag.UseModalLayout == true ? "1" : "" },
+                FormMethod.Post,
+                new { id = "cvx-create-form", autocomplete = "off" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.CommunityId)
+
+        @* campo oculto para MainCategoryId — lo rellena JS *@
+        <input type="hidden" name="MainCategoryId" id="hidMainCat" value="" />
+
+        @* campo oculto para tipo de post (se guarda en Content como prefijo opcional) *@
+        <input type="hidden" id="hidPostType" value="" />
+
+        <div class="cvx-cp-scroll">
+
+            @* ── TIPO DE POST ──────────────────────────────── *@
+            <p class="cvx-cp-type-label">Tipo de publicación</p>
+            <div class="cvx-cp-type-row">
+                <button type="button" class="cvx-cp-type-pill is-active" data-type="debate">
+                    <i class="fa-solid fa-fire-flame-curved"></i> Debate
+                </button>
+                <button type="button" class="cvx-cp-type-pill" data-type="analisis">
+                    <i class="fa-solid fa-chart-line"></i> Análisis
+                </button>
+                <button type="button" class="cvx-cp-type-pill" data-type="noticia">
+                    <i class="fa-solid fa-satellite-dish"></i> Noticia
+                </button>
+                <button type="button" class="cvx-cp-type-pill" data-type="pregunta">
+                    <i class="fa-regular fa-circle-question"></i> Pregunta
+                </button>
+            </div>
+
+            @* ── TÍTULO ────────────────────────────────────── *@
+            <div class="cvx-cp-title-wrap">
+                @Html.TextBoxFor(m => m.Title, new
+                {
+                    @class = "cvx-cp-title-input",
+                    id = "cvxTitleInput",
+                    placeholder = "Título del post...",
+                    maxlength = "200",
+                    autocomplete = "off"
+                })
+                <span class="cvx-cp-title-line"></span>
+                <span class="cvx-cp-title-counter" id="cvxTitleCounter">0 / 200</span>
+                @Html.ValidationMessageFor(m => m.Title, "", new { @class = "cvx-cp-error" })
+            </div>
+
+            @* ── EDITOR DE CONTENIDO ───────────────────────── *@
+            <div class="cvx-cp-editor-wrap">
+                <div class="cvx-cp-toolbar">
+                    <button type="button" class="cvx-cp-tb-btn" title="Negrita" onclick="CvxEditor.wrap('**','**')"><b>B</b></button>
+                    <button type="button" class="cvx-cp-tb-btn" title="Cursiva" onclick="CvxEditor.wrap('*','*')"><i>I</i></button>
+                    <div class="cvx-cp-tb-sep"></div>
+                    <button type="button" class="cvx-cp-tb-btn" title="Cita" onclick="CvxEditor.prefix('> ')">
+                        <i class="fa-solid fa-quote-left" style="font-size:11px"></i>
+                    </button>
+                    <button type="button" class="cvx-cp-tb-btn" title="Código" onclick="CvxEditor.wrap('`','`')">
+                        <i class="fa-solid fa-code" style="font-size:11px"></i>
+                    </button>
+                    <div class="cvx-cp-tb-sep"></div>
+                    <button type="button" class="cvx-cp-tb-btn" title="Enlace" onclick="CvxEditor.insertLink()">
+                        <i class="fa-solid fa-link" style="font-size:11px"></i>
+                    </button>
+                </div>
+                @Html.TextAreaFor(m => m.Content, new
+                {
+                    @class = "cvx-cp-content-ta",
+                    id = "cvxContentTa",
+                    placeholder = "Desarrolla tu post aquí... Puedes usar **negrita**, *cursiva*, `código` y > citas."
+                })
+                @Html.ValidationMessageFor(m => m.Content, "", new { @class = "cvx-cp-error" })
+            </div>
+
+            @* ── IMAGEN (COLAPSABLE) ───────────────────────── *@
+            <button type="button" class="cvx-cp-image-toggle" id="cvxImgToggle">
+                <i class="fa-solid fa-paperclip"></i> Añadir imagen (URL opcional)
+                <i class="fa-solid fa-chevron-down" id="cvxImgChevron" style="margin-left:auto;font-size:0.68rem;"></i>
+            </button>
+            <div class="cvx-cp-image-field" id="cvxImgField">
+                @Html.TextBoxFor(m => m.Image, new
+                {
+                    @class = "cvx-cp-image-input",
+                    placeholder = "https://ejemplo.com/imagen.jpg",
+                    maxlength = "500"
+                })
+                @Html.ValidationMessageFor(m => m.Image, "", new { @class = "cvx-cp-error" })
+            </div>
+
+            @* ── CATEGORÍAS ────────────────────────────────── *@
+            @if (Model.AvailableCategories.Any())
+            {
+                <p class="cvx-cp-cats-label">Categoría principal <span style="color:#ef4444">*</span></p>
+                <div class="cvx-cp-cats-row" id="cvxCatsMain">
+                    @foreach (var cat in Model.AvailableCategories)
+                    {
+                        <button type="button"
+                                class="cvx-cp-cat-chip"
+                                data-cat-id="@cat.Id"
+                                data-cat-mode="main"
+                                style="--chip-color: @cat.ColorHex">
+                            <span class="cvx-cp-cat-dot"></span>
+                            @cat.Name
+                        </button>
+                    }
+                </div>
+                @Html.ValidationMessageFor(m => m.MainCategoryId, "", new { @class = "cvx-cp-error" })
+
+                if (Model.AvailableCategories.Count > 1)
+                {
+                    <p class="cvx-cp-cats-label" style="margin-top:14px">Categorías adicionales</p>
+                    <div class="cvx-cp-cats-row" id="cvxCatsExtra">
+                        @foreach (var cat in Model.AvailableCategories)
+                        {
+                            <button type="button"
+                                    class="cvx-cp-cat-chip"
+                                    data-cat-id="@cat.Id"
+                                    data-cat-mode="extra"
+                                    style="--chip-color: @cat.ColorHex">
+                                <span class="cvx-cp-cat-dot"></span>
+                                @cat.Name
+                            </button>
+                            @* checkboxes reales ocultos para enviar ExtraCategoryIds *@
+                            <input type="checkbox"
+                                   name="ExtraCategoryIds"
+                                   value="@cat.Id"
+                                   id="eck_@cat.Id"
+                                   style="display:none" />
+                        }
+                    </div>
+                    <p class="cvx-cp-cats-hint">
+                        <span>Click</span> para seleccionar — categoría principal obligatoria, adicionales opcionales
+                    </p>
+                }
+            }
+
+        </div>@* /cvx-cp-scroll *@
+
+        @* ── FOOTER FIJO ───────────────────────────────────── *@
+        <div class="cvx-cp-footer">
+            <span class="cvx-cp-footer-left" id="cvxFooterHint">Selecciona una categoría</span>
+            <div class="cvx-cp-footer-right">
+                <button type="button" class="cvx-cp-btn-cancel" onclick="CvxCreatePost.cancel()">
+                    Cancelar
+                </button>
+                <button type="submit" class="cvx-cp-btn-publish" id="cvxPublishBtn">
+                    <i class="fa-solid fa-paper-plane"></i> Publicar post
+                </button>
+            </div>
+        </div>
+
+    }@* /form *@
+
+</div>@* /cvx-cp-wrapper *@
+
+<script>(function () {
+    "use strict";
+
+    // ── TIPO DE POST ────────────────────────────────────────
+    var typePills = document.querySelectorAll(".cvx-cp-type-pill");
+    var hidPostType = document.getElementById("hidPostType");
+    if (hidPostType) hidPostType.value = "debate";
+
+    typePills.forEach(function (pill) {
+        pill.addEventListener("click", function () {
+            typePills.forEach(function (p) { p.classList.remove("is-active"); });
+            pill.classList.add("is-active");
+            if (hidPostType) hidPostType.value = pill.dataset.type;
+        });
+    });
+
+    // ── CONTADOR TÍTULO ─────────────────────────────────────
+    var titleInput   = document.getElementById("cvxTitleInput");
+    var titleCounter = document.getElementById("cvxTitleCounter");
+
+    function updateCounter() {
+        var len = titleInput.value.length;
+        titleCounter.textContent = len + " / 200";
+        titleCounter.className = "cvx-cp-title-counter" +
+            (len >= 200 ? " is-limit" : len >= 160 ? " is-near" : "");
+    }
+    if (titleInput) {
+        titleInput.addEventListener("input", updateCounter);
+        updateCounter();
+    }
+
+    // ── IMAGEN TOGGLE ───────────────────────────────────────
+    var imgToggle  = document.getElementById("cvxImgToggle");
+    var imgField   = document.getElementById("cvxImgField");
+    var imgChevron = document.getElementById("cvxImgChevron");
+
+    if (imgToggle) {
+        imgToggle.addEventListener("click", function () {
+            var open = imgField.classList.toggle("is-open");
+            imgToggle.classList.toggle("is-open", open);
+            imgChevron.style.transform = open ? "rotate(180deg)" : "";
+        });
+    }
+
+    // ── CATEGORÍAS ──────────────────────────────────────────
+    var hidMainCat   = document.getElementById("hidMainCat");
+    var footerHint   = document.getElementById("cvxFooterHint");
+    var publishBtn   = document.getElementById("cvxPublishBtn");
+
+    // Chips de categoría principal
+    var mainChips = document.querySelectorAll("#cvxCatsMain .cvx-cp-cat-chip");
+    mainChips.forEach(function (chip) {
+        chip.addEventListener("click", function () {
+            mainChips.forEach(function (c) { c.classList.remove("is-main"); });
+            chip.classList.add("is-main");
+            if (hidMainCat) hidMainCat.value = chip.dataset.catId;
+            if (footerHint) footerHint.textContent = "Categoría: " + chip.textContent.trim();
+        });
+    });
+
+    // Chips de categorías extra
+    var extraChips = document.querySelectorAll("#cvxCatsExtra .cvx-cp-cat-chip");
+    extraChips.forEach(function (chip) {
+        chip.addEventListener("click", function () {
+            var active = chip.classList.toggle("is-extra");
+            var cb = document.getElementById("eck_" + chip.dataset.catId);
+            if (cb) cb.checked = active;
+        });
+    });
+
+    // Validar antes de submit
+    var form = document.getElementById("cvx-create-form");
+    if (form) {
+        form.addEventListener("submit", function (e) {
+            if (!hidMainCat || !hidMainCat.value) {
+                e.preventDefault();
+                if (footerHint) {
+                    footerHint.textContent = "⚠ Selecciona una categoría principal";
+                    footerHint.style.color = "#ef4444";
+                    setTimeout(function () {
+                        footerHint.textContent = "Selecciona una categoría";
+                        footerHint.style.color = "";
+                    }, 2500);
+                }
+                // scroll al selector de categorías
+                var catsSection = document.getElementById("cvxCatsMain");
+                if (catsSection) catsSection.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+        });
+    }
+
+    // ── CANCELAR ────────────────────────────────────────────
+    window.CvxCreatePost = {
+        cancel: function () {
+            if (window.self !== window.top && window.top.CorvaxDashboard) {
+                window.top.CorvaxDashboard.closeCreatePost();
+            } else {
+                window.history.back();
+            }
+        }
+    };
+
+    // ── EDITOR MARKDOWN ─────────────────────────────────────
+    window.CvxEditor = {
+        ta: document.getElementById("cvxContentTa"),
+
+        wrap: function (before, after) {
+            var ta = this.ta;
+            if (!ta) return;
+            var s = ta.selectionStart, e = ta.selectionEnd;
+            var sel = ta.value.substring(s, e) || "texto";
+            ta.value = ta.value.substring(0, s) + before + sel + after + ta.value.substring(e);
+            ta.selectionStart = s + before.length;
+            ta.selectionEnd   = s + before.length + sel.length;
+            ta.focus();
+        },
+
+        prefix: function (pfx) {
+            var ta = this.ta;
+            if (!ta) return;
+            var s = ta.selectionStart;
+            var lineStart = ta.value.lastIndexOf("\n", s - 1) + 1;
+            ta.value = ta.value.substring(0, lineStart) + pfx + ta.value.substring(lineStart);
+            ta.selectionStart = ta.selectionEnd = s + pfx.length;
+            ta.focus();
+        },
+
+        insertLink: function () {
+            var ta = this.ta;
+            if (!ta) return;
+            var url = prompt("URL del enlace:");
+            if (!url) return;
+            var s = ta.selectionStart, e = ta.selectionEnd;
+            var sel = ta.value.substring(s, e) || "texto del enlace";
+            var md  = "[" + sel + "](" + url + ")";
+            ta.value = ta.value.substring(0, s) + md + ta.value.substring(e);
+            ta.focus();
+        }
+    };
+
+})();</script>

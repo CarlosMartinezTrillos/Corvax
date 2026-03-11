@@ -22,4 +22,15 @@
 
 @section Scripts{
     <script src="~/Scripts/corvax-dashboard.js"></script>
+
+    @if (Request.QueryString["modal"] != null)
+    {
+        <script>
+            if (window.self !== window.top && window.top.CorvaxDashboard) {
+                window.top.CorvaxDashboard.closeCreatePost();
+            }
+        </script>
+    }
+
 }
+

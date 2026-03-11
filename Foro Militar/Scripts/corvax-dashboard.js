@@ -84,8 +84,9 @@
         }).join("");
         return '<div class="cvx-feed-header">'
             + tabs
-            + '<a href="/communities/' + slug + '/create-post" class="cvx-new-post-btn cvx-btn-outline">'
-            + '<i class="fa-solid fa-pen"></i> Nuevo post</a>'
+            + '<button class="cvx-new-post-btn cvx-btn-outline" '
+            + 'onclick="CorvaxDashboard.openCreatePost(\'' + slug + '\')">'
+            + '<i class="fa-solid fa-pen"></i> Nuevo post</button>'
             + '</div>';
     }
 
@@ -285,6 +286,102 @@
         });
 
     };
+
+    CorvaxDashboard.openCreatePost = function (slug) {
+        var existing = document.getElementById("cvx-create-post-modal");
+        if (existing) existing.remove();
+
+        // ── Bloquear scroll del fondo ───────────────────────────
+        document.body.style.overflow = "hidden";
+
+        // ── Overlay con blur ────────────────────────────────────
+        var overlay = document.createElement("div");
+        overlay.id = "cvx-create-post-modal";
+        overlay.style.cssText = [
+            "position:fixed", "inset:0", "z-index:9999",
+            "background:rgba(7,7,15,0.72)",
+            "backdrop-filter:blur(6px)",
+            "-webkit-backdrop-filter:blur(6px)",
+            "display:flex",
+            "flex-direction:column",       // ← columna para label + box
+            "align-items:center",
+            "justify-content:center",
+            "padding:20px"
+        ].join(";");
+
+        // ── Label "Nuevo post" ENCIMA de la ventana ─────────────
+        var label = document.createElement("div");
+        label.style.cssText = [
+            "display:flex", "align-items:center", "gap:10px",
+            "margin-bottom:10px",
+            "font-family:'Barlow Condensed',sans-serif",
+            "font-size:0.78rem",
+            "font-weight:700",
+            "letter-spacing:0.12em",
+            "text-transform:uppercase",
+            "color:rgba(255,255,255,0.45)",
+            "user-select:none"
+        ].join(";");
+        label.innerHTML =
+            '<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#7c3aed;box-shadow:0 0 8px #7c3aed"></span>'
+            + 'Nuevo post';
+
+        // ── Contenedor del modal (sin header blanco) ────────────
+        var box = document.createElement("div");
+        box.style.cssText = [
+            "background:#0d0d1a",
+            "border:1px solid rgba(124,58,237,0.28)",
+            "border-radius:14px",
+            "width:min(720px,95vw)",
+            "height:min(92vh,820px)",
+            "display:flex",
+            "flex-direction:column",
+            "box-shadow:0 24px 64px rgba(0,0,0,0.8),0 0 0 1px rgba(255,255,255,0.03),0 0 40px rgba(124,58,237,0.12)",
+            "overflow:hidden",
+            "animation:cvxModalIn 0.22s cubic-bezier(0.22,1,0.36,1) both"
+        ].join(";");
+
+        // Inyectar keyframe de animación si no existe
+        if (!document.getElementById("cvx-modal-keyframe")) {
+            var style = document.createElement("style");
+            style.id = "cvx-modal-keyframe";
+            style.textContent = [
+                "@keyframes cvxModalIn {",
+                "  from { opacity:0; transform:scale(0.94) translateY(12px); }",
+                "  to   { opacity:1; transform:scale(1)    translateY(0); }",
+                "}"
+            ].join("");
+            document.head.appendChild(style);
+        }
+
+        // ── Iframe apunta al Razor sin header blanco ────────────
+        var iframe = document.createElement("iframe");
+        iframe.src = "/communities/" + slug + "/create-post?modal=1";
+        iframe.style.cssText = "flex:1;border:none;width:100%;border-radius:14px;";
+        iframe.name = "cvx-create-frame";
+
+        box.appendChild(iframe);
+
+        // ── Click en overlay (fuera del label y box) cierra ─────
+        overlay.addEventListener("click", function (e) {
+            if (e.target === overlay) CorvaxDashboard.closeCreatePost();
+        });
+
+        overlay.appendChild(label);
+        overlay.appendChild(box);
+        document.body.appendChild(overlay);
+    };
+    // Esta función la llama el iframe desde adentro al terminar
+    CorvaxDashboard.closeCreatePost = function () {
+        document.body.style.overflow = ""; 
+        var modal = document.getElementById("cvx-create-post-modal");
+        if (modal) modal.remove();
+        // Recarga el feed sin recargar la página
+        var cfg = window.CORVAX;
+        if (cfg) loadPosts(cfg.slug, "new", 1);
+    };
+
+    CorvaxDashboard.loadPosts = loadPosts;
 
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", init);
