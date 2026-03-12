@@ -1,193 +1,655 @@
-﻿/* ============================================================
+﻿/* ═══════════════════════════════════════════════════════════════
    CORVAX — Post Card
-   ============================================================ */
+   ~/Content/post-card.css
+   Sincronizado con renderPostCard() en corvax-dashboard.js
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── CARD SHELL ──────────────────────────────────────────────── */
 
 .cvx-post-card {
     display: flex;
-    gap: 18px;
-    padding: 18px;
-    background: #0d0d1a;
-    border: 1px solid rgba(124,58,237,.18);
+    gap: 0;
+    background: var(--corvax-bg-card);
+    border: 1px solid var(--corvax-border);
     border-radius: 14px;
-    transition: .2s;
     position: relative;
     cursor: pointer;
-    user-select:none;
+    user-select: none;
+    overflow: visible;
+    transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03);
+    font-family: var(--font-body);
 }
 
-    .cvx-post-card:hover {
-        border-color: rgba(124,58,237,.45);
-        transform: translateY(-3px);
-        box-shadow: 0 14px 32px rgba(0,0,0,.7), 0 0 22px rgba(124,58,237,.18);
+    /* scanline */
+    .cvx-post-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 14px;
+        overflow: hidden;
+        background-image: repeating-linear-gradient( 0deg, transparent, transparent 2px, rgba(255,255,255,0.009) 2px, rgba(255,255,255,0.009) 4px );
+        pointer-events: none;
+        z-index: 0;
     }
 
-/* ─────────────────────────────
-   VOTE COLUMN
-──────────────────────────── */
+    /* left accent bar — igual que community-card-pro */
+    .cvx-post-card::after {
+        content: "";
+        position: absolute;
+        top: 18%;
+        bottom: 18%;
+        left: 0;
+        width: 3px;
+        border-radius: 0 2px 2px 0;
+        background: var(--corvax-purple);
+        opacity: 0;
+        transition: opacity 0.22s ease;
+        z-index: 1;
+    }
+
+    .cvx-post-card > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    .cvx-post-card:hover {
+        transform: translateY(-3px);
+        border-color: rgba(124,58,237,0.45);
+        box-shadow: 0 14px 36px rgba(0,0,0,0.7), 0 0 28px rgba(124,58,237,0.18), inset 0 1px 0 rgba(255,255,255,0.05);
+    }
+
+        .cvx-post-card:hover::after {
+            opacity: 1;
+        }
+
+/* ── VOTE COLUMN ─────────────────────────────────────────────── */
 
 .cvx-post-vote {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 6px;
-    width: 50px;
-    padding: 8px 6px;
-    background: rgba(255,255,255,.02);
-    border-radius: 10px;
+    width: 58px;
+    flex-shrink: 0;
+    padding: 18px 8px;
+    background: rgba(255,255,255,0.018);
+    border-right: 1px solid rgba(255,255,255,0.05);
+    z-index: 30;
 }
 
 .cvx-vote-btn {
     width: 30px;
     height: 30px;
     border-radius: 8px;
-    border: 1px solid rgba(255,255,255,.08);
-    background: rgba(255,255,255,.04);
-    color: #7070a0;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.04);
+    color: var(--corvax-text-muted);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: .18s ease;
+    font-size: 13px;
+    transition: all 0.18s ease;
+    flex-shrink: 0;
 }
-    .cvx-vote-btn.is-active {
-        transform: scale(1.05);
-    }
 
     .cvx-vote-btn:hover {
         transform: translateY(-1px);
     }
 
+    .cvx-vote-btn.is-active {
+        transform: scale(1.08);
+    }
+
 .cvx-vote-btn-up:hover,
 .cvx-vote-btn-up.is-active {
-    color: #22c55e;
-    border-color: #22c55e;
-    background: rgba(34,197,94,.15);
+    color: var(--corvax-green);
+    border-color: var(--corvax-green);
+    background: rgba(34,197,94,0.15);
+    box-shadow: 0 0 10px rgba(34,197,94,0.18);
 }
 
 .cvx-vote-btn-down:hover,
 .cvx-vote-btn-down.is-active {
-    color: #ef4444;
-    border-color: #ef4444;
-    background: rgba(239,68,68,.15);
+    color: var(--corvax-red);
+    border-color: var(--corvax-red);
+    background: rgba(239,68,68,0.15);
+    box-shadow: 0 0 10px rgba(239,68,68,0.18);
 }
 
 .cvx-vote-counters {
     display: flex;
     flex-direction: column;
-    font-size: 12px;
-    font-weight: 600;
     align-items: center;
+    gap: 4px;
+    width: 100%;
 }
 
-.cvx-upvote-count {
-    color: #22c55e;
-}
-
+/* Los hijos .cvx-upvote-count y .cvx-downvote-count son wrappers
+   del componente vote-tier — no necesitan color propio aquí,
+   el tier ya lo maneja. Solo centramos. */
+.cvx-upvote-count,
 .cvx-downvote-count {
-    color: #ef4444;
+    display: flex;
+    justify-content: center;
+    width: 100%;
 }
 
 .cvx-vote-divider {
     height: 1px;
-    width: 16px;
-    background: rgba(255,255,255,.1);
+    width: 20px;
+    background: rgba(255,255,255,0.08);
+    flex-shrink: 0;
 }
 
-/* ─────────────────────────────
-   BODY
-──────────────────────────── */
+/* ── POST BODY ───────────────────────────────────────────────── */
 
 .cvx-post-body {
     flex: 1;
     display: flex;
     flex-direction: column;
     gap: 10px;
+    padding: 16px 18px 14px 16px;
+    min-width: 0; /* evita overflow en flex */
 }
 
-/* meta */
+/* ── META (avatar + usuario + fecha + tags) ──────────────────── */
 
 .cvx-post-meta {
     display: flex;
+    position: relative;
     align-items: center;
     gap: 10px;
-    font-size: 12px;
-    color: #7070a0;
+    flex-wrap: wrap;
+    font-family: var(--font-label);
+    font-size: 0.72rem;
+    color: var(--corvax-text-muted);
+    letter-spacing: 0.02em;
+    z-index: 1;
 }
 
 .cvx-post-author {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 7px;
 }
 
+/* Avatar imagen */
 .cvx-post-avatar {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
+    border: 1px solid rgba(124,58,237,0.30);
+    object-fit: cover;
+    flex-shrink: 0;
 }
 
-/* title */
+/* Avatar por defecto (sin imagen) */
+.cvx-post-avatar-default {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--corvax-bg-surface);
+    border: 1px solid rgba(124,58,237,0.28);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.cvx-post-avatar,
+.cvx-post-avatar-default {
+    z-index: 0;
+    position: relative;
+}
+
+.cvx-icon-crow {
+    width: 12px;
+    height: 12px;
+    color: var(--corvax-text-muted);
+    opacity: 0.7;
+}
+
+.cvx-post-username {
+    font-weight: 600;
+    color: var(--corvax-text);
+    font-family: var(--font-label);
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+}
+
+.cvx-post-dot {
+    color: rgba(255,255,255,0.18);
+    font-size: 0.65rem;
+}
+
+.cvx-post-time {
+    font-size: 0.68rem;
+    color: var(--corvax-text-muted);
+    font-family: var(--font-label);
+    letter-spacing: 0.03em;
+}
+
+/* ── TAGS ────────────────────────────────────────────────────── */
+
+.cvx-post-tags {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.cvx-post-tag {
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-family: var(--font-label);
+    font-size: 0.63rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    background: var(--corvax-bg-surface);
+    border: 1px solid rgba(255,255,255,0.07);
+    color: var(--corvax-text-muted);
+}
+
+/* Tag principal — usa CSS variable --tag-color inyectada en línea */
+.cvx-post-tag-main {
+    background: color-mix(in srgb, var(--tag-color, var(--corvax-purple)) 12%, transparent);
+    border-color: color-mix(in srgb, var(--tag-color, var(--corvax-purple)) 35%, transparent);
+    color: var(--tag-color, var(--corvax-purple));
+}
+
+    .cvx-post-tag-main i {
+        font-size: 0.55rem;
+        margin-right: 3px;
+        opacity: 0.8;
+    }
+
+/* Fallback para navegadores sin color-mix (IE/Edge antiguo) */
+@supports not (color: color-mix(in srgb, red 50%, blue)) {
+    .cvx-post-tag-main {
+        background: rgba(124,58,237,0.12);
+        border-color: rgba(124,58,237,0.35);
+        color: var(--corvax-purple);
+    }
+}
+
+/* ── TÍTULO ──────────────────────────────────────────────────── */
 
 .cvx-post-title {
-    font-size: 17px;
-    font-weight: 600;
-    color: #e8e8f0;
     margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--corvax-text);
+    letter-spacing: 0.02em;
+    line-height: 1.3;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
-/* excerpt */
+/* ── EXCERPT / PREVIEW ───────────────────────────────────────── */
+
+.cvx-post-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
 
 .cvx-post-excerpt {
-    font-size: 14px;
-    color: #9090b0;
-    line-height: 1.45;
+    font-size: 0.84rem;
+    color: var(--corvax-text-muted);
+    line-height: 1.5;
+    margin: 0;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    font-family: var(--font-body);
+    font-weight: 300;
 }
 
-/* image */
+/* Cuando el excerpt está expandido (clase toggled por expandPost) */
+.cvx-post-preview.is-expanded .cvx-post-excerpt {
+    -webkit-line-clamp: unset;
+    overflow: visible;
+    display: block;
+    word-break: break-word;
+}
+
+.cvx-expand-post {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    width: 100%; /* ocupa todo el ancho */
+    margin-top: 6px;
+    padding: 5px 0;
+    background: none;
+    border: none;
+    border-top: 1px solid rgba(124,58,237,0.15);
+    font-family: var(--font-label);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--corvax-purple);
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.15s ease;
+    isolation: auto;
+    overflow: visible;
+}
+
+    .cvx-expand-post:hover {
+        opacity: 1;
+    }
+
+.cvx-post-preview.is-expanded .cvx-expand-post {
+    display: none;
+}
+
+.cvx-post-preview.is-expanded .cvx-post-excerpt {
+    -webkit-line-clamp: unset;
+    overflow: visible;
+    display: block;
+}
+
+/* ── IMAGEN ──────────────────────────────────────────────────── */
 
 .cvx-post-thumbnail {
+    margin: 0;
     border-radius: 10px;
     overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.05);
+    max-height: 320px;
 }
 
     .cvx-post-thumbnail img {
         width: 100%;
+        display: block;
+        object-fit: cover;
+        max-height: 320px;
+        transition: transform 0.3s ease;
     }
 
-.cvx-post-image {
-    border-radius: 10px;
-    overflow: hidden;
+.cvx-post-card:hover .cvx-post-thumbnail img {
+    transform: scale(1.015);
 }
 
-    .cvx-post-image img {
-        width: 100%;
-        display: block;
-    }
+/* ── FOOTER DE ACCIONES ──────────────────────────────────────── */
 
-/* actions */
+.cvx-post-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: auto;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-top: 4px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    scrollbar-width: none;
+}
 
 .cvx-post-action {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    color: #7070a0;
+    gap: 5px;
+    padding: 5px 10px;
+    border-radius: 7px;
+    font-family: var(--font-label);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--corvax-text-muted);
     background: none;
     border: none;
     cursor: pointer;
-    transition: .15s;
+    text-decoration: none;
+    transition: all 0.15s ease;
 }
+.cvx-post-actions::-webkit-scrollbar {
+    display: none; /* oculta scrollbar en Chrome/Safari */
+}
+    .cvx-post-action i {
+        font-size: 0.78rem;
+    }
 
     .cvx-post-action:hover {
-        color: #e8e8f0;
-        transform: translateY(-1px);
+        color: var(--corvax-text);
+        background: rgba(255,255,255,0.05);
     }
+
+/* Guardar — estado activo */
+.cvx-action-save.is-saved {
+    color: var(--corvax-purple);
+}
+
+    .cvx-action-save.is-saved i {
+        /* Cambia a bookmark sólido cuando está guardado */
+        font-family: "Font Awesome 6 Free";
+        font-weight: 900;
+        content: "\f02e"; /* fa-bookmark solid */
+    }
+
+.cvx-action-save:hover {
+    color: var(--corvax-purple) !important;
+}
+
+/* Compartir */
+.cvx-action-share:hover {
+    color: #60a5fa !important;
+}
+
+/* Copiar link */
+.cvx-action-copy-link:hover {
+    color: var(--corvax-text) !important;
+}
+
+/* ── FEED WRAPPER (fondo entre cards) ────────────────────────── */
+
+#post-feed-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* ── FEED HEADER (sort tabs + nuevo post) ────────────────────── */
+
+.cvx-feed-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding: 10px 0 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    margin-bottom: 4px;
+}
+
+.cvx-sort-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-family: var(--font-label);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--corvax-text-muted);
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: all 0.15s ease;
+}
+
+    .cvx-sort-btn:hover {
+        color: var(--corvax-text);
+        background: rgba(255,255,255,0.05);
+        border-color: rgba(255,255,255,0.07);
+    }
+
+.cvx-sort-btn--active {
+    color: var(--corvax-purple);
+    background: rgba(124,58,237,0.12);
+    border-color: rgba(124,58,237,0.28);
+}
+
+    .cvx-sort-btn--active:hover {
+        background: rgba(124,58,237,0.18);
+    }
+
+.cvx-new-post-btn {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 16px;
+    border-radius: 9px;
+    font-family: var(--font-label);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--corvax-purple);
+    background: rgba(124,58,237,0.10);
+    border: 1px solid rgba(124,58,237,0.30);
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+    .cvx-new-post-btn:hover {
+        background: var(--corvax-purple);
+        color: #fff;
+        box-shadow: 0 0 18px rgba(124,58,237,0.35);
+        border-color: var(--corvax-purple);
+    }
+
+/* ── EMPTY / LOADING STATES ──────────────────────────────────── */
+
+.cvx-empty-feed {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 60px 20px;
+    color: var(--corvax-text-muted);
+    font-family: var(--font-label);
+    font-size: 0.82rem;
+    letter-spacing: 0.05em;
+    text-align: center;
+}
+
+.cvx-empty-feed__icon {
+    font-size: 2.2rem;
+    opacity: 0.5;
+}
+
+.cvx-empty-feed__title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--corvax-text);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.cvx-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 40px 20px;
+    color: var(--corvax-text-muted);
+    font-family: var(--font-label);
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.cvx-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(124,58,237,0.25);
+    border-top-color: var(--corvax-purple);
+    border-radius: 50%;
+    animation: cvxSpin 0.7s linear infinite;
+}
+
+@keyframes cvxSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ── PAGINACIÓN ──────────────────────────────────────────────── */
+
+.cvx-btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    border-radius: 9px;
+    font-family: var(--font-label);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--corvax-text-muted);
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.10);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+    .cvx-btn-outline:hover {
+        color: var(--corvax-text);
+        border-color: rgba(124,58,237,0.40);
+        background: rgba(124,58,237,0.08);
+    }
+
+.cvx-post-actions {
+    flex-direction: row !important;
+    align-items: center;
+}
+
+/* ── VOTE TIER TOOLTIPS ──────────────────────────────────────── */
+
+.vote-tier,
+.dv-vote-tier {
+    position: relative;
+}
+
+.vote-tier-tooltip,
+.dv-vote-tooltip {
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    transform: translateX(-50%) translateY(-8px);
+    background: var(--corvax-bg-card);
+    border: 1px solid rgba(124,58,237,0.35);
+    border-radius: 10px;
+    padding: 10px 14px;
+    min-width: 180px;
+    white-space: nowrap;
+    font-family: var(--font-label);
+    font-size: 0.72rem;
+    color: var(--corvax-text);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.7), 0 0 16px rgba(124,58,237,0.12);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    z-index: 99999;
+}
+
+.vote-tier:hover .vote-tier-tooltip,
+.dv-vote-tier:hover .dv-vote-tooltip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-12px);
+}

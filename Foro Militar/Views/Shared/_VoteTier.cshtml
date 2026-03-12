@@ -1,57 +1,182 @@
-﻿@model int?
+﻿@* ─────────────────────────────────────────────────────────────
+       _VoteTier.cshtml — Upvote tier badge
+       Uso: @await Html.PartialAsync("_VoteTier", post.UpVotes)
+       Sincronizado con renderVoteTier() en corvax-dashboard.js
+    ───────────────────────────────────────────────────────────── *@
+
+@model int?
 
 @{
     var votes = Model ?? 0;
 
-    var tier = "tier-bronce";
-    var tierName = "Polluelo";
-    var icon = "fa-feather";
+    /* ─────────────────────────────
+       CONFIGURACIÓN
+    ───────────────────────────── */
 
-    if (votes >= 1000)
+    const int TIER_SIZE = 700;
+    const int SUBTIER_SIZE = TIER_SIZE / 5; // 140
+
+    string[] tiers = {
+        "tier-bronce",
+        "tier-plata",
+        "tier-oro",
+        "tier-platino",
+        "tier-diamante",
+        "tier-amatista",
+        "tier-ebano",
+        "tier-corvus"
+    };
+
+    string[][] names = {
+        new[]{ "Polluelo Curioso",   "Polluelo Observador", "Polluelo Explorador", "Polluelo Vigilante", "Polluelo del Nido"   },
+        new[]{ "Pluma Plateada I",   "Pluma Plateada II",   "Pluma Plateada III",  "Pluma Plateada IV",  "Pluma Plateada V"    },
+        new[]{ "Cuervo Iniciado",    "Cuervo Mensajero",    "Cuervo Vigilante",    "Cuervo Estratega",   "Cuervo del Ocaso"    },
+        new[]{ "Nido de Piedra",     "Nido Elevado",        "Nido Guardián",       "Nido Arcano",        "Nido Supremo"        },
+        new[]{ "Bandada Errante",    "Bandada Vigía",       "Bandada Sombría",     "Bandada Imperial",   "Bandada Ancestral"   },
+        new[]{ "Heraldo del Viento", "Señor del Viento",    "Maestro del Vuelo",   "Oráculo del Cielo",  "Soberano de Alas"    },
+        new[]{ "Guardián de Corvax", "Portador del Cuervo", "Vigía del Abismo",    "Señor de la Bandada","Mano de Corvax"      },
+        new[]{ "Elegido de Corvax",  "Heraldo de Corvax",   "Avatar de Corvax",    "Sombra de Corvax",   "Corona de Corvax"    }
+    };
+
+    string[] icons = {
+        "fa-feather",
+        "fa-feather",
+        "fa-crow",
+        "fa-egg",
+        "fa-feather-pointed",
+        "fa-wind",
+        "fa-skull",
+        "fa-crown"
+    };
+
+    /* ─────────────────────────────
+       CÁLCULO DE TIER
+    ───────────────────────────── */
+
+    int tierIndex = Math.Min(7, votes / TIER_SIZE);
+    int subTier = Math.Min(4, (votes % TIER_SIZE) / SUBTIER_SIZE);
+
+    var tier = tiers[tierIndex];
+    var tierName = names[tierIndex][subTier];
+    var icon = icons[tierIndex];
+
+    /* ─────────────────────────────
+       PROGRESO DENTRO DEL TIER
+    ───────────────────────────── */
+
+    int currentTierStart = tierIndex * TIER_SIZE;
+    int nextRank = currentTierStart + TIER_SIZE;
+    int progress = votes - currentTierStart;
+    int progressPercent = Math.Min(100, (int)((double)progress / TIER_SIZE * 100));
+
+    /* ─────────────────────────────
+       FLAGS
+    ───────────────────────────── */
+
+    bool viral = votes >= 2500;
+    string specialClass = "";
+    bool hasEasterEgg = false;
+
+    /* ─────────────────────────────
+       EASTER EGGS
+    ───────────────────────────── */
+
+    if (votes == 69)
+    {
+        tierName = "Nice.";
+        icon = "fa-face-smile";
+        specialClass = "rank-meme";
+        hasEasterEgg = true;
+    }
+    else if (votes == 404)
+    {
+        tierName = "Rank Not Found";
+        icon = "fa-bug";
+        specialClass = "rank-error";
+        hasEasterEgg = true;
+    }
+    else if (votes == 666)
+    {
+        tier = "tier-ebano";
+        tierName = "Cuervo del Abismo";
+        icon = "fa-skull";
+        specialClass = "rank-abyss";
+        hasEasterEgg = true;
+    }
+    else if (votes == 777)
     {
         tier = "tier-corvus";
-        tierName = "Corona de Corvax";
+        tierName = "Reliquia de Corvax";
         icon = "fa-crown";
+        specialClass = "rank-relic";
+        hasEasterEgg = true;
     }
-    else if (votes >= 500)
+    else if (votes == 999)
     {
         tier = "tier-amatista";
-        tierName = "Cuervo Arcano";
-        icon = "fa-crow";
+        tierName = "Oráculo del Vacío";
+        icon = "fa-eye";
+        specialClass = "rank-oracle";
+        hasEasterEgg = true;
     }
-    else if (votes >= 250)
+    else if (votes == 1337)
     {
-        tier = "tier-diamante";
-        tierName = "Cuervo Ancestral";
-        icon = "fa-feather-pointed";
+        tier = "tier-ebano";
+        tierName = "Hack del Cuervo";
+        icon = "fa-terminal";
+        specialClass = "rank-hacker";
+        hasEasterEgg = true;
     }
-    else if (votes >= 100)
+    else if (votes == 7777)
     {
-        tier = "tier-platino";
-        tierName = "Cuervo Mayor";
-        icon = "fa-feather";
+        tier = "tier-corvus";
+        tierName = "Trono de Corvax";
+        icon = "fa-crown";
+        specialClass = "rank-throne";
+        hasEasterEgg = true;
     }
-    else if (votes >= 50)
+    else if (votes >= 10000)
     {
-        tier = "tier-oro";
-        tierName = "Cuervo Vigilante";
-        icon = "fa-dove";
+        tier = "tier-corvus";
+        tierName = "Artefacto Ancestral";
+        icon = "fa-gem";
+        specialClass = "rank-artifact";
+        hasEasterEgg = true;
     }
-    else if (votes >= 10)
-    {
-        tier = "tier-plata";
-        tierName = "Cuervo Joven";
-        icon = "fa-feather";
-    }
+
+    /* ─────────────────────────────
+       CLASES COMPUESTAS
+    ───────────────────────────── */
+
+    var viralClass = viral ? "post-viral" : "";
+    var eggLabel = hasEasterEgg ? "⟡ Rango Oculto" : $"{progress} / {TIER_SIZE} para el siguiente rango";
 }
-<div class="vote-tier tooltip-container">
+
+<div class="vote-tier tooltip-container @tier @specialClass @viralClass">
 
     <span class="vote-number">@votes</span>
 
-    <div class="tooltip-content vote-tier-tooltip @tier">
+    <div class="vote-tier-tooltip">
 
-        <i class="fa-solid @icon"></i>
-        <span>@tierName</span>
+        <div class="tier-header">
+            <i class="fa-solid @icon"></i>
+            <span class="tier-name">@tierName</span>
+        </div>
+
+        <div class="tier-progress-bar">
+            <div class="tier-progress-fill" style="width:@progressPercent"></div>
+        </div>
+
+        <small class="tier-progress-text">
+            @eggLabel
+        </small>
+
+        @if (viral && !hasEasterEgg)
+        {
+            <small class="tier-viral-label">
+                <i class="fa-solid fa-fire"></i> Post viral
+            </small>
+        }
 
     </div>
 

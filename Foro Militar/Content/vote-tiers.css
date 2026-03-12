@@ -1,332 +1,1011 @@
 ﻿/* ═══════════════════════════════════════════════════════════════
-   CORVAX — Vote Tier Tooltip  |  Estilo Foro Táctico v2
-   Clases intactas: vote-tier · vote-number · vote-tier-tooltip
-   tier-bronce · tier-plata · tier-oro · tier-platino
-   tier-diamante · tier-amatista · tier-corvus
+   CORVAX — Vote Tier Badge  |  post-vote-tier.css
+   ~/Content/post-vote-tier.css
+   Sincronizado con _VoteTier.cshtml y renderVoteTier()
    ═══════════════════════════════════════════════════════════════ */
 
 /* ── CONTENEDOR BASE ─────────────────────────────────────────── */
+
 .vote-tier {
     position: relative;
     display: inline-flex;
     align-items: center;
     cursor: default;
+    font-variant-numeric: tabular-nums;
 }
 
 .vote-number {
-    font-variant-numeric: tabular-nums;
     font-weight: 700;
+    letter-spacing: .03em;
 }
 
 /* ── TOOLTIP BASE ────────────────────────────────────────────── */
+
 .vote-tier-tooltip {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    padding: 8px 14px;
-    border-radius: 10px;
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    white-space: nowrap;
-    /* posicionamiento */
     position: absolute;
     bottom: 100%;
     left: 50%;
-    margin-bottom: 8px;
-    z-index: 9999;
-    /* estado oculto */
+    transform: translateX(-50%) translateY(6px) scale(.96);
     opacity: 0;
     pointer-events: none;
-    transform: translateX(-50%) translateY(4px) scale(0.96);
-    transition: opacity 0.22s ease, transform 0.22s cubic-bezier(.22, 1, .36, 1);
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    padding: 11px 15px;
+    border-radius: 11px;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    white-space: nowrap;
+    margin-bottom: 8px;
+    z-index: 9999;
+    transition: opacity .22s ease, transform .22s cubic-bezier(.22,1,.36,1);
 }
 
-    .vote-tier-tooltip.show {
-        opacity: 1;
-        pointer-events: auto;
-        transform: translateX(-50%) translateY(0) scale(1);
-    }
+.vote-tier:hover .vote-tier-tooltip {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0) scale(1);
+}
 
-    /* aura base */
-    .vote-tier-tooltip::before {
-        content: "";
-        position: absolute;
-        inset: -5px;
-        border-radius: 13px;
-        opacity: 0;
-        filter: blur(10px);
-        z-index: -1;
-        transition: opacity 0.4s ease;
-    }
+/* aura base — sobreescrita por cada tier */
+.vote-tier-tooltip::before {
+    content: "";
+    position: absolute;
+    inset: -5px;
+    border-radius: 15px;
+    opacity: 0;
+    filter: blur(12px);
+    z-index: -1;
+    transition: opacity .4s ease;
+}
 
-    .vote-tier-tooltip:hover::before {
-        opacity: 0.55;
-    }
+.vote-tier:hover .vote-tier-tooltip::before {
+    opacity: .55;
+}
 
-    .vote-tier-tooltip i {
+/* ── HEADER ──────────────────────────────────────────────────── */
+
+.tier-header {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+    .tier-header i {
         font-size: 13px;
         flex-shrink: 0;
-        transition: transform 0.25s ease, filter 0.25s ease;
+        transition: transform .25s ease, filter .25s ease;
     }
 
-    /* ── TIER: BRONCE ────────────────────────────────────────────── */
-    .vote-tier-tooltip.tier-bronce {
-        background: linear-gradient(145deg, #1c1209, #2a1a0a);
-        color: #c8884a;
-        border: 1px solid rgba(162, 100, 40, 0.45);
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(162, 100, 40, 0.1);
+.tier-name {
+    line-height: 1;
+}
+
+/* ── PROGRESS ────────────────────────────────────────────────── */
+
+.tier-progress-bar {
+    width: 100%;
+    height: 4px;
+    border-radius: 4px;
+    background: rgba(0,0,0,0.45);
+    overflow: hidden;
+}
+
+.tier-progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width .3s ease;
+}
+
+.tier-progress-text {
+    opacity: .55;
+    font-weight: 500;
+    color: inherit;
+    font-size: .67rem;
+}
+
+/* ── VIRAL LABEL ─────────────────────────────────────────────── */
+
+.tier-viral-label {
+    color: #c084fc;
+    font-size: .67rem;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    opacity: .85;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TIERS — número + tooltip + aura + progress
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── BRONCE ──────────────────────────────────────────────────── */
+
+.vote-tier.tier-bronce .vote-number {
+    color: #c8884a;
+}
+
+.vote-tier.tier-bronce .vote-tier-tooltip {
+    background: linear-gradient(145deg, #1c1209, #2a1a0a);
+    color: #e8a870;
+    border: 1px solid rgba(162,100,40,.45);
+    box-shadow: 0 4px 18px rgba(0,0,0,.60), 0 0 0 1px rgba(162,100,40,.10);
+}
+
+    .vote-tier.tier-bronce .vote-tier-tooltip::before {
+        background: radial-gradient(circle, #a0622a, transparent);
     }
 
-        .vote-tier-tooltip.tier-bronce::before {
-            background: radial-gradient(circle, #a0622a, transparent);
-        }
+.vote-tier.tier-bronce .tier-header i {
+    color: #d4914f;
+}
 
-        .vote-tier-tooltip.tier-bronce i {
-            color: #d4914f;
-        }
+.vote-tier.tier-bronce .tier-progress-fill {
+    background: linear-gradient(90deg, #7c3c10, #c8884a);
+}
 
-    /* ── TIER: PLATA ─────────────────────────────────────────────── */
-    .vote-tier-tooltip.tier-plata {
-        background: linear-gradient(145deg, #141414, #1e1e22);
-        color: #d8d8e0;
-        border: 1px solid rgba(160, 160, 175, 0.35);
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(160, 160, 175, 0.08);
+/* ── PLATA ───────────────────────────────────────────────────── */
+
+.vote-tier.tier-plata .vote-number {
+    color: #d8d8e0;
+    text-shadow: 0 0 4px rgba(216,216,224,.25);
+}
+
+.vote-tier.tier-plata .vote-tier-tooltip {
+    background: linear-gradient(145deg, #141418, #1e1e24);
+    color: #e0e0ec;
+    border: 1px solid rgba(160,160,180,.32);
+    box-shadow: 0 4px 18px rgba(0,0,0,.60), 0 0 10px rgba(160,160,180,.08);
+}
+
+    .vote-tier.tier-plata .vote-tier-tooltip::before {
+        background: radial-gradient(circle, #b0b0cc, transparent);
     }
 
-        .vote-tier-tooltip.tier-plata::before {
-            background: radial-gradient(circle, #c0c0cc, transparent);
-        }
+.vote-tier.tier-plata .tier-header i {
+    color: #c8c8d8;
+    animation: corvaxSilverShine 3s infinite ease-in-out;
+}
 
-        .vote-tier-tooltip.tier-plata i {
-            color: #c8c8d8;
-            animation: corvaxSilverShine 3s infinite ease-in-out;
-        }
+.vote-tier.tier-plata .tier-progress-fill {
+    background: linear-gradient(90deg, #7a7a8a, #c8c8e0);
+}
 
 @keyframes corvaxSilverShine {
-    0%, 100% {
-        opacity: 0.6;
+    0%,100% {
+        opacity: .6;
+        filter: none;
     }
 
     50% {
         opacity: 1;
+        filter: drop-shadow(0 0 4px #c8c8e0);
     }
 }
 
-/* ── TIER: ORO ───────────────────────────────────────────────── */
-.vote-tier-tooltip.tier-oro {
-    background: linear-gradient(145deg, #1e1600, #2e2200);
+/* ── ORO ─────────────────────────────────────────────────────── */
+
+.vote-tier.tier-oro .vote-number {
     color: #f0c040;
-    border: 1px solid rgba(210, 170, 50, 0.45);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), 0 0 10px rgba(240, 190, 0, 0.18);
+    text-shadow: 0 0 6px rgba(240,192,64,.45);
 }
 
-    .vote-tier-tooltip.tier-oro::before {
-        background: radial-gradient(circle, #d4a800, transparent);
+.vote-tier.tier-oro .vote-tier-tooltip {
+    background: linear-gradient(145deg, #1a1400, #261e00);
+    color: #fde68a;
+    border: 1px solid rgba(200,160,30,.42);
+    box-shadow: 0 4px 18px rgba(0,0,0,.65), 0 0 14px rgba(240,192,64,.10);
+}
+
+    .vote-tier.tier-oro .vote-tier-tooltip::before {
+        background: radial-gradient(circle, #d4a020, transparent);
     }
 
-    .vote-tier-tooltip.tier-oro i {
-        color: #ffd700;
-        animation: corvaxGoldPulse 2.5s infinite alternate ease-in-out;
-    }
+.vote-tier.tier-oro .tier-header i {
+    color: #f0c040;
+    animation: corvaxGoldPulse 2.8s infinite alternate;
+}
+
+.vote-tier.tier-oro .tier-progress-fill {
+    background: linear-gradient(90deg, #a07010, #f0c040);
+}
 
 @keyframes corvaxGoldPulse {
     from {
-        transform: scale(1);
-        filter: drop-shadow(0 0 2px #d4a800);
+        filter: drop-shadow(0 0 2px rgba(240,192,64,.40));
     }
 
     to {
-        transform: scale(1.18);
-        filter: drop-shadow(0 0 6px #ffd700);
+        filter: drop-shadow(0 0 8px rgba(240,192,64,.80));
     }
 }
 
-/* ── TIER: PLATINO ───────────────────────────────────────────── */
-.vote-tier-tooltip.tier-platino {
-    background: linear-gradient(145deg, #0c1a1e, #112228);
+/* ── PLATINO ─────────────────────────────────────────────────── */
+
+.vote-tier.tier-platino .vote-number {
     color: #9ae8f8;
-    border: 1px solid rgba(80, 210, 240, 0.35);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), 0 0 12px rgba(80, 210, 240, 0.15);
+    text-shadow: 0 0 7px rgba(154,232,248,.40);
 }
 
-    .vote-tier-tooltip.tier-platino::before {
-        background: radial-gradient(circle, #40d0ee, transparent);
-        animation: corvaxPlatAura 3s infinite alternate ease-in-out;
-    }
-
-    .vote-tier-tooltip.tier-platino i {
-        color: #6ee8ff;
-        animation: corvaxPlatGlow 2.5s infinite alternate;
-    }
-
-@keyframes corvaxPlatGlow {
-    from {
-        transform: scale(1);
-        filter: drop-shadow(0 0 2px #40d0ee);
-    }
-
-    to {
-        transform: scale(1.2);
-        filter: drop-shadow(0 0 7px #6ee8ff);
-    }
+.vote-tier.tier-platino .vote-tier-tooltip {
+    background: linear-gradient(145deg, #071518, #0d1f24);
+    color: #baf3ff;
+    border: 1px solid rgba(100,210,230,.35);
+    box-shadow: 0 4px 18px rgba(0,0,0,.65), 0 0 16px rgba(154,232,248,.10);
 }
 
-@keyframes corvaxPlatAura {
-    from {
-        opacity: 0.25;
+    .vote-tier.tier-platino .vote-tier-tooltip::before {
+        background: radial-gradient(circle, #60c8e0, transparent);
     }
 
-    to {
-        opacity: 0.5;
+.vote-tier.tier-platino .tier-header i {
+    color: #9ae8f8;
+    animation: corvaxPlatinumBreath 3.5s infinite ease-in-out;
+}
+
+.vote-tier.tier-platino .tier-progress-fill {
+    background: linear-gradient(90deg, #1a6878, #9ae8f8);
+}
+
+@keyframes corvaxPlatinumBreath {
+    0%,100% {
+        filter: drop-shadow(0 0 3px rgba(154,232,248,.35));
+    }
+
+    50% {
+        filter: drop-shadow(0 0 10px rgba(154,232,248,.75));
     }
 }
 
-/* ── TIER: DIAMANTE ──────────────────────────────────────────── */
-.vote-tier-tooltip.tier-diamante {
-    background: linear-gradient(145deg, #070e14, #0b1c28);
+/* ── DIAMANTE ────────────────────────────────────────────────── */
+
+.vote-tier.tier-diamante .vote-number {
     color: #70d8ff;
-    border: 1px solid rgba(30, 190, 255, 0.4);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.65), 0 0 16px rgba(30, 190, 255, 0.2);
+    text-shadow: 0 0 8px rgba(112,216,255,.50);
+    animation: corvaxDiamondPulse 3s infinite alternate;
 }
 
-    .vote-tier-tooltip.tier-diamante::before {
-        background: radial-gradient(circle, #1ebeff, transparent);
-        animation: corvaxDiamAura 2s infinite alternate ease-in-out;
+.vote-tier.tier-diamante .vote-tier-tooltip {
+    background: linear-gradient(145deg, #041018, #071a28);
+    color: #93e6ff;
+    border: 1px solid rgba(80,190,230,.38);
+    box-shadow: 0 4px 20px rgba(0,0,0,.70), 0 0 18px rgba(112,216,255,.12);
+}
+
+    .vote-tier.tier-diamante .vote-tier-tooltip::before {
+        background: radial-gradient(circle, #40b8e8, transparent);
     }
 
-    .vote-tier-tooltip.tier-diamante i {
-        color: #50d0ff;
-        animation: corvaxDiamShimmer 2s infinite alternate;
-    }
+.vote-tier.tier-diamante .tier-header i {
+    color: #70d8ff;
+    animation: corvaxDiamondSpin 6s infinite linear;
+}
 
-@keyframes corvaxDiamShimmer {
+.vote-tier.tier-diamante .tier-progress-fill {
+    background: linear-gradient(90deg, #0a5878, #70d8ff);
+}
+
+@keyframes corvaxDiamondPulse {
     from {
-        transform: scale(1);
-        filter: drop-shadow(0 0 3px #1ebeff);
+        text-shadow: 0 0 6px rgba(112,216,255,.45);
     }
 
     to {
-        transform: scale(1.25);
-        filter: drop-shadow(0 0 10px #50d0ff);
+        text-shadow: 0 0 18px rgba(112,216,255,.80), 0 0 32px rgba(112,216,255,.25);
     }
 }
 
-@keyframes corvaxDiamAura {
-    from {
-        transform: scale(0.9);
-        opacity: 0.3;
+@keyframes corvaxDiamondSpin {
+    0% {
+        transform: rotate(0deg) scale(1);
+        filter: drop-shadow(0 0 3px #70d8ff);
     }
 
-    to {
-        transform: scale(1.1);
-        opacity: 0.6;
+    50% {
+        transform: rotate(180deg) scale(1.15);
+        filter: drop-shadow(0 0 8px #70d8ff);
+    }
+
+    100% {
+        transform: rotate(360deg) scale(1);
+        filter: drop-shadow(0 0 3px #70d8ff);
     }
 }
 
-/* ── TIER: AMATISTA ──────────────────────────────────────────── */
-.vote-tier-tooltip.tier-amatista {
-    background: linear-gradient(145deg, #130b20, #1e1033);
+/* ── AMATISTA ────────────────────────────────────────────────── */
+
+.vote-tier.tier-amatista .vote-number {
     color: #cc96ff;
-    border: 1px solid rgba(148, 60, 240, 0.45);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.65), 0 0 18px rgba(148, 60, 240, 0.22);
+    text-shadow: 0 0 10px rgba(204,150,255,.55);
+    animation: corvaxAmatistGlow 2.5s infinite alternate;
 }
 
-    .vote-tier-tooltip.tier-amatista::before {
-        background: radial-gradient(circle, #8c38e0, transparent);
-        animation: corvaxAmethAura 3s infinite alternate ease-in-out;
+.vote-tier.tier-amatista .vote-tier-tooltip {
+    background: linear-gradient(145deg, #0e0518, #180a28);
+    color: #e0b8ff;
+    border: 1px solid rgba(150,80,220,.42);
+    box-shadow: 0 4px 20px rgba(0,0,0,.70), 0 0 20px rgba(204,150,255,.14);
+}
+
+    .vote-tier.tier-amatista .vote-tier-tooltip::before {
+        background: radial-gradient(circle, #9050d0, transparent);
     }
 
-    .vote-tier-tooltip.tier-amatista i {
-        color: #be82ff;
-        animation: corvaxAmethPulse 2s infinite alternate;
-    }
+.vote-tier.tier-amatista .tier-header i {
+    color: #cc96ff;
+    animation: corvaxAmatistIcon 2s infinite alternate;
+}
 
-@keyframes corvaxAmethPulse {
+.vote-tier.tier-amatista .tier-progress-fill {
+    background: linear-gradient(90deg, #5a1a9a, #cc96ff);
+}
+
+@keyframes corvaxAmatistGlow {
     from {
-        transform: scale(1);
-        filter: drop-shadow(0 0 4px #8c38e0);
+        text-shadow: 0 0 8px rgba(204,150,255,.50);
     }
 
     to {
-        transform: scale(1.22);
-        filter: drop-shadow(0 0 11px #c070ff);
+        text-shadow: 0 0 20px rgba(204,150,255,.90), 0 0 40px rgba(124,58,237,.35);
     }
 }
 
-@keyframes corvaxAmethAura {
+@keyframes corvaxAmatistIcon {
     from {
-        transform: scale(0.95);
-        opacity: 0.35;
+        transform: scale(1);
+        filter: drop-shadow(0 0 3px #cc96ff);
     }
 
     to {
         transform: scale(1.18);
-        opacity: 0.7;
+        filter: drop-shadow(0 0 10px #cc96ff);
     }
 }
 
-/* ── TIER: CORVUS (LEGENDARIO) ───────────────────────────────── */
-.vote-tier-tooltip.tier-corvus {
-    background: linear-gradient(135deg, #0d0018, #060008, #160028);
-    color: #eec8ff;
-    border: 1px solid rgba(124, 58, 237, 0.6);
-    box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.25), 0 4px 24px rgba(0, 0, 0, 0.75), 0 0 20px rgba(124, 58, 237, 0.35), 0 0 40px rgba(255, 215, 0, 0.12);
-    animation: corvusCardGlow 2.5s infinite alternate ease-in-out;
+/* ── ÉBANO ───────────────────────────────────────────────────── */
+
+.vote-tier.tier-ebano .vote-number {
+    color: #a78bfa;
+    text-shadow: 0 0 10px rgba(167,139,250,.60);
+    animation: corvaxEbanoPulse 2s infinite alternate;
 }
 
-    .vote-tier-tooltip.tier-corvus::before {
-        background: radial-gradient(circle at 50% 50%, gold, transparent 70%);
-        opacity: 0.4;
-        filter: blur(8px);
-        animation: corvusShine 2.5s infinite alternate ease-in-out;
+.vote-tier.tier-ebano .vote-tier-tooltip {
+    background: linear-gradient(145deg, #080412, #10081e);
+    color: #c4b5fd;
+    border: 1px solid rgba(120,70,200,.48);
+    box-shadow: 0 4px 22px rgba(0,0,0,.75), 0 0 22px rgba(167,139,250,.16);
+}
+
+    .vote-tier.tier-ebano .vote-tier-tooltip::before {
+        background: radial-gradient(circle, #6030b0, transparent);
     }
 
-    .vote-tier-tooltip.tier-corvus i {
-        color: #ffd700;
-        animation: corvusIconFlare 1.8s infinite alternate;
-    }
+.vote-tier.tier-ebano .tier-header i {
+    color: #a78bfa;
+    animation: corvaxEbanoFloat 3s infinite ease-in-out;
+}
 
-@keyframes corvusCardGlow {
+.vote-tier.tier-ebano .tier-progress-fill {
+    background: linear-gradient(90deg, #3b1a7a, #a78bfa);
+}
+
+@keyframes corvaxEbanoPulse {
     from {
-        box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.25), 0 4px 24px rgba(0, 0, 0, 0.75), 0 0 20px rgba(124, 58, 237, 0.35), 0 0 40px rgba(255, 215, 0, 0.12);
+        text-shadow: 0 0 8px rgba(167,139,250,.55);
     }
 
     to {
-        box-shadow: 0 0 0 1px rgba(160, 80, 255, 0.45), 0 4px 30px rgba(0, 0, 0, 0.8), 0 0 32px rgba(160, 80, 255, 0.5), 0 0 60px rgba(255, 215, 0, 0.22);
+        text-shadow: 0 0 22px rgba(167,139,250,.92), 0 0 44px rgba(91,33,182,.38);
     }
 }
 
-@keyframes corvusIconFlare {
+@keyframes corvaxEbanoFloat {
+    0%,100% {
+        transform: translateY(0);
+        filter: drop-shadow(0 0 4px #a78bfa);
+    }
+
+    50% {
+        transform: translateY(-3px);
+        filter: drop-shadow(0 0 10px #a78bfa);
+    }
+}
+
+/* ── CORVUS ──────────────────────────────────────────────────── */
+
+.vote-tier.tier-corvus .vote-number {
+    color: #ffd700;
+    text-shadow: 0 0 12px rgba(255,215,0,.65);
+    animation: corvaxCrown 2s infinite alternate;
+}
+
+.vote-tier.tier-corvus .vote-tier-tooltip {
+    background: linear-gradient(145deg, #100c00, #1e1600);
+    color: #ffe566;
+    border: 1px solid rgba(215,175,0,.48);
+    box-shadow: 0 4px 24px rgba(0,0,0,.80), 0 0 26px rgba(255,215,0,.18), 0 0 50px rgba(255,215,0,.07);
+}
+
+    .vote-tier.tier-corvus .vote-tier-tooltip::before {
+        background: radial-gradient(circle, #c8a000, transparent);
+    }
+
+.vote-tier.tier-corvus .tier-header i {
+    color: #ffd700;
+    animation: corvaxCrownIcon 2s infinite alternate;
+}
+
+.vote-tier.tier-corvus .tier-progress-fill {
+    background: linear-gradient(90deg, #8a6000, #ffd700, #fffaaa);
+}
+
+@keyframes corvaxCrown {
     from {
-        transform: scale(1);
+        text-shadow: 0 0 8px rgba(255,215,0,.60);
+    }
+
+    to {
+        text-shadow: 0 0 24px rgba(255,215,0,.98), 0 0 50px rgba(255,165,0,.42);
+    }
+}
+
+@keyframes corvaxCrownIcon {
+    from {
+        transform: scale(1) rotate(-5deg);
         filter: drop-shadow(0 0 4px gold);
     }
 
     to {
-        transform: scale(1.32);
+        transform: scale(1.2) rotate(5deg);
         filter: drop-shadow(0 0 14px gold);
     }
 }
 
-@keyframes corvusShine {
-    0% {
-        transform: scale(0.88);
-        opacity: 0.35;
+/* ═══════════════════════════════════════════════════════════════
+   VIRAL — votes >= 2500
+   ═══════════════════════════════════════════════════════════════ */
+
+.post-viral .vote-number {
+    animation: corvaxViral 1.8s infinite alternate !important;
+}
+
+.post-viral .vote-tier-tooltip {
+    border-color: rgba(192,132,252,.45) !important;
+    box-shadow: 0 4px 22px rgba(0,0,0,.75), 0 0 22px rgba(192,132,252,.18) !important;
+}
+
+@keyframes corvaxViral {
+    from {
+        text-shadow: 0 0 4px #9333ea;
     }
 
-    50% {
-        transform: scale(1.08);
-        opacity: 0.65;
-    }
-
-    100% {
-        transform: scale(0.88);
-        opacity: 0.35;
+    to {
+        text-shadow: 0 0 18px #c084fc, 0 0 36px rgba(192,132,252,.38);
     }
 }
 
-/* ── HOVER MICRO ─────────────────────────────────────────────── */
-.vote-tier-tooltip:hover {
-    transform: translateX(-50%) translateY(-2px) scale(1.03);
+/* ═══════════════════════════════════════════════════════════════
+   EASTER EGGS
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 69 — Nice. ──────────────────────────────────────────────── */
+
+.rank-meme .vote-number {
+    color: #34d399;
+    animation: memeFloat 1s infinite alternate;
+}
+
+.rank-meme .vote-tier-tooltip {
+    background: linear-gradient(145deg, #041510, #081e14);
+    color: #6ee7b7;
+    border: 1px solid rgba(52,211,153,.30);
+    box-shadow: 0 4px 18px rgba(0,0,0,.70), 0 0 14px rgba(52,211,153,.14);
+}
+
+    .rank-meme .vote-tier-tooltip::before {
+        background: radial-gradient(circle, #20b080, transparent);
+    }
+
+.rank-meme .tier-header i {
+    color: #34d399;
+    animation: memeWiggle 0.6s infinite alternate;
+}
+
+.rank-meme .tier-progress-fill {
+    background: linear-gradient(90deg, #065f46, #34d399);
+}
+
+@keyframes memeFloat {
+    from {
+        text-shadow: 0 0 4px #34d399;
+        transform: translateY(0);
+    }
+
+    to {
+        text-shadow: 0 0 14px #34d399;
+        transform: translateY(-2px);
+    }
+}
+
+@keyframes memeWiggle {
+    from {
+        transform: rotate(-8deg) scale(1);
+    }
+
+    to {
+        transform: rotate(8deg) scale(1.2);
+    }
+}
+
+/* ── 404 — Rank Not Found ────────────────────────────────────── */
+
+.rank-error .vote-number {
+    color: #a855f7;
+    animation: errorFlicker 2.4s steps(1) infinite;
+}
+
+.rank-error .vote-tier-tooltip {
+    background: linear-gradient(145deg, #0c0514, #140820);
+    color: #d8b4fe;
+    border: 1px solid rgba(168,85,247,.32);
+    box-shadow: 0 4px 18px rgba(0,0,0,.75), 0 0 14px rgba(168,85,247,.14);
+}
+
+    .rank-error .vote-tier-tooltip::before {
+        background: radial-gradient(circle, #7820c0, transparent);
+    }
+
+.rank-error .tier-header i {
+    color: #a855f7;
+    animation: errorGlitch 3s steps(1) infinite;
+}
+
+.rank-error .tier-progress-fill {
+    background: linear-gradient(90deg, #4a1070, #a855f7);
+    animation: errorBar 2.4s steps(1) infinite;
+}
+
+@keyframes errorFlicker {
+    0%,88%,92%,100% {
+        opacity: 1;
+    }
+
+    90% {
+        opacity: 0;
+    }
+}
+
+@keyframes errorGlitch {
+    0%,90%,100% {
+        transform: translate(0);
+    }
+
+    92% {
+        transform: translate(-3px, 1px);
+    }
+
+    94% {
+        transform: translate(3px, -1px);
+    }
+
+    96% {
+        transform: translate(-2px, 2px);
+    }
+}
+
+@keyframes errorBar {
+    0%,88%,100% {
+        opacity: 1;
+    }
+
+    90% {
+        opacity: 0;
+    }
+}
+
+/* ── 666 — Cuervo del Abismo ─────────────────────────────────── */
+
+.rank-abyss .vote-number {
+    animation: abyssPulse 1.6s infinite alternate;
+}
+
+.rank-abyss .vote-tier-tooltip {
+    background: linear-gradient(145deg, #060010, #0e0018);
+    border-color: rgba(91,33,182,.55);
+    box-shadow: 0 4px 22px rgba(0,0,0,.85), 0 0 24px rgba(91,33,182,.22);
+}
+
+    .rank-abyss .vote-tier-tooltip::before {
+        background: radial-gradient(circle, #3b0082, transparent);
+    }
+
+.rank-abyss .tier-header i {
+    color: #a78bfa;
+    animation: abyssIcon 1.6s infinite alternate;
+}
+
+.rank-abyss .tier-progress-fill {
+    background: linear-gradient(90deg, #1e0040, #7c3aed, #a78bfa);
+    animation: abyssProgress 2s infinite alternate;
+}
+
+@keyframes abyssPulse {
+    from {
+        text-shadow: 0 0 6px #5b21b6;
+    }
+
+    to {
+        text-shadow: 0 0 22px #7c3aed, 0 0 44px rgba(124,58,237,.42);
+    }
+}
+
+@keyframes abyssIcon {
+    from {
+        transform: scale(1);
+        filter: drop-shadow(0 0 4px #7c3aed);
+    }
+
+    to {
+        transform: scale(1.25);
+        filter: drop-shadow(0 0 14px #7c3aed);
+    }
+}
+
+@keyframes abyssProgress {
+    from {
+        filter: brightness(1);
+    }
+
+    to {
+        filter: brightness(1.4) drop-shadow(0 0 4px #7c3aed);
+    }
+}
+
+/* ── 777 — Reliquia de Corvax ────────────────────────────────── */
+
+.rank-relic .vote-number {
+    animation: relicShimmer 2s infinite alternate;
+}
+
+.rank-relic .vote-tier-tooltip {
+    background: linear-gradient(145deg, #120c00, #1e1400);
+    border-color: rgba(255,215,0,.46);
+    box-shadow: 0 4px 24px rgba(0,0,0,.85), 0 0 20px rgba(255,215,0,.20), inset 0 0 20px rgba(255,215,0,.04);
+    animation: corvaxRelic 2.5s infinite alternate;
+}
+
+    .rank-relic .vote-tier-tooltip::before {
+        background: radial-gradient(circle, #c8a000, transparent);
+    }
+
+.rank-relic .tier-header i {
+    color: #ffd700;
+    animation: relicIcon 2s infinite;
+}
+
+.rank-relic .tier-progress-fill {
+    background: linear-gradient(90deg, #7a5800, #ffd700, #fffacc);
+}
+
+@keyframes relicShimmer {
+    from {
+        text-shadow: 0 0 8px gold;
+        filter: brightness(1);
+    }
+
+    to {
+        text-shadow: 0 0 26px gold, 0 0 50px rgba(255,215,0,.38);
+        filter: brightness(1.22);
+    }
+}
+
+@keyframes corvaxRelic {
+    from {
+        transform: translateX(-50%) scale(1);
+    }
+
+    to {
+        transform: translateX(-50%) scale(1.06);
+    }
+}
+
+@keyframes relicIcon {
+    0%,100% {
+        transform: rotate(0deg) scale(1);
+    }
+
+    25% {
+        transform: rotate(-12deg) scale(1.15);
+    }
+
+    75% {
+        transform: rotate(12deg) scale(1.15);
+    }
+}
+
+/* ── 999 — Oráculo del Vacío ─────────────────────────────────── */
+
+.rank-oracle .vote-number {
+    color: #cc96ff;
+    animation: oracleSee 2.5s infinite;
+}
+
+.rank-oracle .vote-tier-tooltip {
+    background: linear-gradient(145deg, #0a0416, #120820);
+    color: #e0b8ff;
+    border-color: rgba(170,100,255,.40);
+    box-shadow: 0 4px 22px rgba(0,0,0,.80), 0 0 22px rgba(204,150,255,.18);
+}
+
+    .rank-oracle .vote-tier-tooltip::before {
+        background: radial-gradient(circle, #8840d0, transparent);
+    }
+
+.rank-oracle .tier-header i {
+    color: #cc96ff;
+    animation: oracleEye 3s infinite;
+}
+
+.rank-oracle .tier-progress-fill {
+    background: linear-gradient(90deg, #5a1a9a, #cc96ff);
+    animation: oracleProgress 2.5s infinite;
+}
+
+@keyframes oracleSee {
+    0%,100% {
+        text-shadow: 0 0 8px #cc96ff;
+        filter: hue-rotate(0deg);
+    }
+
+    50% {
+        text-shadow: 0 0 26px #cc96ff, 0 0 50px rgba(204,150,255,.38);
+        filter: hue-rotate(25deg);
+    }
+}
+
+@keyframes oracleEye {
+    0%,45%,55%,100% {
+        transform: scaleY(1);
+    }
+
+    50% {
+        transform: scaleY(0.1);
+    }
+}
+
+@keyframes oracleProgress {
+    0%,100% {
+        filter: hue-rotate(0deg) brightness(1);
+    }
+
+    50% {
+        filter: hue-rotate(30deg) brightness(1.3);
+    }
+}
+
+/* ── 1337 — Hack del Cuervo ──────────────────────────────────── */
+
+.rank-hacker .vote-number {
+    color: #4ade80;
+    font-family: 'Courier New', monospace;
+    text-shadow: 0 0 8px #4ade80;
+    animation: hackerType 0.7s steps(1) infinite;
+}
+
+.rank-hacker .vote-tier-tooltip {
+    background: #020a04;
+    color: #86efac;
+    border: 1px solid rgba(74,222,128,.32);
+    font-family: 'Courier New', monospace;
+    box-shadow: 0 4px 22px rgba(0,0,0,.90), 0 0 16px rgba(74,222,128,.14);
+    animation: hackerTooltip 1.4s infinite;
+}
+
+    .rank-hacker .vote-tier-tooltip::before {
+        background: radial-gradient(circle, #20a040, transparent);
+    }
+
+.rank-hacker .tier-header i {
+    color: #4ade80;
+    animation: hackerCursor 0.7s steps(1) infinite;
+}
+
+.rank-hacker .tier-progress-fill {
+    background: linear-gradient(90deg, #064420, #4ade80);
+    animation: hackerProgress 0.7s steps(1) infinite;
+}
+
+@keyframes hackerType {
+    0%,100% {
+        opacity: 1;
+        text-shadow: 0 0 8px #4ade80;
+    }
+
+    50% {
+        opacity: .4;
+        text-shadow: 0 0 2px #4ade80;
+    }
+}
+
+@keyframes hackerTooltip {
+    0% {
+        transform: translateX(-50%);
+    }
+
+    25% {
+        transform: translateX(-49%);
+    }
+
+    50% {
+        transform: translateX(-51%);
+    }
+
+    75% {
+        transform: translateX(-49%);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+@keyframes hackerCursor {
+    0%,49% {
+        opacity: 1;
+    }
+
+    50%,100% {
+        opacity: 0;
+    }
+}
+
+@keyframes hackerProgress {
+    0%,49% {
+        opacity: 1;
+    }
+
+    50%,100% {
+        opacity: .5;
+    }
+}
+
+/* ── 7777 — Trono de Corvax ──────────────────────────────────── */
+
+.rank-throne .vote-number {
+    animation: throneGlow 2s infinite alternate;
+}
+
+.rank-throne .vote-tier-tooltip {
+    background: linear-gradient(145deg, #120c00, #201400);
+    color: #ffe566;
+    border-color: rgba(255,215,0,.52);
+    box-shadow: 0 4px 28px rgba(0,0,0,.90), 0 0 32px rgba(255,215,0,.22), 0 0 64px rgba(255,165,0,.10), inset 0 0 24px rgba(255,215,0,.05);
+}
+
+    .rank-throne .vote-tier-tooltip::before {
+        background: radial-gradient(circle, #c89000, transparent);
+    }
+
+.rank-throne .tier-header i {
+    color: #ffd700;
+    animation: throneIcon 2s infinite;
+}
+
+.rank-throne .tier-progress-fill {
+    background: linear-gradient(90deg, #6a4800, #ffd700, #fff0a0);
+    animation: throneProgress 2s infinite alternate;
+}
+
+@keyframes throneGlow {
+    from {
+        text-shadow: 0 0 10px gold;
+    }
+
+    to {
+        text-shadow: 0 0 28px gold, 0 0 56px rgba(255,165,0,.48);
+    }
+}
+
+@keyframes throneIcon {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        filter: drop-shadow(0 0 4px gold);
+    }
+
+    25% {
+        transform: translateY(-4px) rotate(-5deg);
+        filter: drop-shadow(0 0 10px gold);
+    }
+
+    75% {
+        transform: translateY(-4px) rotate(5deg);
+        filter: drop-shadow(0 0 10px gold);
+    }
+
+    100% {
+        transform: translateY(0) rotate(0deg);
+        filter: drop-shadow(0 0 4px gold);
+    }
+}
+
+@keyframes throneProgress {
+    from {
+        filter: brightness(1);
+    }
+
+    to {
+        filter: brightness(1.35) drop-shadow(0 0 4px gold);
+    }
+}
+
+/* ── 10000+ — Artefacto Ancestral ────────────────────────────── */
+
+.rank-artifact .vote-number {
+    color: #ffd700;
+    animation: artifactNumber 2.5s infinite alternate;
+}
+
+.rank-artifact .vote-tier-tooltip {
+    background: linear-gradient(145deg, #0e0a00, #1a1200);
+    color: #ffe566;
+    border: 1px solid gold;
+    box-shadow: 0 4px 28px rgba(0,0,0,.90), 0 0 16px rgba(255,215,0,.45), 0 0 36px rgba(255,215,0,.24), inset 0 0 28px rgba(255,215,0,.07);
+    animation: artifactPulse 3s infinite alternate;
+}
+
+    .rank-artifact .vote-tier-tooltip::before {
+        background: radial-gradient(circle, #c8a000, transparent);
+        opacity: .8 !important;
+    }
+
+.rank-artifact .tier-header i {
+    color: #ffd700;
+    animation: artifactIcon 3s infinite;
+}
+
+.rank-artifact .tier-progress-fill {
+    background: linear-gradient(90deg, #6a4800, #ffd700, #ffffff);
+    box-shadow: 0 0 8px rgba(255,215,0,.60);
+}
+
+@keyframes artifactNumber {
+    from {
+        text-shadow: 0 0 10px gold;
+        filter: brightness(1);
+    }
+
+    to {
+        text-shadow: 0 0 30px gold, 0 0 60px rgba(255,215,0,.48);
+        filter: brightness(1.28);
+    }
+}
+
+@keyframes artifactPulse {
+    from {
+        transform: translateX(-50%) scale(1);
+        box-shadow: 0 4px 28px rgba(0,0,0,.90), 0 0 16px rgba(255,215,0,.40);
+    }
+
+    to {
+        transform: translateX(-50%) scale(1.08);
+        box-shadow: 0 4px 28px rgba(0,0,0,.90), 0 0 32px rgba(255,215,0,.65), 0 0 64px rgba(255,215,0,.25);
+    }
+}
+
+@keyframes artifactIcon {
+    0%,100% {
+        transform: rotate(0deg) scale(1);
+        filter: drop-shadow(0 0 4px gold);
+    }
+
+    33% {
+        transform: rotate(120deg) scale(1.2);
+        filter: drop-shadow(0 0 12px gold);
+    }
+
+    66% {
+        transform: rotate(240deg) scale(1.1);
+        filter: drop-shadow(0 0 8px gold);
+    }
 }

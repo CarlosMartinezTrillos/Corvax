@@ -7,30 +7,18 @@
 
         <button class="cvx-vote-btn cvx-vote-btn-up @(Model.CurrentUserVote == 1 ? "is-active" : "")"
                 data-vote="up">
-
             <i class="fa-solid fa-chevron-up"></i>
-
         </button>
 
         <div class="cvx-vote-counters">
-
-            <span class="cvx-upvote-count">
-                @Model.UpVotes
-            </span>
-
+            <span class="cvx-upvote-count">@Model.UpVotes</span>
             <span class="cvx-vote-divider"></span>
-
-            <span class="cvx-downvote-count">
-                @Model.DownVotes
-            </span>
-
+            <span class="cvx-downvote-count">@Model.DownVotes</span>
         </div>
 
         <button class="cvx-vote-btn cvx-vote-btn-down @(Model.CurrentUserVote == -1 ? "is-active" : "")"
                 data-vote="down">
-
             <i class="fa-solid fa-chevron-down"></i>
-
         </button>
 
     </aside>
@@ -50,41 +38,41 @@
                 else
                 {
                     <div class="cvx-post-avatar cvx-post-avatar-default">
-                        <!-- Icono del cuervo -->
-                        <svg class="cvx-icon-crow" viewBox="0 0 24 24">
-                            <!-- aquí iría tu SVG del cuervo -->
+                        <svg class="cvx-icon-crow" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M21 3c-1.5 3-3.5 4-6 4-1.1 0-2.1-.2-3-.5
+                                     C10.5 5.5 9 4.5 7 4c-1.5-.4-3 0-4 1
+                                     1 .5 2.5.8 3.5 1.8C5.2 8 4.5 10 5 12
+                                     c.8 3.2 3.8 5 7 5 1 0 2-.2 3-.6
+                                     C16.8 18 19 16 20 13.5c.7-1.8.5-3.8-.5-5.5
+                                     C21 7 22 5 21 3z" />
                         </svg>
                     </div>
                 }
-                <span class="cvx-post-username">
-                    @Model.Username
-                </span>
+
+                <span class="cvx-post-username">@Model.Username</span>
 
             </div>
 
             <span class="cvx-post-dot">•</span>
 
-            <time class="cvx-post-time">
-                @Model.CreatedAt.ToString("g")
-            </time>
+            <time class="cvx-post-time">@Model.CreatedAt.ToString("g")</time>
 
             <div class="cvx-post-tags">
 
-                <span class="cvx-post-tag cvx-post-tag-main"
-                      style="--tag-color:@Model.MainCategoryColor">
-
-                    <i class="fa-solid fa-tag"></i>
-                    @Model.MainCategoryName
-
-                </span>
+                @if (!string.IsNullOrEmpty(Model.MainCategoryName))
+                {
+                    <span class="cvx-post-tag cvx-post-tag-main"
+                          style="--tag-color:@(Model.MainCategoryColor ?? "#7c3aed")">
+                        <i class="fa-solid fa-tag"></i>
+                        @Model.MainCategoryName
+                    </span>
+                }
 
                 @if (Model.ExtraCategories != null)
                 {
                     foreach (var cat in Model.ExtraCategories.Take(2))
                     {
-                        <span class="cvx-post-tag">
-                            @cat
-                        </span>
+                        <span class="cvx-post-tag">@cat</span>
                     }
                 }
 
@@ -92,71 +80,50 @@
 
         </header>
 
-
-        <h2 class="cvx-post-title">
-            @Model.Title
-        </h2>
-
+        <h2 class="cvx-post-title">@Model.Title</h2>
 
         <div class="cvx-post-preview">
 
-            <p class="cvx-post-excerpt">
-                @(Model.ContentExcerpt ?? "")
-            </p>
+            <p class="cvx-post-excerpt">@(Model.ContentExcerpt ?? "")</p>
 
-            <button class="cvx-expand-post">
-                Ver más
-            </button>
+            @if ((Model.ContentExcerpt ?? "").Length > 120)
+            {
+                <button class="cvx-expand-post"
+                        onclick="event.stopPropagation();CorvaxDashboard.expandPost(this)">
+                    <i class="fa-solid fa-chevron-down"></i> Ver más
+                </button>
+            }
 
         </div>
-
 
         @if (!string.IsNullOrEmpty(Model.Image))
         {
             <figure class="cvx-post-thumbnail">
-                <img src="@Model.Image">
+                <img src="@Model.Image" loading="lazy" alt="">
             </figure>
         }
-
 
         <footer class="cvx-post-actions">
 
             <a class="cvx-post-action"
                href="/posts/@Model.Id">
-
                 <i class="fa-regular fa-comment"></i>
-
-                <span>
-                    @Model.CommentCount
-                </span>
-
+                <span>@Model.CommentCount</span>
             </a>
 
             <button class="cvx-post-action cvx-action-save @(Model.IsSaved ? "is-saved" : "")">
-
                 <i class="fa-regular fa-bookmark"></i>
-
-                <span>
-                    Guardar
-                </span>
-
+                <span>Guardar</span>
             </button>
 
             <button class="cvx-post-action cvx-action-share">
-
                 <i class="fa-solid fa-share-nodes"></i>
-
-                <span>
-                    Compartir
-                </span>
-
+                <span>Compartir</span>
             </button>
 
             <button class="cvx-post-action cvx-action-copy-link"
                     data-link="/posts/@Model.Id">
-
                 <i class="fa-solid fa-link"></i>
-
             </button>
 
         </footer>

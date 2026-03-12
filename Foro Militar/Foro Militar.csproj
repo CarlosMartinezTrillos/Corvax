@@ -252,6 +252,7 @@
     <Compile Include="Models\Post.cs" />
     <Compile Include="Models\PostCategory.cs" />
     <Compile Include="Models\RegisterRequest.cs" />
+    <Compile Include="Models\SavedPost.cs" />
     <Compile Include="Models\UserCommunity.cs" />
     <Compile Include="Models\Users.cs" />
     <Compile Include="Models\Vote.cs" />
@@ -289,9 +290,12 @@
     <Content Include="Content\create-post.css" />
     <Content Include="Content\DashboardBoard.css" />
     <Content Include="Content\DashboardPlaceholders.css" />
+    <Content Include="Content\Downvote-tier.css" />
     <Content Include="Content\Home.css" />
     <Content Include="Content\Layout.css" />
     <Content Include="Content\post-card.css" />
+    <Content Include="Content\post-downvote-tier.css" />
+    <Content Include="Content\post-vote-tier.css" />
     <Content Include="Content\TopCommunities.css" />
     <Content Include="Content\vote-tiers.css" />
     <Content Include="Content\_CorvaxBase.css" />
@@ -379,6 +383,8 @@
     <Content Include="Views\Communities\_CommunityDashboardContent.cshtml" />
     <Content Include="Views\Shared\Components\_PostCard.cshtml" />
     <Content Include="Views\Posts\Create.cshtml" />
+    <Content Include="Views\Shared\_PostVoteTier.cshtml" />
+    <Content Include="Views\Shared\_DownVoteTier.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

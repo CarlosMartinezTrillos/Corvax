@@ -140,7 +140,7 @@
                 </button>
 
                 <div class="vote-counter down-counter">
-                    <span>@Model.DownVotes</span>
+                    @Html.Partial("_DownVoteTier", Model.DownVotes)
                 </div>
 
             </div>

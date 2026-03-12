@@ -1,0 +1,181 @@
+﻿@* ─────────────────────────────────────────────────────────────
+       _DownVoteTier.cshtml — Downvote tier badge
+       Uso: @await Html.PartialAsync("_DownVoteTier", post.DownVotes)
+       Sincronizado con renderDownvoteTier() en corvax-dashboard.js
+    ───────────────────────────────────────────────────────────── *@
+
+@model int?
+
+@{
+    var votes = Model ?? 0;
+
+    /* ─────────────────────────────
+       CONFIGURACIÓN
+    ───────────────────────────── */
+
+    const int TIER_SIZE = 700;
+    const int SUBTIER_SIZE = TIER_SIZE / 5; // 140
+
+    string[] tiers = {
+        "dv-tier-murmur",
+        "dv-tier-shadow",
+        "dv-tier-corrupt",
+        "dv-tier-ruin",
+        "dv-tier-void",
+        "dv-tier-curse",
+        "dv-tier-entity",
+        "dv-tier-abyss"
+    };
+
+    string[][] names = {
+        new[]{ "Murmullo del Vacío",   "Pluma Inquieta",        "Eco Desentonado",      "Tinta Derramada",       "Nota Desafinada"       },
+        new[]{ "Sombra Ligera",        "Pluma Marchita",        "Susurro Persistente",  "Rastro Oscuro",         "Eco Torcido"           },
+        new[]{ "Tinta Corrupta",       "Archivo Distorsionado", "Fragmento Inestable",  "Pluma Profanada",       "Eco del Abismo"        },
+        new[]{ "Texto en Ruinas",      "Debate Colapsado",      "Fragmento Caído",      "Página Quemada",        "Eco Devastado"         },
+        new[]{ "Señal Perdida",        "Registro Maldito",      "Nido Profanado",       "Archivo Prohibido",     "Eco del Vacío"         },
+        new[]{ "Sello de Silencio",    "Registro Condenado",    "Herida del Foro",      "Marca del Abismo",      "Maldición Persistente" },
+        new[]{ "Sombras Antiguas",     "Vigía del Vacío",       "Oráculo Caído",        "Guardián Roto",         "Portador del Eco"      },
+        new[]{ "Fragmento del Abismo", "Voz del Vacío",         "Archivo Maldito",      "Sombra de Corvax",      "Reliquia del Abismo"   }
+    };
+
+    string[] icons = {
+        "fa-comment-slash",
+        "fa-cloud",
+        "fa-skull",
+        "fa-scroll",
+        "fa-circle-xmark",
+        "fa-skull-crossbones",
+        "fa-ghost",
+        "fa-crow"
+    };
+
+    /* ─────────────────────────────
+       CÁLCULO DE TIER
+    ───────────────────────────── */
+
+    int tierIndex = Math.Min(7, votes / TIER_SIZE);
+    int subTier = Math.Min(4, (votes % TIER_SIZE) / SUBTIER_SIZE);
+
+    var tier = tiers[tierIndex];
+    var tierName = names[tierIndex][subTier];
+    var icon = icons[tierIndex];
+
+    /* ─────────────────────────────
+       PROGRESO DENTRO DEL TIER
+    ───────────────────────────── */
+
+    int currentTierStart = tierIndex * TIER_SIZE;
+    int nextRank = currentTierStart + TIER_SIZE;
+    int progress = votes - currentTierStart;
+    int progressPercent = Math.Min(100, (int)((double)progress / TIER_SIZE * 100));
+
+    /* ─────────────────────────────
+       FLAGS
+    ───────────────────────────── */
+
+    bool anomaly = votes >= 500;
+    string specialClass = "";
+    bool hasEasterEgg = false;
+
+    /* ─────────────────────────────
+       EASTER EGGS
+    ───────────────────────────── */
+
+    if (votes == 13)
+    {
+        tierName = "Presagio";
+        icon = "fa-eye";
+        specialClass = "dv-omen";
+        hasEasterEgg = true;
+    }
+    else if (votes == 66)
+    {
+        tierName = "Eco Infernal";
+        icon = "fa-fire";
+        specialClass = "dv-hell";
+        hasEasterEgg = true;
+    }
+    else if (votes == 404)
+    {
+        tierName = "Post No Encontrado";
+        icon = "fa-ghost";
+        specialClass = "dv-error";
+        hasEasterEgg = true;
+    }
+    else if (votes == 666)
+    {
+        tier = "dv-tier-abyss";
+        tierName = "Maldición Mayor";
+        icon = "fa-skull";
+        specialClass = "dv-demon";
+        hasEasterEgg = true;
+    }
+    else if (votes == 777)
+    {
+        tierName = "Error del Oráculo";
+        icon = "fa-bug";
+        specialClass = "dv-glitch";
+        hasEasterEgg = true;
+    }
+    else if (votes == 999)
+    {
+        tierName = "Fin del Ciclo";
+        icon = "fa-hourglass-end";
+        specialClass = "dv-cycle";
+        hasEasterEgg = true;
+    }
+    else if (votes == 1337)
+    {
+        tierName = "Caos Técnico";
+        icon = "fa-terminal";
+        specialClass = "dv-hacker";
+        hasEasterEgg = true;
+    }
+    else if (votes >= 5600)
+    {
+        tier = "dv-tier-abyss";
+        tierName = "El Gran Rechazo";
+        icon = "fa-radiation";
+        specialClass = "dv-great-rejection";
+        hasEasterEgg = true;
+    }
+
+    /* ─────────────────────────────
+       CLASES COMPUESTAS
+    ───────────────────────────── */
+
+    var anomalyClass = anomaly && !hasEasterEgg ? "dv-anomaly-active" : "";
+    var eggLabel = hasEasterEgg
+        ? "⟡ Señal Corrupta Detectada"
+        : $"{progress} / {TIER_SIZE} hacia la corrupción total";
+}
+
+<div class="dv-vote-tier tooltip-container @tier @specialClass @anomalyClass">
+
+    <span class="dv-vote-number">-@votes</span>
+
+    <div class="dv-vote-tooltip">
+
+        <div class="dv-tier-header">
+            <i class="fa-solid @icon"></i>
+            <span class="dv-tier-name">@tierName</span>
+        </div>
+
+        <div class="dv-tier-progress-bar">
+            <div class="dv-tier-progress-fill" style="width:@progressPercent"></div>
+        </div>
+
+        <small class="dv-tier-progress-text">
+            @eggLabel
+        </small>
+
+        @if (anomaly && !hasEasterEgg)
+        {
+            <small class="dv-anomaly-label">
+                <i class="fa-solid fa-triangle-exclamation"></i> Anomalía detectada
+            </small>
+        }
+
+    </div>
+
+</div>

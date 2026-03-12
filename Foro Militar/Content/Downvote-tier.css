@@ -1,0 +1,441 @@
+﻿/* ═══════════════════════════════════════════════════════════════
+   CORVAX — DownVote Tier Badge
+   Contraparte corrupta del sistema de upvotes
+   Sincronizado con _DownVoteTier.cshtml
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── CONTENEDOR BASE ─────────────────────────────────────────── */
+
+.dv-vote-tier {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    cursor: default;
+    font-variant-numeric: tabular-nums;
+}
+
+.dv-vote-number {
+    font-weight: 700;
+    letter-spacing: .03em;
+}
+
+/* ── TOOLTIP BASE ────────────────────────────────────────────── */
+
+.dv-vote-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(6px) scale(.96);
+    opacity: 0;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    padding: 11px 15px;
+    border-radius: 11px;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    white-space: nowrap;
+    margin-bottom: 8px;
+    z-index: 9999;
+    transition: opacity .22s ease, transform .22s cubic-bezier(.22,1,.36,1);
+}
+
+.dv-vote-tier:hover .dv-vote-tooltip {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0) scale(1);
+}
+
+/* aura */
+
+.dv-vote-tooltip::before {
+    content: "";
+    position: absolute;
+    inset: -5px;
+    border-radius: 15px;
+    opacity: 0;
+    filter: blur(14px);
+    z-index: -1;
+    transition: opacity .4s ease;
+}
+
+.dv-vote-tier:hover .dv-vote-tooltip::before {
+    opacity: .6;
+}
+
+/* ── HEADER ──────────────────────────────────────────────────── */
+
+.dv-tier-header {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+    .dv-tier-header i {
+        font-size: 13px;
+        flex-shrink: 0;
+        transition: transform .25s ease, filter .25s ease;
+    }
+
+.dv-tier-name {
+    line-height: 1;
+}
+
+/* ── PROGRESS ────────────────────────────────────────────────── */
+
+.dv-tier-progress-bar {
+    width: 100%;
+    height: 4px;
+    border-radius: 4px;
+    background: rgba(0,0,0,.55);
+    overflow: hidden;
+}
+
+.dv-tier-progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width .3s ease;
+}
+
+.dv-tier-progress-text {
+    opacity: .55;
+    font-weight: 500;
+    font-size: .67rem;
+}
+
+/* ── ANOMALY LABEL ───────────────────────────────────────────── */
+
+.dv-anomaly-label {
+    color: #ef4444;
+    font-size: .65rem;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TIERS DEL ABISMO
+   ═══════════════════════════════════════════════════════════════ */
+
+
+/* ── MURMUR ─────────────────────────────────────────────────── */
+
+.dv-vote-tier.dv-tier-murmur .dv-vote-number {
+    color: #8b5cf6;
+}
+
+.dv-tier-murmur .dv-vote-tooltip {
+    background: linear-gradient(145deg,#0a0514,#120a20);
+    color: #c4b5fd;
+    border: 1px solid rgba(139,92,246,.35);
+}
+
+    .dv-tier-murmur .dv-vote-tooltip::before {
+        background: radial-gradient(circle,#7c3aed,transparent);
+    }
+
+.dv-tier-murmur .dv-tier-progress-fill {
+    background: linear-gradient(90deg,#3b0764,#8b5cf6);
+}
+
+
+/* ── SHADOW ─────────────────────────────────────────────────── */
+
+.dv-tier-shadow .dv-vote-number {
+    color: #a78bfa;
+    text-shadow: 0 0 6px rgba(167,139,250,.4);
+}
+
+.dv-tier-shadow .dv-vote-tooltip {
+    background: linear-gradient(145deg,#080512,#140c22);
+    color: #d8b4fe;
+    border: 1px solid rgba(140,100,240,.32);
+}
+
+    .dv-tier-shadow .dv-vote-tooltip::before {
+        background: radial-gradient(circle,#8b5cf6,transparent);
+    }
+
+.dv-tier-shadow .dv-tier-progress-fill {
+    background: linear-gradient(90deg,#4c1d95,#a78bfa);
+}
+
+
+/* ── CORRUPT ────────────────────────────────────────────────── */
+
+.dv-tier-corrupt .dv-vote-number {
+    color: #fb7185;
+    text-shadow: 0 0 6px rgba(251,113,133,.4);
+}
+
+.dv-tier-corrupt .dv-vote-tooltip {
+    background: linear-gradient(145deg,#14050a,#200910);
+    color: #fda4af;
+    border: 1px solid rgba(220,70,100,.35);
+}
+
+    .dv-tier-corrupt .dv-vote-tooltip::before {
+        background: radial-gradient(circle,#fb7185,transparent);
+    }
+
+.dv-tier-corrupt .dv-tier-progress-fill {
+    background: linear-gradient(90deg,#7f1d1d,#fb7185);
+}
+
+
+/* ── RUIN ───────────────────────────────────────────────────── */
+
+.dv-tier-ruin .dv-vote-number {
+    color: #f97316;
+    text-shadow: 0 0 7px rgba(249,115,22,.5);
+}
+
+.dv-tier-ruin .dv-vote-tooltip {
+    background: linear-gradient(145deg,#160800,#261000);
+    color: #fdba74;
+    border: 1px solid rgba(200,90,20,.38);
+}
+
+    .dv-tier-ruin .dv-vote-tooltip::before {
+        background: radial-gradient(circle,#f97316,transparent);
+    }
+
+.dv-tier-ruin .dv-tier-progress-fill {
+    background: linear-gradient(90deg,#9a3412,#f97316);
+}
+
+
+/* ── VOID ───────────────────────────────────────────────────── */
+
+.dv-tier-void .dv-vote-number {
+    color: #22d3ee;
+    text-shadow: 0 0 8px rgba(34,211,238,.6);
+}
+
+.dv-tier-void .dv-vote-tooltip {
+    background: linear-gradient(145deg,#021018,#041b24);
+    color: #67e8f9;
+    border: 1px solid rgba(34,211,238,.35);
+}
+
+    .dv-tier-void .dv-vote-tooltip::before {
+        background: radial-gradient(circle,#22d3ee,transparent);
+    }
+
+.dv-tier-void .dv-tier-progress-fill {
+    background: linear-gradient(90deg,#155e75,#22d3ee);
+}
+
+
+/* ── CURSE ─────────────────────────────────────────────────── */
+
+.dv-tier-curse .dv-vote-number {
+    color: #ef4444;
+    text-shadow: 0 0 10px rgba(239,68,68,.6);
+}
+
+.dv-tier-curse .dv-vote-tooltip {
+    background: linear-gradient(145deg,#180404,#260606);
+    color: #fecaca;
+    border: 1px solid rgba(239,68,68,.45);
+}
+
+    .dv-tier-curse .dv-vote-tooltip::before {
+        background: radial-gradient(circle,#ef4444,transparent);
+    }
+
+.dv-tier-curse .dv-tier-progress-fill {
+    background: linear-gradient(90deg,#7f1d1d,#ef4444);
+}
+
+
+/* ── ENTITY ─────────────────────────────────────────────────── */
+
+.dv-tier-entity .dv-vote-number {
+    color: #f472b6;
+    text-shadow: 0 0 12px rgba(244,114,182,.7);
+}
+
+.dv-tier-entity .dv-vote-tooltip {
+    background: linear-gradient(145deg,#160411,#22061a);
+    color: #fbcfe8;
+    border: 1px solid rgba(244,114,182,.45);
+}
+
+    .dv-tier-entity .dv-vote-tooltip::before {
+        background: radial-gradient(circle,#f472b6,transparent);
+    }
+
+.dv-tier-entity .dv-tier-progress-fill {
+    background: linear-gradient(90deg,#831843,#f472b6);
+}
+
+
+/* ── ABYSS ─────────────────────────────────────────────────── */
+
+.dv-tier-abyss .dv-vote-number {
+    color: #a78bfa;
+    text-shadow: 0 0 14px rgba(167,139,250,.9);
+    animation: abyssPulse 2s infinite alternate;
+}
+
+.dv-tier-abyss .dv-vote-tooltip {
+    background: linear-gradient(145deg,#04010a,#090012);
+    color: #ddd6fe;
+    border: 1px solid rgba(124,58,237,.55);
+    box-shadow: 0 0 22px rgba(124,58,237,.25);
+}
+
+    .dv-tier-abyss .dv-vote-tooltip::before {
+        background: radial-gradient(circle,#7c3aed,transparent);
+    }
+
+.dv-tier-abyss .dv-tier-progress-fill {
+    background: linear-gradient(90deg,#3b0764,#7c3aed,#c4b5fd);
+}
+
+@keyframes abyssPulse {
+    from {
+        text-shadow: 0 0 10px #7c3aed;
+    }
+
+    to {
+        text-shadow: 0 0 28px #7c3aed,0 0 48px rgba(124,58,237,.45);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ANOMALÍA GLOBAL
+   ═══════════════════════════════════════════════════════════════ */
+
+.dv-anomaly-active .dv-vote-number {
+    animation: anomalyFlicker 1.8s infinite alternate;
+}
+
+@keyframes anomalyFlicker {
+    from {
+        filter: brightness(1);
+    }
+
+    to {
+        filter: brightness(1.35) drop-shadow(0 0 6px crimson);
+    }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   EASTER EGGS
+   ═══════════════════════════════════════════════════════════════ */
+
+/* 13 */
+
+.dv-omen .dv-vote-number {
+    color: #fde047;
+    text-shadow: 0 0 12px gold;
+}
+
+/* 66 */
+
+.dv-hell .dv-vote-number {
+    color: #ef4444;
+    animation: hellFire 1s infinite alternate;
+}
+
+@keyframes hellFire {
+    from {
+        text-shadow: 0 0 6px red;
+    }
+
+    to {
+        text-shadow: 0 0 20px orange;
+    }
+}
+
+/* 404 */
+
+.dv-error .dv-vote-number {
+    animation: errorGlitch 2s infinite;
+}
+
+/* 666 */
+
+.dv-demon .dv-vote-number {
+    color: #dc2626;
+    animation: demonPulse 1.5s infinite alternate;
+}
+
+@keyframes demonPulse {
+    from {
+        text-shadow: 0 0 6px #7f1d1d;
+    }
+
+    to {
+        text-shadow: 0 0 22px #dc2626;
+    }
+}
+
+/* 777 */
+
+.dv-glitch .dv-vote-number {
+    animation: glitchShift 1.2s infinite;
+}
+
+@keyframes glitchShift {
+    0%,100% {
+        transform: translate(0)
+    }
+
+    25% {
+        transform: translate(-1px,1px)
+    }
+
+    50% {
+        transform: translate(1px,-1px)
+    }
+
+    75% {
+        transform: translate(-1px,-1px)
+    }
+}
+
+/* 999 */
+
+.dv-cycle .dv-vote-number {
+    animation: cycleFade 2s infinite;
+}
+
+@keyframes cycleFade {
+    0%,100% {
+        opacity: 1
+    }
+
+    50% {
+        opacity: .4
+    }
+}
+
+/* 1337 */
+
+.dv-hacker .dv-vote-number {
+    color: #4ade80;
+    font-family: monospace;
+    text-shadow: 0 0 8px #4ade80;
+}
+
+/* FINAL */
+
+.dv-great-rejection .dv-vote-number {
+    color: #ff0000;
+    animation: rejectPulse 1.2s infinite alternate;
+}
+
+@keyframes rejectPulse {
+    from {
+        text-shadow: 0 0 12px crimson;
+    }
+
+    to {
+        text-shadow: 0 0 30px red,0 0 50px black;
+    }
+}

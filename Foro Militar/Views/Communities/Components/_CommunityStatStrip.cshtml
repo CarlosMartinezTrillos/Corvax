@@ -72,7 +72,7 @@
             <i class="fa-solid fa-caret-down"></i>
         </button>
         <div class="vote-counter down-counter">
-            <span>@Model.DownVotes</span>
+            <span>@Html.Partial("_DownVoteTier", Model.DownVotes)</span>
         </div>
     </div>
 

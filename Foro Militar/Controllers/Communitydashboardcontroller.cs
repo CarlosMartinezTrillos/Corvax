@@ -424,7 +424,7 @@ namespace Foro.API.Controllers
                 case "comments":
                     query = query.OrderByDescending(p => p.Comments.Count);
                     break;
-                default: //hot
+                default: // hot
                     query = query.OrderByDescending(p =>
                         (p.Votes.Count(v => v.VoteType == 1)
                         - p.Votes.Count(v => v.VoteType == -1))
@@ -434,64 +434,92 @@ namespace Foro.API.Controllers
 
             var totalCount = await query.CountAsync();
 
-            var posts = await query
+            // ── 1. Traer los IDs de la página actual ────────────────────────
+            // Primero obtenemos solo los IDs que corresponden a esta página.
+            // Esto nos permite hacer la consulta de SavedPosts con una lista
+            // acotada en lugar de toda la tabla.
+            var pageIds = await query
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
-            .Select(p => new PostFeedDto
+                .Select(p => p.Id)
+                .ToListAsync();
+
+            // ── 2. Posts guardados del usuario en esta página ────────────────
+            // HashSet para O(1) en el lookup dentro del Select en memoria.
+            var savedPostIds = new HashSet<int>();
+
+            if (currentUserId.HasValue && pageIds.Any())
+            {
+                savedPostIds = new HashSet<int>(
+                    await _context.SavedPosts
+                        .Where(s =>
+                            s.UserId == currentUserId.Value &&
+                            pageIds.Contains(s.PostId))
+                        .Select(s => s.PostId)
+                        .ToListAsync()
+                );
+            }
+
+            // ── 3. Query final con los datos completos ───────────────────────
+            var postsRaw = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(p => new
+                {
+                    p.Id,
+                    p.Title,
+                    p.Image,
+                    p.Content,
+                    p.UserId,
+                    p.CreatedAt,
+                    Username = p.User.Username,
+                    UserAvatar = p.User.AvatarUrl,
+                    UpVotes = p.Votes.Count(v => v.VoteType == 1),
+                    DownVotes = p.Votes.Count(v => v.VoteType == -1),
+                    CommentCount = p.Comments.Count(c => !c.IsDeleted),
+                    MainCategoryName = p.MainCategory.Name,
+                    MainCategoryColor = p.MainCategory.ColorHex,
+                    ExtraCategories = p.PostCategories
+                        .Where(pc => pc.CategoryId != p.MainCategoryId)
+                        .Select(pc => pc.Category.Name)
+                        .Take(2)
+                        .ToList(),
+                    CurrentUserVote = currentUserId == null
+                        ? 0
+                        : p.Votes
+                            .Where(v => v.UserId == currentUserId.Value)
+                            .Select(v => v.VoteType)
+                            .FirstOrDefault()
+                })
+                .ToListAsync(); // ← SQL termina aquí
+
+            // ── 4. Proyectar a DTO en memoria (IsSaved se resuelve aquí) ─────
+            var posts = postsRaw.Select(p => new PostFeedDto
             {
                 Id = p.Id,
-
                 Title = p.Title,
-
                 Image = p.Image,
-
                 ContentExcerpt = p.Content != null
-                    ? p.Content.Substring(0, p.Content.Length > 150 ? 150 : p.Content.Length)
+                    ? p.Content.Substring(0, Math.Min(p.Content.Length, 150))
                     : "",
-
                 UserId = p.UserId,
-
-                Username = p.User.Username,
-
-                UserAvatar = p.User.AvatarUrl,
-
+                Username = p.Username,
+                UserAvatar = p.UserAvatar,
                 CreatedAt = p.CreatedAt,
+                UpVotes = p.UpVotes,
+                DownVotes = p.DownVotes,
+                Score = p.UpVotes - p.DownVotes,
+                CommentCount = p.CommentCount,
+                MainCategoryName = p.MainCategoryName,
+                MainCategoryColor = p.MainCategoryColor,
+                ExtraCategories = p.ExtraCategories,
+                CurrentUserVote = p.CurrentUserVote,
 
-                UpVotes = p.Votes.Count(v => v.VoteType == 1),
-
-                DownVotes = p.Votes.Count(v => v.VoteType == -1),
-
-                Score =
-                    p.Votes.Count(v => v.VoteType == 1)
-                    -
-                    p.Votes.Count(v => v.VoteType == -1),
-
-                CommentCount =
-                    p.Comments.Count(c => !c.IsDeleted),
-
-                MainCategoryName = p.MainCategory.Name,
-
-                MainCategoryColor = p.MainCategory.ColorHex,
-
-                ExtraCategories =
-                    p.PostCategories
-                    .Where(pc => pc.CategoryId != p.MainCategoryId)
-                    .Select(pc => pc.Category.Name)
-                    .Take(2)
-                    .ToList(),
-
-                CurrentUserVote = currentUserId == null
-                    ? 0
-                    : p.Votes
-                        .Where(v => v.UserId == currentUserId.Value)
-                        .Select(v => v.VoteType)
-                        .FirstOrDefault(),
-
+                // ✅ Resuelto en memoria, sin problema con EF6
+                IsSaved = savedPostIds.Contains(p.Id),
 
                 TimeAgo = ""
-            })
-            .ToListAsync();
-
+            }).ToList();
 
             return Json(new PagedResult<PostFeedDto>
             {
@@ -501,6 +529,50 @@ namespace Foro.API.Controllers
                 Page = page
             }, JsonRequestBehavior.AllowGet);
         }
+
+        // ══════════════════════════════════════════════════════════════
+        // POST /api/posts/{postId}/save  →  toggle guardar post
+        // ══════════════════════════════════════════════════════════════
+        [HttpPost]
+        [Route("~/api/posts/{postId}/save")]
+        public async Task<ActionResult> ToggleSavePost(int postId)
+        {
+            var userId = GetCurrentUserId();
+
+            if (!userId.HasValue)
+            {
+                Response.StatusCode = 401;
+                return Json(new { message = "Debes iniciar sesión." });
+            }
+
+            var existing = await _context.SavedPosts
+                .FirstOrDefaultAsync(s =>
+                    s.PostId == postId &&
+                    s.UserId == userId.Value);
+
+            if (existing != null)
+            {
+                _context.SavedPosts.Remove(existing);
+            }
+            else
+            {
+                _context.SavedPosts.Add(new SavedPost
+                {
+                    PostId = postId,
+                    UserId = userId.Value,
+                    SavedAt = DateTime.Now
+                });
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Json(new
+            {
+                success = true,
+                isSaved = existing == null   // si existía lo quitamos → false, si no existía lo creamos → true
+            });
+        }
+
 
     }
 }

@@ -1,0 +1,138 @@
+﻿@model int?
+
+@{
+    var votes = Model ?? 0;
+
+    /* ─────────────────────────────
+       CONFIGURACIÓN DEL SISTEMA
+    ───────────────────────────── */
+
+    int tierSize = 700;
+    int subTierSize = tierSize / 5;
+
+    string[] tiers = {
+        "tier-bronce",
+        "tier-plata",
+        "tier-oro",
+        "tier-platino",
+        "tier-diamante",
+        "tier-amatista",
+        "tier-ebano",
+        "tier-corvus"
+    };
+
+    string[][] names = {
+        new[]{"Polluelo Curioso","Polluelo Observador","Polluelo Explorador","Polluelo Vigilante","Polluelo del Nido"},
+        new[]{"Pluma Plateada I","Pluma Plateada II","Pluma Plateada III","Pluma Plateada IV","Pluma Plateada V"},
+        new[]{"Cuervo Iniciado","Cuervo Mensajero","Cuervo Vigilante","Cuervo Estratega","Cuervo del Ocaso"},
+        new[]{"Nido de Piedra","Nido Elevado","Nido Guardián","Nido Arcano","Nido Supremo"},
+        new[]{"Bandada Errante","Bandada Vigía","Bandada Sombría","Bandada Imperial","Bandada Ancestral"},
+        new[]{"Heraldo del Viento","Señor del Viento","Maestro del Vuelo","Oráculo del Cielo","Soberano de Alas"},
+        new[]{"Guardián de Corvax","Portador del Cuervo","Vigía del Abismo","Señor de la Bandada","Mano de Corvax"},
+        new[]{"Elegido de Corvax","Heraldo de Corvax","Avatar de Corvax","Sombra de Corvax","Corona de Corvax"}
+    };
+
+    string[] icons = {
+        "fa-feather",
+        "fa-feather",
+        "fa-crow",
+        "fa-egg",
+        "fa-feather-pointed",
+        "fa-wind",
+        "fa-skull",
+        "fa-crown"
+    };
+
+    /* ─────────────────────────────
+       CÁLCULO DE TIER
+    ───────────────────────────── */
+
+    int tierIndex = Math.Min(7, votes / tierSize);
+    int subTier = Math.Min(4, (votes % tierSize) / subTierSize);
+
+    var tier = tiers[tierIndex];
+    var tierName = names[tierIndex][subTier];
+    var icon = icons[tierIndex];
+
+    bool hidden = false;
+    string specialClass = "";
+
+    /* ─────────────────────────────
+       RANGOS OCULTOS
+    ───────────────────────────── */
+
+    if (votes == 69)
+    {
+        tierName = "Nice.";
+        icon = "fa-face-smile";
+        specialClass = "rank-meme";
+        hidden = true;
+    }
+    else if (votes == 404)
+    {
+        tierName = "Rank Not Found";
+        icon = "fa-bug";
+        specialClass = "rank-error";
+        hidden = true;
+    }
+    else if (votes == 666)
+    {
+        tier = "tier-ebano";
+        tierName = "Cuervo del Abismo";
+        icon = "fa-skull";
+        specialClass = "rank-abyss";
+        hidden = true;
+    }
+    else if (votes == 777)
+    {
+        tier = "tier-corvus";
+        tierName = "Reliquia de Corvax";
+        icon = "fa-crown";
+        specialClass = "rank-relic";
+        hidden = true;
+    }
+    else if (votes == 999)
+    {
+        tier = "tier-amatista";
+        tierName = "Oráculo del Vacío";
+        icon = "fa-eye";
+        specialClass = "rank-oracle";
+        hidden = true;
+    }
+    else if (votes == 1337)
+    {
+        tier = "tier-ebano";
+        tierName = "Hack del Cuervo";
+        icon = "fa-terminal";
+        specialClass = "rank-hacker";
+        hidden = true;
+    }
+    else if (votes == 7777)
+    {
+        tier = "tier-corvus";
+        tierName = "Trono de Corvax";
+        icon = "fa-crown";
+        specialClass = "rank-throne";
+        hidden = true;
+    }
+    else if (votes >= 10000)
+    {
+        tier = "tier-corvus";
+        tierName = "Artefacto Ancestral";
+        icon = "fa-gem";
+        specialClass = "rank-artifact";
+        hidden = true;
+    }
+
+    /* ─────────────────────────────
+       PROGRESO
+    ───────────────────────────── */
+
+    int currentTierStart = tierIndex * tierSize;
+    int nextRank = currentTierStart + tierSize;
+
+    int progress = votes - currentTierStart;
+    int progressPercent = (int)((double)progress / tierSize * 100);
+
+    bool viral = votes >= 2500;
+}

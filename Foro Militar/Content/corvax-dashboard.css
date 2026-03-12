@@ -33,7 +33,7 @@
     grid-template-columns: minmax(0,1fr) 320px;
     gap: 26px;
     max-width: 1200px;
-    margin: 0px 15px 0px 5px;
+    margin: 0px 15px 0px 30px;
     padding: 26px 18px 40px;
 }
 
@@ -242,4 +242,25 @@
     .cvx-community-dashboard {
         grid-template-columns: 1fr;
     }
+}
+
+
+/* ── FIX: tooltips de vote tier por encima del layout ─────── */
+.cvx-community-main {
+    overflow: visible;
+}
+
+.cvx-community-dashboard {
+    overflow: visible;
+}
+
+.cvx-post-vote {
+    position: relative;
+    z-index: 100;
+    overflow: visible;
+}
+
+.vote-tier-tooltip,
+.dv-vote-tooltip {
+    z-index: 99999 !important;
 }

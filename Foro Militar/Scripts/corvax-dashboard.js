@@ -90,108 +90,184 @@
             + '</div>';
     }
 
-        function renderPostCard(post) {
+    function renderPostCard(post) {
 
-            const upActive = post.CurrentUserVote === 1 ? "is-active" : "";
-            const downActive = post.CurrentUserVote === -1 ? "is-active" : "";
+        const upActive = post.CurrentUserVote === 1 ? "is-active" : "";
+        const downActive = post.CurrentUserVote === -1 ? "is-active" : "";
+        const savedClass = post.IsSaved ? "is-saved" : "";
 
-                    return `
-            <article class="cvx-post-card" data-post-id="${post.Id}">
-
-                <aside class="cvx-post-vote">
-
-                    <button class="cvx-vote-btn cvx-vote-btn-up ${upActive}"
-                        onclick="event.stopPropagation();CorvaxDashboard.votePost(${post.Id},1)">
-
-                        <i class="fa-solid fa-chevron-up"></i>
-
-                    </button>
-
-                    <div class="cvx-vote-counters">
-
-                        <span class="cvx-upvote-count">
-                            ${post.UpVotes ?? 0}
-                        </span>
-
-                        <span class="cvx-vote-divider"></span>
-
-                        <span class="cvx-downvote-count">
-                            ${post.DownVotes ?? 0}
-                        </span>
-
-                    </div>
-
-                    <button class="cvx-vote-btn cvx-vote-btn-down ${downActive}"
-                        onclick="event.stopPropagation();CorvaxDashboard.votePost(${post.Id},-1)">
-
-                        <i class="fa-solid fa-chevron-down"></i>
-
-                    </button>
-
-                </aside>
+        // ── Avatar ────────────────────────────────────────────────────────────────
+        // Igual que el Razor: img si hay UserAvatar, default con SVG de cuervo si no.
+        const avatarHtml = post.UserAvatar
+            ? `<img class="cvx-post-avatar" src="${post.UserAvatar}" alt="avatar">`
+            : `<div class="cvx-post-avatar cvx-post-avatar-default">
+           <svg class="cvx-icon-crow" viewBox="0 0 24 24" fill="currentColor">
+               <path d="M21 3c-1.5 3-3.5 4-6 4-1.1 0-2.1-.2-3-.5
+                        C10.5 5.5 9 4.5 7 4c-1.5-.4-3 0-4 1
+                        1 .5 2.5.8 3.5 1.8C5.2 8 4.5 10 5 12
+                        c.8 3.2 3.8 5 7 5 1 0 2-.2 3-.6
+                        C16.8 18 19 16 20 13.5c.7-1.8.5-3.8-.5-5.5
+                        C21 7 22 5 21 3z"/>
+           </svg>
+        </div>`;
 
 
-                <div class="cvx-post-body">
-
-                    <header class="cvx-post-meta">
-
-                        <span class="cvx-post-author">
-                            ${post.Username ?? ""}
-                        </span>
-
-                        <span class="cvx-post-dot">•</span>
-
-                        <span class="cvx-post-time">
-                           ${post.CreatedAt ? new Date(post.CreatedAt).toLocaleDateString() : ""}
-                        </span>
-
-                    </header>
+        const excerptLen = (post.ContentExcerpt || "").length;
+        const showVerMas = excerptLen > 120;
 
 
-                    <h2 class="cvx-post-title">
-                        ${post.Title ?? ""}
-                    </h2>
+        // ── Tags / Categorías ─────────────────────────────────────────────────────
+        // Tag principal con color CSS variable + hasta 2 categorías extra,
+        // igual que el foreach con .Take(2) del Razor.
+        let tagsHtml = "";
 
-
-                    ${post.ContentExcerpt ?
-                            `<p class="cvx-post-excerpt">${post.ContentExcerpt}</p>`
-                            : ""
-                        }
-
-
-                    ${post.Image ?
-                            `<div class="cvx-post-image">
-                            <img src="${post.Image}" loading="lazy" />
-                    </div>`
-                            : ""
-                        }
-
-
-                    <footer class="cvx-post-footer">
-
-                        <a class="cvx-post-action"
-                           href="/posts/${post.Id}#comments"
-                           onclick="event.stopPropagation()">
-
-                           <i class="fa-regular fa-comment"></i>
-                           ${post.CommentCount ?? 0}
-
-                        </a>
-
-                            <button class="cvx-post-action"
-                                onclick="event.stopPropagation();CorvaxDashboard.copyLink(${post.Id})">
-
-                                <i class="fa-solid fa-link"></i>
-
-                            </button>
-
-                    </footer>
-
-                </div>
-
-            </article>
-            `;
+        if (post.MainCategoryName) {
+            const color = post.MainCategoryColor || "#7c3aed";
+            tagsHtml += `
+                <span class="cvx-post-tag cvx-post-tag-main"
+                      style="--tag-color:${color}">
+                    <i class="fa-solid fa-tag"></i>
+                    ${post.MainCategoryName}
+                </span>`;
         }
+
+        if (Array.isArray(post.ExtraCategories)) {
+            post.ExtraCategories.slice(0, 2).forEach(function (cat) {
+                tagsHtml += `<span class="cvx-post-tag">${cat}</span>`;
+            });
+        }
+
+        // ── Fecha formateada ──────────────────────────────────────────────────────
+        // El Razor usa ToString("g") → fecha + hora corta.
+        // En JS lo replicamos con toLocaleString() que da el mismo resultado.
+        const dateStr = post.CreatedAt
+            ? new Date(post.CreatedAt).toLocaleString([], {
+                year: "numeric",
+                month: "numeric",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit"
+            })
+            : "";
+
+        // ── Imagen ────────────────────────────────────────────────────────────────
+        // El Razor usa <figure class="cvx-post-thumbnail">, igualamos eso.
+        const imageHtml = post.Image
+            ? `<figure class="cvx-post-thumbnail">
+                   <img src="${post.Image}" loading="lazy" alt="">
+               </figure>`
+            : "";
+
+        // ─────────────────────────────────────────────────────────────────────────
+        return `
+        <article class="cvx-post-card" data-post-id="${post.Id}">
+ 
+            <!-- ── Columna de votos ────────────────────────────────────────── -->
+            <aside class="cvx-post-vote">
+ 
+                <button class="cvx-vote-btn cvx-vote-btn-up ${upActive}"
+                        onclick="event.stopPropagation();CorvaxDashboard.votePost(${post.Id}, 1)">
+                    <i class="fa-solid fa-chevron-up"></i>
+                </button>
+ 
+                <div class="cvx-vote-counters">
+ 
+                    <div class="cvx-upvote-count">
+                        ${renderVoteTier(post.UpVotes)}
+                    </div>
+ 
+                    <span class="cvx-vote-divider"></span>
+ 
+                    <div class="cvx-downvote-count">
+                        ${renderDownvoteTier(post.DownVotes)}
+                    </div>
+ 
+                </div>
+ 
+                <button class="cvx-vote-btn cvx-vote-btn-down ${downActive}"
+                        onclick="event.stopPropagation();CorvaxDashboard.votePost(${post.Id}, -1)">
+                    <i class="fa-solid fa-chevron-down"></i>
+                </button>
+ 
+            </aside>
+ 
+            <!-- ── Cuerpo del post ─────────────────────────────────────────── -->
+            <div class="cvx-post-body">
+ 
+                <!-- Meta: avatar + usuario + fecha + tags -->
+                <header class="cvx-post-meta">
+ 
+                    <div class="cvx-post-author">
+                        ${avatarHtml}
+                        <span class="cvx-post-username">${post.Username ?? ""}</span>
+                    </div>
+ 
+                    <span class="cvx-post-dot">•</span>
+ 
+                    <time class="cvx-post-time">${dateStr}</time>
+ 
+                    <div class="cvx-post-tags">
+                        ${tagsHtml}
+                    </div>
+ 
+                </header>
+ 
+                <!-- Título -->
+                <h2 class="cvx-post-title">${post.Title ?? ""}</h2>
+ 
+                    <!-- Excerpt con botón "Ver más" -->
+                    <div class="cvx-post-preview">
+                        <p class="cvx-post-excerpt">${post.ContentExcerpt ?? ""}</p>
+                        ${showVerMas
+                                    ? `<button class="cvx-expand-post"
+                                       onclick="event.stopPropagation();CorvaxDashboard.expandPost(this)">
+                                   <i class="fa-solid fa-chevron-down"></i> Ver más
+                               </button>`
+                                    : ""}
+                    </div>
+ 
+                <!-- Imagen (figure, igual que Razor) -->
+                ${imageHtml}
+ 
+                <!-- Footer de acciones -->
+                <footer class="cvx-post-actions">
+ 
+                    <!-- Comentarios: href sin #comments, igual que el Razor -->
+                    <a class="cvx-post-action"
+                       href="/posts/${post.Id}"
+                       onclick="event.stopPropagation()">
+                        <i class="fa-regular fa-comment"></i>
+                        <span>${post.CommentCount ?? 0}</span>
+                    </a>
+ 
+                    <!-- Guardar -->
+                    <button class="cvx-post-action cvx-action-save ${savedClass}"
+                            onclick="event.stopPropagation();CorvaxDashboard.savePost(${post.Id}, this)">
+                        <i class="fa-regular fa-bookmark"></i>
+                        <span>Guardar</span>
+                    </button>
+ 
+                    <!-- Compartir -->
+                    <button class="cvx-post-action cvx-action-share"
+                            onclick="event.stopPropagation();CorvaxDashboard.sharePost(${post.Id})">
+                        <i class="fa-solid fa-share-nodes"></i>
+                        <span>Compartir</span>
+                    </button>
+ 
+                    <!-- Copiar link -->
+                    <button class="cvx-post-action cvx-action-copy-link"
+                            data-link="/posts/${post.Id}"
+                            onclick="event.stopPropagation();CorvaxDashboard.copyLink(${post.Id})">
+                        <i class="fa-solid fa-link"></i>
+                    </button>
+ 
+                </footer>
+ 
+            </div>
+ 
+        </article>`;
+    }
+
 
     CorvaxDashboard.votePost = function (postId, type) {
 
@@ -220,8 +296,8 @@
                 const upBtn = card.querySelector(".cvx-vote-btn-up");
                 const downBtn = card.querySelector(".cvx-vote-btn-down");
 
-                upCount.textContent = data.upVotes;
-                downCount.textContent = data.downVotes;
+                upCount.innerHTML = renderVoteTier(data.upVotes);
+                downCount.innerHTML = renderDownvoteTier(data.downVotes);
 
                 upBtn.classList.remove("is-active");
                 downBtn.classList.remove("is-active");
@@ -275,6 +351,33 @@
                     if (voteType === -1) downBtn.classList.add("active");
                 }
             });
+    };
+
+    CorvaxDashboard.savePost = function (postId, btn) {
+        fetch("/api/posts/" + postId + "/save", { method: "POST" })
+            .then(function (r) {
+                if (r.status === 401) { window.location = "/Auth/Login"; return null; }
+                return r.json();
+            })
+            .then(function (data) {
+                if (!data) return;
+                btn.classList.toggle("is-saved", data.isSaved);
+            });
+    };
+
+    CorvaxDashboard.expandPost = function (btn) {
+        var preview = btn.closest(".cvx-post-preview");
+        if (!preview) return;
+
+        var isExpanded = preview.classList.contains("is-expanded");
+
+        if (isExpanded) {
+            preview.classList.remove("is-expanded");
+            btn.innerHTML = '<i class="fa-solid fa-chevron-down"></i> Ver más';
+        } else {
+            preview.classList.add("is-expanded");
+            btn.innerHTML = '<i class="fa-solid fa-chevron-up"></i> Ver menos';
+        }
     };
 
     CorvaxDashboard.copyLink = function (postId) {
@@ -380,6 +483,232 @@
         var cfg = window.CORVAX;
         if (cfg) loadPosts(cfg.slug, "new", 1);
     };
+
+
+            function renderVoteTier(votes) {
+                votes = votes ?? 0;
+
+                const TIER_SIZE = 700;
+                const SUBTIER_SIZE = TIER_SIZE / 5;   // 140
+
+                const tiers = [
+                    "tier-bronce",
+                    "tier-plata",
+                    "tier-oro",
+                    "tier-platino",
+                    "tier-diamante",
+                    "tier-amatista",
+                    "tier-ebano",
+                    "tier-corvus"
+                ];
+
+                const names = [
+                    ["Polluelo Curioso", "Polluelo Observador", "Polluelo Explorador", "Polluelo Vigilante", "Polluelo del Nido"],
+                    ["Pluma Plateada I", "Pluma Plateada II", "Pluma Plateada III", "Pluma Plateada IV", "Pluma Plateada V"],
+                    ["Cuervo Iniciado", "Cuervo Mensajero", "Cuervo Vigilante", "Cuervo Estratega", "Cuervo del Ocaso"],
+                    ["Nido de Piedra", "Nido Elevado", "Nido Guardián", "Nido Arcano", "Nido Supremo"],
+                    ["Bandada Errante", "Bandada Vigía", "Bandada Sombría", "Bandada Imperial", "Bandada Ancestral"],
+                    ["Heraldo del Viento", "Señor del Viento", "Maestro del Vuelo", "Oráculo del Cielo", "Soberano de Alas"],
+                    ["Guardián de Corvax", "Portador del Cuervo", "Vigía del Abismo", "Señor de la Bandada", "Mano de Corvax"],
+                    ["Elegido de Corvax", "Heraldo de Corvax", "Avatar de Corvax", "Sombra de Corvax", "Corona de Corvax"]
+                ];
+
+                const icons = [
+                    "fa-feather",
+                    "fa-feather",
+                    "fa-crow",
+                    "fa-egg",
+                    "fa-feather-pointed",
+                    "fa-wind",
+                    "fa-skull",
+                    "fa-crown"
+                ];
+
+                // ── Cálculo de tier ───────────────────────────────────────────
+                let tierIndex = Math.min(7, Math.floor(votes / TIER_SIZE));
+                let subTier = Math.min(4, Math.floor((votes % TIER_SIZE) / SUBTIER_SIZE));
+
+                let tier = tiers[tierIndex];
+                let tierName = names[tierIndex][subTier];
+                let icon = icons[tierIndex];
+
+                // Progreso relativo al inicio del tier actual (igual que el Razor)
+                const currentTierStart = tierIndex * TIER_SIZE;
+                const nextRank = currentTierStart + TIER_SIZE;
+                const progressPercent = Math.min(100, ((votes - currentTierStart) / TIER_SIZE) * 100);
+
+                // ── Easter eggs (sincronizados con _VoteTier.cshtml) ──────────
+                let specialClass = "";
+
+                if (votes === 69) {
+                    tierName = "Nice.";
+                    icon = "fa-face-smile";
+                    specialClass = "rank-meme";
+                } else if (votes === 404) {
+                    tierName = "Rank Not Found";
+                    icon = "fa-bug";
+                    specialClass = "rank-error";
+                } else if (votes === 666) {
+                    tier = "tier-ebano";
+                    tierName = "Cuervo del Abismo";
+                    icon = "fa-skull";
+                    specialClass = "rank-abyss";
+                } else if (votes === 777) {
+                    tier = "tier-corvus";
+                    tierName = "Reliquia de Corvax";
+                    icon = "fa-crown";
+                    specialClass = "rank-relic";
+                } else if (votes === 999) {
+                    tier = "tier-amatista";
+                    tierName = "Oráculo del Vacío";
+                    icon = "fa-eye";
+                    specialClass = "rank-oracle";
+                } else if (votes === 1337) {
+                    tier = "tier-ebano";
+                    tierName = "Hack del Cuervo";
+                    icon = "fa-terminal";
+                    specialClass = "rank-hacker";
+                } else if (votes === 7777) {
+                    tier = "tier-corvus";
+                    tierName = "Trono de Corvax";
+                    icon = "fa-crown";
+                    specialClass = "rank-throne";
+                } else if (votes >= 10000) {
+                    tier = "tier-corvus";
+                    tierName = "Artefacto Ancestral";
+                    icon = "fa-gem";
+                    specialClass = "rank-artifact";
+                }
+
+                const viral = votes >= 2500 ? "post-viral" : "";
+
+                return `
+        <div class="vote-tier tooltip-container ${tier} ${specialClass} ${viral}">
+
+            <span class="vote-number">${votes}</span>
+
+            <div class="vote-tier-tooltip">
+
+                <div class="tier-header">
+                    <i class="fa-solid ${icon}"></i>
+                    <span class="tier-name">${tierName}</span>
+                </div>
+
+                <div class="tier-progress-bar">
+                    <div class="tier-progress-fill" style="width:${progressPercent}%"></div>
+                </div>
+
+                <small class="tier-progress-text">
+                    ${votes - currentTierStart} / ${TIER_SIZE} para el siguiente rango
+                </small>
+
+            </div>
+
+        </div>`;
+            }
+
+            function renderDownvoteTier(votes) {
+                votes = votes ?? 0;
+
+                const tiers = [
+                    "dv-tier-murmur",
+                    "dv-tier-shadow",
+                    "dv-tier-corrupt",
+                    "dv-tier-ruin",
+                    "dv-tier-void",
+                    "dv-tier-curse",
+                    "dv-tier-entity",
+                    "dv-tier-abyss"
+                ];
+
+                const names = [
+                    ["Murmullo del Vacío", "Pluma Inquieta", "Eco Desentonado", "Tinta Derramada", "Nota Desafinada"],
+                    ["Sombra Ligera", "Pluma Marchita", "Susurro Persistente", "Rastro Oscuro", "Eco Torcido"],
+                    ["Tinta Corrupta", "Archivo Distorsionado", "Fragmento Inestable", "Pluma Profanada", "Eco del Abismo"],
+                    ["Texto en Ruinas", "Debate Colapsado", "Fragmento Caído", "Página Quemada", "Eco Devastado"],
+                    ["Señal Perdida", "Registro Maldito", "Nido Profanado", "Archivo Prohibido", "Eco del Vacío"],
+                    ["Sello de Silencio", "Registro Condenado", "Herida del Foro", "Marca del Abismo", "Maldición Persistente"],
+                    ["Sombras Antiguas", "Vigía del Vacío", "Oráculo Caído", "Guardián Roto", "Portador del Eco"],
+                    ["Fragmento del Abismo", "Voz del Vacío", "Archivo Maldito", "Sombra de Corvax", "Reliquia del Abismo"]
+                ];
+
+                const icons = [
+                    "fa-comment-slash",
+                    "fa-cloud",
+                    "fa-skull",
+                    "fa-scroll",
+                    "fa-circle-xmark",
+                    "fa-skull-crossbones",
+                    "fa-ghost",
+                    "fa-crow"
+                ];
+
+                // ── Lógica de tier ───────────────────────────────────────
+                let tierIndex = Math.min(7, Math.floor(votes / 700));
+                let subTier = Math.min(4, Math.floor((votes % 700) / 140));
+
+                let tier = tiers[tierIndex];
+                let tierName = names[tierIndex][subTier];
+                let icon = icons[tierIndex];
+
+                let nextRank = (tierIndex + 1) * 700;
+                let progressPercent = Math.min(100, (votes / nextRank) * 100);
+
+                // ── Easter eggs ──────────────────────────────────────────
+                let specialClass = "";
+                let hidden = false;
+
+                if (votes === 13) {
+                    tierName = "Presagio"; icon = "fa-eye"; specialClass = "dv-omen"; hidden = true;
+                } else if (votes === 66) {
+                    tierName = "Eco Infernal"; icon = "fa-fire"; specialClass = "dv-hell"; hidden = true;
+                } else if (votes === 404) {
+                    tierName = "Post No Encontrado"; icon = "fa-ghost"; specialClass = "dv-error"; hidden = true;
+                } else if (votes === 666) {
+                    tier = "dv-tier-abyss";
+                    tierName = "Maldición Mayor"; icon = "fa-skull"; specialClass = "dv-demon"; hidden = true;
+                } else if (votes === 777) {
+                    tierName = "Error del Oráculo"; icon = "fa-bug"; specialClass = "dv-glitch"; hidden = true;
+                } else if (votes === 999) {
+                    tierName = "Fin del Ciclo"; icon = "fa-hourglass-end"; specialClass = "dv-cycle"; hidden = true;
+                } else if (votes === 1337) {
+                    tierName = "Caos Técnico"; icon = "fa-terminal"; specialClass = "dv-hacker"; hidden = true;
+                }
+
+                const anomaly = votes >= 500;
+
+                // ── Tooltip extra: anomalía ──────────────────────────────
+                const anomalyTag = anomaly
+                    ? `<small class="dv-anomaly-label">⚠ Anomalía detectada</small>`
+                    : "";
+
+                return `
+        <div class="dv-vote-tier tooltip-container ${tier} ${specialClass}">
+
+            <span class="dv-vote-number">-${votes}</span>
+
+            <div class="dv-vote-tooltip">
+
+                <div class="dv-tier-header">
+                    <i class="fa-solid ${icon}"></i>
+                    <span class="dv-tier-name">${tierName}</span>
+                </div>
+
+                <div class="dv-tier-progress-bar">
+                    <div class="dv-tier-progress-fill" style="width:${progressPercent}%"></div>
+                </div>
+
+                <small class="dv-tier-progress-text">
+                    ${votes} / ${nextRank} votos negativos
+                </small>
+
+                ${anomalyTag}
+
+            </div>
+
+        </div>`;
+            }
+
 
     CorvaxDashboard.loadPosts = loadPosts;
 
