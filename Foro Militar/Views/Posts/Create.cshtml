@@ -23,12 +23,14 @@ else
 
 <div class="cvx-cp-wrapper">
 
-    @* ── BREADCRUMB ──────────────────────────────────────── *@
-    <a href="@Url.Action("Dashboard", "Communities", new { slug = Model.CommunitySlug })"
-       class="cvx-cp-back">
-        <i class="fa-solid fa-chevron-left"></i>
-        @Model.CommunityName
-    </a>
+    @if (ViewBag.UseModalLayout != true)
+    {
+        <a href="@Url.Action("Dashboard", "Communities", new { slug = Model.CommunitySlug })"
+           class="cvx-cp-back">
+            <i class="fa-solid fa-chevron-left"></i>
+            @Model.CommunityName
+        </a>
+    }
 
     @* ── FORMULARIO ──────────────────────────────────────── *@
     @using (Html.BeginForm("Create", "Posts",
@@ -187,143 +189,213 @@ else
 </div>@* /cvx-cp-wrapper *@
 
 <script>(function () {
-    "use strict";
+        "use strict";
 
-    // ── TIPO DE POST ────────────────────────────────────────
-    var typePills = document.querySelectorAll(".cvx-cp-type-pill");
-    var hidPostType = document.getElementById("hidPostType");
-    if (hidPostType) hidPostType.value = "debate";
+        // ── TIPO DE POST ────────────────────────────────────────
+        var typePills = document.querySelectorAll(".cvx-cp-type-pill");
+        var hidPostType = document.getElementById("hidPostType");
+        if (hidPostType) hidPostType.value = "debate";
 
-    typePills.forEach(function (pill) {
-        pill.addEventListener("click", function () {
-            typePills.forEach(function (p) { p.classList.remove("is-active"); });
-            pill.classList.add("is-active");
-            if (hidPostType) hidPostType.value = pill.dataset.type;
+        typePills.forEach(function (pill) {
+            pill.addEventListener("click", function () {
+                typePills.forEach(function (p) { p.classList.remove("is-active"); });
+                pill.classList.add("is-active");
+                if (hidPostType) hidPostType.value = pill.dataset.type;
+            });
         });
+
+        // ── CONTADOR TÍTULO ─────────────────────────────────────
+        var titleInput = document.getElementById("cvxTitleInput");
+        var titleCounter = document.getElementById("cvxTitleCounter");
+
+        function updateCounter() {
+            var len = titleInput.value.length;
+            titleCounter.textContent = len + " / 200";
+            titleCounter.className = "cvx-cp-title-counter" +
+                (len >= 200 ? " is-limit" : len >= 160 ? " is-near" : "");
+        }
+        if (titleInput) {
+            titleInput.addEventListener("input", updateCounter);
+            updateCounter();
+        }
+
+        // ── IMAGEN TOGGLE ───────────────────────────────────────
+        var imgToggle = document.getElementById("cvxImgToggle");
+        var imgField = document.getElementById("cvxImgField");
+        var imgChevron = document.getElementById("cvxImgChevron");
+
+        if (imgToggle) {
+            imgToggle.addEventListener("click", function () {
+                var open = imgField.classList.toggle("is-open");
+                imgToggle.classList.toggle("is-open", open);
+                imgChevron.style.transform = open ? "rotate(180deg)" : "";
+            });
+        }
+
+        // ── CATEGORÍAS ──────────────────────────────────────────
+        var hidMainCat = document.getElementById("hidMainCat");
+        var footerHint = document.getElementById("cvxFooterHint");
+        var publishBtn = document.getElementById("cvxPublishBtn");
+
+        // Chips de categoría principal
+        var mainChips = document.querySelectorAll("#cvxCatsMain .cvx-cp-cat-chip");
+        mainChips.forEach(function (chip) {
+            chip.addEventListener("click", function () {
+                mainChips.forEach(function (c) { c.classList.remove("is-main"); });
+                chip.classList.add("is-main");
+                if (hidMainCat) hidMainCat.value = chip.dataset.catId;
+                if (footerHint) footerHint.textContent = "Categoría: " + chip.textContent.trim();
+            });
+        });
+
+        // Chips de categorías extra
+        var extraChips = document.querySelectorAll("#cvxCatsExtra .cvx-cp-cat-chip");
+        extraChips.forEach(function (chip) {
+            chip.addEventListener("click", function () {
+                var active = chip.classList.toggle("is-extra");
+                var cb = document.getElementById("eck_" + chip.dataset.catId);
+                if (cb) cb.checked = active;
+            });
+        });
+
+        // Validar antes de submit
+        var form = document.getElementById("cvx-create-form");
+        if (form) {
+            form.addEventListener("submit", function (e) {
+                if (!hidMainCat || !hidMainCat.value) {
+                    e.preventDefault();
+                    if (footerHint) {
+                        footerHint.textContent = "⚠ Selecciona una categoría principal";
+                        footerHint.style.color = "#ef4444";
+                        setTimeout(function () {
+                            footerHint.textContent = "Selecciona una categoría";
+                            footerHint.style.color = "";
+                        }, 2500);
+                    }
+                    // scroll al selector de categorías
+                    var catsSection = document.getElementById("cvxCatsMain");
+                    if (catsSection) catsSection.scrollIntoView({ behavior: "smooth", block: "center" });
+                }
+            });
+        }
+
+        // ── CANCELAR ────────────────────────────────────────────
+        window.CvxCreatePost = {
+            cancel: function () {
+                if (window.self !== window.top && window.top.CorvaxDashboard) {
+                    window.top.CorvaxDashboard.closeCreatePost();
+                } else {
+                    window.history.back();
+                }
+            }
+        };
+
+        // ── EDITOR MARKDOWN ─────────────────────────────────────
+        window.CvxEditor = {
+            ta: document.getElementById("cvxContentTa"),
+
+            wrap: function (before, after) {
+                var ta = this.ta;
+                if (!ta) return;
+                var s = ta.selectionStart, e = ta.selectionEnd;
+                var sel = ta.value.substring(s, e) || "texto";
+                ta.value = ta.value.substring(0, s) + before + sel + after + ta.value.substring(e);
+                ta.selectionStart = s + before.length;
+                ta.selectionEnd = s + before.length + sel.length;
+                ta.focus();
+            },
+
+            prefix: function (pfx) {
+                var ta = this.ta;
+                if (!ta) return;
+                var s = ta.selectionStart;
+                var lineStart = ta.value.lastIndexOf("\n", s - 1) + 1;
+                ta.value = ta.value.substring(0, lineStart) + pfx + ta.value.substring(lineStart);
+                ta.selectionStart = ta.selectionEnd = s + pfx.length;
+                ta.focus();
+            },
+
+            insertLink: function () {
+                var ta = this.ta;
+                if (!ta) return;
+                var url = prompt("URL del enlace:");
+                if (!url) return;
+                var s = ta.selectionStart, e = ta.selectionEnd;
+                var sel = ta.value.substring(s, e) || "texto del enlace";
+                var md = "[" + sel + "](" + url + ")";
+                ta.value = ta.value.substring(0, s) + md + ta.value.substring(e);
+                ta.focus();
+            }
+        };
+
+    })
+    ();
+    // ── GRADIENTE EN TIEMPO REAL ────────────────────────────────
+    var chipColors = {};
+
+    // Leer colores de los chips desde data attributes
+    document.querySelectorAll(".cvx-cp-cat-chip").forEach(function (chip) {
+        chipColors[chip.dataset.catId] = chip.style.getPropertyValue("--chip-color");
     });
 
-    // ── CONTADOR TÍTULO ─────────────────────────────────────
-    var titleInput   = document.getElementById("cvxTitleInput");
-    var titleCounter = document.getElementById("cvxTitleCounter");
+    var currentMainColor = null;
+    var currentExtraColor = null;
 
-    function updateCounter() {
-        var len = titleInput.value.length;
-        titleCounter.textContent = len + " / 200";
-        titleCounter.className = "cvx-cp-title-counter" +
-            (len >= 200 ? " is-limit" : len >= 160 ? " is-near" : "");
+    function applyGradient() {
+        var wrapper = document.querySelector(".cvx-cp-wrapper");
+        if (!wrapper) return;
+
+        if (!currentMainColor) {
+            // Sin selección — fondo por defecto
+            wrapper.style.background = "";
+            return;
+        }
+
+        if (!currentExtraColor) {
+            // Solo main — fondo sólido suave
+            wrapper.style.background =
+                "radial-gradient(ellipse at 20% 0%, " +
+                hexToRgba(currentMainColor, 0.12) + " 0%, transparent 65%)";
+            return;
+        }
+
+        // Main + extra — gradiente entre los dos colores
+        wrapper.style.background =
+            "radial-gradient(ellipse at 15% 0%, " +
+            hexToRgba(currentMainColor, 0.14) + " 0%, transparent 55%), " +
+            "radial-gradient(ellipse at 85% 0%, " +
+            hexToRgba(currentExtraColor, 0.10) + " 0%, transparent 55%)";
     }
-    if (titleInput) {
-        titleInput.addEventListener("input", updateCounter);
-        updateCounter();
+
+    function hexToRgba(hex, alpha) {
+        hex = hex.trim().replace("#", "");
+        var r = parseInt(hex.substring(0, 2), 16);
+        var g = parseInt(hex.substring(2, 4), 16);
+        var b = parseInt(hex.substring(4, 6), 16);
+        return "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
     }
 
-    // ── IMAGEN TOGGLE ───────────────────────────────────────
-    var imgToggle  = document.getElementById("cvxImgToggle");
-    var imgField   = document.getElementById("cvxImgField");
-    var imgChevron = document.getElementById("cvxImgChevron");
+    // Sobreescribir los listeners de categorías para incluir gradiente
 
-    if (imgToggle) {
-        imgToggle.addEventListener("click", function () {
-            var open = imgField.classList.toggle("is-open");
-            imgToggle.classList.toggle("is-open", open);
-            imgChevron.style.transform = open ? "rotate(180deg)" : "";
-        });
-    }
-
-    // ── CATEGORÍAS ──────────────────────────────────────────
-    var hidMainCat   = document.getElementById("hidMainCat");
-    var footerHint   = document.getElementById("cvxFooterHint");
-    var publishBtn   = document.getElementById("cvxPublishBtn");
-
-    // Chips de categoría principal
-    var mainChips = document.querySelectorAll("#cvxCatsMain .cvx-cp-cat-chip");
+    // Main
     mainChips.forEach(function (chip) {
         chip.addEventListener("click", function () {
-            mainChips.forEach(function (c) { c.classList.remove("is-main"); });
-            chip.classList.add("is-main");
-            if (hidMainCat) hidMainCat.value = chip.dataset.catId;
-            if (footerHint) footerHint.textContent = "Categoría: " + chip.textContent.trim();
+            currentMainColor = chipColors[chip.dataset.catId] || null;
+            applyGradient();
         });
     });
 
-    // Chips de categorías extra
-    var extraChips = document.querySelectorAll("#cvxCatsExtra .cvx-cp-cat-chip");
+    // Extra — solo toma el color de la PRIMERA extra activa
     extraChips.forEach(function (chip) {
         chip.addEventListener("click", function () {
-            var active = chip.classList.toggle("is-extra");
-            var cb = document.getElementById("eck_" + chip.dataset.catId);
-            if (cb) cb.checked = active;
+            // Calcular primera extra activa DESPUÉS del toggle
+            setTimeout(function () {
+                var firstActive = document.querySelector("#cvxCatsExtra .cvx-cp-cat-chip.is-extra");
+                currentExtraColor = firstActive
+                    ? (chipColors[firstActive.dataset.catId] || null)
+                    : null;
+                applyGradient();
+            }, 0);
         });
     });
-
-    // Validar antes de submit
-    var form = document.getElementById("cvx-create-form");
-    if (form) {
-        form.addEventListener("submit", function (e) {
-            if (!hidMainCat || !hidMainCat.value) {
-                e.preventDefault();
-                if (footerHint) {
-                    footerHint.textContent = "⚠ Selecciona una categoría principal";
-                    footerHint.style.color = "#ef4444";
-                    setTimeout(function () {
-                        footerHint.textContent = "Selecciona una categoría";
-                        footerHint.style.color = "";
-                    }, 2500);
-                }
-                // scroll al selector de categorías
-                var catsSection = document.getElementById("cvxCatsMain");
-                if (catsSection) catsSection.scrollIntoView({ behavior: "smooth", block: "center" });
-            }
-        });
-    }
-
-    // ── CANCELAR ────────────────────────────────────────────
-    window.CvxCreatePost = {
-        cancel: function () {
-            if (window.self !== window.top && window.top.CorvaxDashboard) {
-                window.top.CorvaxDashboard.closeCreatePost();
-            } else {
-                window.history.back();
-            }
-        }
-    };
-
-    // ── EDITOR MARKDOWN ─────────────────────────────────────
-    window.CvxEditor = {
-        ta: document.getElementById("cvxContentTa"),
-
-        wrap: function (before, after) {
-            var ta = this.ta;
-            if (!ta) return;
-            var s = ta.selectionStart, e = ta.selectionEnd;
-            var sel = ta.value.substring(s, e) || "texto";
-            ta.value = ta.value.substring(0, s) + before + sel + after + ta.value.substring(e);
-            ta.selectionStart = s + before.length;
-            ta.selectionEnd   = s + before.length + sel.length;
-            ta.focus();
-        },
-
-        prefix: function (pfx) {
-            var ta = this.ta;
-            if (!ta) return;
-            var s = ta.selectionStart;
-            var lineStart = ta.value.lastIndexOf("\n", s - 1) + 1;
-            ta.value = ta.value.substring(0, lineStart) + pfx + ta.value.substring(lineStart);
-            ta.selectionStart = ta.selectionEnd = s + pfx.length;
-            ta.focus();
-        },
-
-        insertLink: function () {
-            var ta = this.ta;
-            if (!ta) return;
-            var url = prompt("URL del enlace:");
-            if (!url) return;
-            var s = ta.selectionStart, e = ta.selectionEnd;
-            var sel = ta.value.substring(s, e) || "texto del enlace";
-            var md  = "[" + sel + "](" + url + ")";
-            ta.value = ta.value.substring(0, s) + md + ta.value.substring(e);
-            ta.focus();
-        }
-    };
-
-})();</script>
+    </script>

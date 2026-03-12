@@ -14,6 +14,7 @@ namespace Foro.Entities.Models
             UserCommunities = new HashSet<UserCommunity>();
             Categories = new HashSet<Category>();
             RankHistory = new HashSet<CommunityRankHistory>();
+            CommunityCategories = new HashSet<CommunityCategory>();
         }
 
         [Key]
@@ -74,7 +75,7 @@ namespace Foro.Entities.Models
 
         public virtual ICollection<CommunityRankHistory> RankHistory { get; set; }
         public virtual ICollection<Vote> Votes { get; set; }
-
+        public virtual ICollection<CommunityCategory> CommunityCategories { get; set; }
         public class CommunityVote
         {
             public int Id { get; set; }

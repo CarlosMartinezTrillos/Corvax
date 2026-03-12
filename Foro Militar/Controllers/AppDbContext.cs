@@ -23,4 +23,5 @@ public class AppDbContext : DbContext
     public DbSet<CommunityRank> CommunityRanks { get; set; }
     public DbSet<CommunityRankHistory> CommunityRankHistories { get; set; }
     public DbSet<SavedPost> SavedPosts { get; set; }
+    public DbSet<CommunityCategory> CommunityCategories { get; set; }
 }

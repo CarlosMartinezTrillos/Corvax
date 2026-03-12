@@ -241,6 +241,7 @@
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\Community.cs" />
+    <Compile Include="Models\CommunityCategories.cs" />
     <Compile Include="Models\CommunityDashboardPageModel.cs" />
     <Compile Include="Models\CommunityRank.cs" />
     <Compile Include="Models\CommunityRankHistory.cs" />
