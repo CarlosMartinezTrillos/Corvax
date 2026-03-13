@@ -103,9 +103,32 @@
 
     </div>
     <!-- XP BAR -->
-    <div class="xp-wrapper">
-        <div class="xp-bar" style="width:@xpWidth"></div>
-    </div>
+        @{
+            var nextRankName = "Rango máximo";
+            var pointsLeft = 0.0;
+            // estos valores vienen del ViewModel pero necesitamos el nombre del siguiente rango
+            // lo calculamos aquí con los datos disponibles
+        }
+        <div class="xp-wrapper tooltip-container">
+            <div class="xp-bar" style="width:@xpWidth"></div>
+            <div class="tooltip-content xp-tooltip">
+                <div class="xp-tooltip-row">
+                    <i class="fa-solid fa-shield"></i>
+                    <span>Nivel @Model.Level — @Model.RankName</span>
+                </div>
+                <div class="xp-tooltip-progress">
+                    <span class="xp-tooltip-pct">@Model.LevelProgressPercent%</span>
+                    hacia el siguiente rango
+                </div>
+                <div class="xp-tooltip-points">
+                    <i class="fa-solid fa-bolt"></i>
+                    @((Model.NextLevelXP - Model.CurrentXP).ToString("N0")) pts restantes
+                </div>
+                <div class="xp-tooltip-score">
+                    PowerScore: @Model.DisplayPowerScore
+                </div>
+            </div>
+        </div>
 
     <!-- NOMBRE + BOTONES -->
     <div class="community-header-row">

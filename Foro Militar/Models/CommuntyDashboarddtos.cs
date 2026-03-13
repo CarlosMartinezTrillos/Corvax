@@ -40,6 +40,15 @@ namespace Foro.API.DTOs.Community
         public string RankName { get; set; }
         public int? RankPosition { get; set; }
 
+        //EXP
+        public double CurrentXP { get; set; }
+        public double NextLevelXP { get; set; }
+        public string NextRankName { get; set; }
+        public string MainCategoryColor { get; set; }
+        public int LevelProgressPercent =>
+            NextLevelXP <= 0 ? 0 : (int)((CurrentXP / NextLevelXP) * 100);
+        public double PointsToNextRank => Math.Max(0, NextLevelXP - CurrentXP);
+
         // Sidebar widgets
         public List<TopMemberDto> TopMembers { get; set; }
         public List<CategoryStatsDto> CategoryStats { get; set; }

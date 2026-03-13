@@ -220,13 +220,17 @@
     height: 3px;
     margin: 48px 22px 18px 22px;
     border-radius: 10px;
-    overflow: hidden;
+    overflow: visible; /* ← era hidden, cambia a visible */
     background: rgba(255,255,255,0.06);
+    position: relative;
+    z-index: 10;
+    cursor: help;
 }
 
 .xp-bar {
     height: 100%;
-    background: linear-gradient( 90deg, var(--main-color, var(--corvax-purple)), #c084fc, var(--main-color, var(--corvax-purple)) );
+    border-radius: 10px;
+    background: linear-gradient(90deg, var(--main-color, var(--corvax-purple)), #c084fc, var(--main-color, var(--corvax-purple)));
     background-size: 200% 100%;
     animation: xp-shimmer 3s ease infinite;
     transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
@@ -589,4 +593,89 @@
 
 .reveal:nth-child(6) {
     animation-delay: 0.40s;
+}
+
+
+/* ── XP Tooltip ──────────────────────────────────────────── */
+.xp-wrapper {
+    cursor: help;
+}
+
+.xp-tooltip {
+    position: absolute;
+    bottom: 12px;
+    top: auto !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 220px;
+    white-space: normal;
+    text-align: left;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 99999;
+    background: var(--corvax-bg-deep);
+    border: 1px solid rgba(124,58,237,0.3);
+    border-radius: 10px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.7);
+    color: var(--corvax-text);
+    font-family: var(--font-label);
+}
+
+.xp-wrapper:hover .xp-tooltip {
+    opacity: 1;
+}
+
+.xp-tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: rgba(124,58,237,0.3);
+}
+
+.xp-tooltip-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 700;
+    color: var(--main-color, var(--corvax-purple));
+    font-size: 0.78rem;
+}
+
+.xp-tooltip-progress {
+    font-size: 0.72rem;
+    color: var(--corvax-text-muted);
+}
+
+.xp-tooltip-pct {
+    font-weight: 700;
+    color: var(--corvax-text);
+}
+
+.xp-tooltip-points {
+    font-size: 0.72rem;
+    color: var(--corvax-text);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+    .xp-tooltip-points i {
+        color: var(--corvax-gold);
+        font-size: 0.65rem;
+    }
+
+.xp-tooltip-score {
+    font-size: 0.68rem;
+    color: var(--corvax-text-muted);
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding-top: 6px;
+    margin-top: 2px;
 }

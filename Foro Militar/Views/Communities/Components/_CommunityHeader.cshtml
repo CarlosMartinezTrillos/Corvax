@@ -92,12 +92,35 @@
         </div>
 
         @{
-            // PowerScore como proxy de progreso — ajusta el divisor según tu escala real
-            double progress = Math.Min(100, (Model.PowerScore / 1000.0) * 100);
+            var xpPct = Model.LevelProgressPercent;
+            var xpWidthHeader = xpPct + "%";
+            var ptsLeft = Model.PointsToNextRank.ToString("N0");
+            var headerMainColor = !string.IsNullOrEmpty(Model.MainCategoryColor)
+                ? Model.MainCategoryColor : "#7c3aed";
+            var xpGradient = $"width:{xpWidthHeader};background:linear-gradient(90deg,{headerMainColor},#c084fc,{headerMainColor})";
         }
-        <div class="cvx-xp-wrapper">
-            <div class="cvx-xp-bar" style="width:@progress.ToString("F1", System.Globalization.CultureInfo.InvariantCulture)"></div>
+        <div class="cvx-xp-wrapper tooltip-container"
+             style="overflow:visible; position:relative; cursor:help;">
+            <div class="cvx-xp-bar" style="@xpGradient"></div>
+            </div>
+            <div class="tooltip-content xp-tooltip">
+                <div class="xp-tooltip-row">
+                    <i class="fa-solid fa-shield"></i>
+                    <span>@(!string.IsNullOrEmpty(Model.RankName) ? Model.RankName : "Recluta")</span>
+                </div>
+                <div class="xp-tooltip-progress">
+                    <span class="xp-tooltip-pct">@xpPct%</span> hacia el siguiente rango
+                </div>
+                <div class="xp-tooltip-points">
+                    <i class="fa-solid fa-bolt"></i>
+                    @ptsLeft pts para <strong>@Model.NextRankName</strong>
+                </div>
+                <div class="xp-tooltip-score">
+                    PowerScore: @Model.PowerScore.ToString("N0")
+                </div>
+            </div>
         </div>
+
 
         <!-- CATEGORIAS -->
         @if (Model.CategoryStats != null && Model.CategoryStats.Any())
@@ -126,5 +149,3 @@
         }
 
     </div>
-
-</div>

@@ -98,6 +98,7 @@
     border-left: 3px solid #7c3aed;
     background-image: repeating-linear-gradient( 0deg, transparent, transparent 2px, rgba(255,255,255,0.010) 2px, rgba(255,255,255,0.010) 4px );
     animation: cvx-header-reveal 0.4s cubic-bezier(0.22,1,0.36,1) both;
+    border-left-color: var(--main-color, #7c3aed);
 }
 
 @keyframes cvx-header-reveal {
@@ -118,10 +119,10 @@
     position: absolute;
     top: -60px;
     left: -60px;
-    width: 280px;
-    height: 280px;
+    width: 340px;
+    height: 340px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(124, 58, 237, 0.10), transparent 70%);
+    background: radial-gradient(circle, color-mix(in srgb, var(--main-color, #7c3aed) 12%, transparent), transparent 70%);
     pointer-events: none;
     z-index: 0;
 }
@@ -402,13 +403,13 @@
 
 /* ── BARRA DE XP ─────────────────────────────────────────── */
 .cvx-xp-wrapper {
-    margin: 5px;
+    margin: 5px 0;
     height: 5px;
-    padding: 5px;
     border-radius: 10px;
-    overflow: hidden;
+    overflow: visible;
     background: rgba(255, 255, 255, 0.06);
-    /* se centra sola dentro del flex-column de cvx-comm-meta */
+    position: relative;
+    cursor: help;
 }
 
 .cvx-xp-bar {

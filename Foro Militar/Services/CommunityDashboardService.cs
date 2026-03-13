@@ -166,6 +166,42 @@ namespace Foro_Militar.Services
                 .Where(c => c.IsActive && c.PowerScore > community.PowerScore)
                 .CountAsync() + 1;
 
+            // ── XP / Progreso de rango ──
+            var allRanks = await _context.CommunityRanks
+                .OrderBy(r => r.MinScore)
+                .ToListAsync();
+
+            double currentXP = 0;
+            double nextLevelXP = 100;
+            string nextRankName = "Rango máximo";
+
+            if (community.Rank != null)
+            {
+                currentXP = community.PowerScore - community.Rank.MinScore;
+
+                var nextRank = allRanks
+                    .Where(r => r.MinScore > community.Rank.MinScore)
+                    .OrderBy(r => r.MinScore)
+                    .FirstOrDefault();
+
+                if (nextRank != null)
+                {
+                    nextLevelXP = nextRank.MinScore - community.Rank.MinScore;
+                    nextRankName = nextRank.Name;
+                }
+                else
+                {
+                    nextLevelXP = 100;
+                    nextRankName = "Rango máximo";
+                }
+            }
+
+            // ── Color principal ──
+            var mainCategoryColor = community.Categories
+                .OrderByDescending(c => c.Id)
+                .Select(c => c.ColorHex)
+                .FirstOrDefault() ?? "#7c3aed";
+
             // ── DTO final ──
             var dto = new CommunityDashboardDto
             {
@@ -187,6 +223,12 @@ namespace Foro_Militar.Services
                 UpVotes = community.UpVotes,
                 DownVotes = community.DownVotes,
                 PowerScore = community.PowerScore,
+
+                CurrentXP = currentXP,
+                NextLevelXP = nextLevelXP,
+                NextRankName = nextRankName,
+                MainCategoryColor = mainCategoryColor,
+
 
                 WeeklyNewFollowers = community.WeeklyNewFollowers,
                 WeeklyPosts = community.WeeklyPosts,

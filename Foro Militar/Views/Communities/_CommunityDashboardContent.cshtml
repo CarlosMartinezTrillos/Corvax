@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="~/Content/post-card.css" />
 }
 
-<div class="cvx-comm-header">
+<div class="cvx-comm-header" style="--main-color:@Model.MainCategoryColor">
     <div class="cvx-comm-banner @(string.IsNullOrEmpty(Model.BannerUrl) ? "no-banner" : "")">
         @if (!string.IsNullOrEmpty(Model.BannerUrl))
         {
@@ -33,8 +33,7 @@
     <!-- MAIN -->
     <main class="cvx-community-main">
 
-        <div class="cvx-feed-header">
-
+        <div class="cvx-comm-header">
             <h2 class="cvx-section-title">
                 <i class="fa-solid fa-fire"></i>
                 Posts de la comunidad
