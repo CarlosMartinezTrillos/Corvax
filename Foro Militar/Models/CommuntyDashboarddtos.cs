@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using System;
-using System.Collections.Generic;
-
 namespace Foro.API.DTOs.Community
 {
     // ─────────────────────────────────────────
@@ -144,7 +141,7 @@ namespace Foro.API.DTOs.Community
 
         public string MainCategoryName { get; set; }
         public string MainCategoryColor { get; set; }
-        public List<string> ExtraCategories { get; set; }
+        public List<CategoryTagDto> ExtraCategories { get; set; }
 
         public bool IsPinned { get; set; }
         public int? CurrentUserVote { get; set; } // 1, -1 o null
@@ -154,8 +151,14 @@ namespace Foro.API.DTOs.Community
         public double HotScore { get; set; }
 
         public string TimeAgo { get; set; }
-    }
 
+        public string PostType { get; set; }
+    }
+    public class CategoryTagDto
+    {
+        public string Name { get; set; }
+        public string ColorHex { get; set; }
+    }
     public class PagedResult<T>
     {
         public List<T> Items { get; set; }

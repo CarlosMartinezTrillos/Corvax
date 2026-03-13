@@ -19,6 +19,11 @@
     transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
     box-shadow: 0 4px 18px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03);
     font-family: var(--font-body);
+    background-color: rgba(13, 13, 26, 0.75); /* semi-transparente para que el blob se vea */
+    background-image: none;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: box-shadow 0.2s ease;
 }
 
     /* scanline */
@@ -652,4 +657,10 @@
 .dv-vote-tier:hover .dv-vote-tooltip {
     opacity: 1;
     transform: translateX(-50%) translateY(-12px);
+}
+
+.cvx-post-tag-extra {
+    background: color-mix(in srgb, var(--tag-color, #7c3aed) 8%, transparent);
+    border-color: color-mix(in srgb, var(--tag-color, #7c3aed) 25%, transparent);
+    color: color-mix(in srgb, var(--tag-color, #7c3aed) 70%, white);
 }

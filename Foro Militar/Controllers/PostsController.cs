@@ -31,7 +31,21 @@ namespace Foro_Militar.Controllers
                 CommunityId = community.Id,
                 CommunitySlug = community.Slug,
                 CommunityName = community.Name,
+
+                // Solo las categorías de esta comunidad → sección "Principal"
                 AvailableCategories = community.Categories
+                    .Where(c => c.IsActive)
+                    .Select(c => new CategoryOption
+                    {
+                        Id = c.Id,
+                        Name = c.Name,
+                        ColorHex = c.ColorHex
+                    }).ToList(),
+
+                // Todas las categorías activas de la BD → sección "Adicionales"
+                AllCategories = _context.Set<Category>()
+                    .Where(c => c.IsActive)
+                    .OrderBy(c => c.Name)
                     .Select(c => new CategoryOption
                     {
                         Id = c.Id,
@@ -62,7 +76,9 @@ namespace Foro_Militar.Controllers
             model.CommunityId = community.Id;
             model.CommunitySlug = community.Slug;
             model.CommunityName = community.Name;
+
             model.AvailableCategories = community.Categories
+                .Where(c => c.IsActive)
                 .Select(c => new CategoryOption
                 {
                     Id = c.Id,
@@ -70,6 +86,18 @@ namespace Foro_Militar.Controllers
                     ColorHex = c.ColorHex
                 }).ToList();
 
+            model.AllCategories = _context.Set<Category>()
+                .Where(c => c.IsActive)
+                .OrderBy(c => c.Name)
+                .Select(c => new CategoryOption
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    ColorHex = c.ColorHex
+                }).ToList();
+
+            if (Request.QueryString["modal"] == "1")
+                ViewBag.UseModalLayout = true;
 
             if (!ModelState.IsValid)
                 return View(model);
@@ -89,6 +117,7 @@ namespace Foro_Militar.Controllers
                 Slug = GenerateSlug(model.Title)
             };
 
+            post.PostType = model.PostType ?? "debate";
             _context.Posts.Add(post);
             _context.SaveChanges();
 
@@ -113,22 +142,21 @@ namespace Foro_Militar.Controllers
 
             _context.SaveChanges();
 
-            // ── NUEVO ─────────────────────────────────────────────
             if (Request.QueryString["modal"] == "1")
             {
                 return Content(@"
-            <script>
-                if (window.top && window.top.CorvaxDashboard)
-                    window.top.CorvaxDashboard.closeCreatePost();
-                else
-                    window.top.location.reload();
-            </script>
-        ", "text/html");
+                    <script>
+                        if (window.top && window.top.CorvaxDashboard)
+                            window.top.CorvaxDashboard.closeCreatePost();
+                        else
+                            window.top.location.reload();
+                    </script>
+                ", "text/html");
             }
-            // ─────────────────────────────────────────────────────
 
             return RedirectToAction("Dashboard", "Communities", new { slug = slug });
         }
+
         private string GenerateSlug(string title)
         {
             if (string.IsNullOrWhiteSpace(title)) return "";

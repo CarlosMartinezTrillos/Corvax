@@ -7,14 +7,15 @@
 @* ── CSS solo cuando viene en modo modal (layout null) ── *@
 @if (ViewBag.UseModalLayout == true)
 {
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/..." rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/Content/create-post.css" />
+    <link rel="stylesheet" href="~/Content/create-post.css?v=2" />
+    @* ← agregar ?v=2 aquí *@
 }
 else
 {
     @section Styles {
-        <link rel="stylesheet" href="~/Content/create-post.css" />
+        <link rel="stylesheet" href="~/Content/create-post.css?v=2" />
     }
 }
 
@@ -45,7 +46,7 @@ else
         <input type="hidden" name="MainCategoryId" id="hidMainCat" value="" />
 
         @* campo oculto para tipo de post (se guarda en Content como prefijo opcional) *@
-        <input type="hidden" id="hidPostType" value="" />
+        <input type="hidden" name="PostType" id="hidPostType" value="debate" />
 
         <div class="cvx-cp-scroll">
 
@@ -125,7 +126,9 @@ else
             @* ── CATEGORÍAS ────────────────────────────────── *@
             @if (Model.AvailableCategories.Any())
             {
-                <p class="cvx-cp-cats-label">Categoría principal <span style="color:#ef4444">*</span></p>
+                <p class="cvx-cp-cats-label">
+                    Categoría principal <span style="color:#ef4444">*</span>
+                </p>
                 <div class="cvx-cp-cats-row" id="cvxCatsMain">
                     @foreach (var cat in Model.AvailableCategories)
                     {
@@ -141,34 +144,34 @@ else
                 </div>
                 @Html.ValidationMessageFor(m => m.MainCategoryId, "", new { @class = "cvx-cp-error" })
 
-                if (Model.AvailableCategories.Count > 1)
-                {
-                    <p class="cvx-cp-cats-label" style="margin-top:14px">Categorías adicionales</p>
-                    <div class="cvx-cp-cats-row" id="cvxCatsExtra">
-                        @foreach (var cat in Model.AvailableCategories)
-                        {
-                            <button type="button"
-                                    class="cvx-cp-cat-chip"
-                                    data-cat-id="@cat.Id"
-                                    data-cat-mode="extra"
-                                    style="--chip-color: @cat.ColorHex">
-                                <span class="cvx-cp-cat-dot"></span>
-                                @cat.Name
-                            </button>
-                            @* checkboxes reales ocultos para enviar ExtraCategoryIds *@
-                            <input type="checkbox"
-                                   name="ExtraCategoryIds"
-                                   value="@cat.Id"
-                                   id="eck_@cat.Id"
-                                   style="display:none" />
-                        }
-                    </div>
-                    <p class="cvx-cp-cats-hint">
-                        <span>Click</span> para seleccionar — categoría principal obligatoria, adicionales opcionales
-                    </p>
-                }
-            }
+                <p class="cvx-cp-cats-label" style="margin-top:14px">Categorías adicionales</p>
 
+                <div id="cvxExtraCounter" class="cvx-cp-extra-counter">
+                    Seleccionadas: <span id="cvxExtraCounterNum" class="cvx-cp-extra-counter-num">0 / 5</span>
+                </div>
+
+                <div class="cvx-cp-cats-row" id="cvxCatsExtra">
+                    @foreach (var extraCat in Model.AllCategories)
+                    {
+                        <button type="button"
+                                class="cvx-cp-cat-chip"
+                                data-cat-id="@extraCat.Id"
+                                data-cat-mode="extra"
+                                style="--chip-color: @extraCat.ColorHex">
+                            <span class="cvx-cp-cat-dot"></span>
+                            @extraCat.Name
+                        </button>
+                        <input type="checkbox"
+                               name="ExtraCategoryIds"
+                               value="@extraCat.Id"
+                               id="eck_@extraCat.Id"
+                               style="display:none" />
+                    }
+                </div>
+                <p class="cvx-cp-cats-hint">
+                    <span>Click</span> para seleccionar — categoría principal obligatoria, adicionales opcionales
+                </p>
+            }
         </div>@* /cvx-cp-scroll *@
 
         @* ── FOOTER FIJO ───────────────────────────────────── *@
@@ -188,7 +191,8 @@ else
 
 </div>@* /cvx-cp-wrapper *@
 
-<script>(function () {
+<script>
+    (function () {
         "use strict";
 
         // ── TIPO DE POST ────────────────────────────────────────
@@ -233,28 +237,152 @@ else
         }
 
         // ── CATEGORÍAS ──────────────────────────────────────────
+        var MAX_EXTRA = 5;
         var hidMainCat = document.getElementById("hidMainCat");
         var footerHint = document.getElementById("cvxFooterHint");
-        var publishBtn = document.getElementById("cvxPublishBtn");
 
-        // Chips de categoría principal
+        // ── Chips principales ────────────────────────────────────
         var mainChips = document.querySelectorAll("#cvxCatsMain .cvx-cp-cat-chip");
+
+        function updateMainChipLabel(chip, selected) {
+            if (selected) {
+                chip.innerHTML =
+                    '<span class="cvx-cp-cat-dot"></span>' +
+                    chip.dataset.catName +
+                    '<span class="cvx-cp-main-remove" title="Quitar">✕</span>';
+
+                chip.querySelector(".cvx-cp-main-remove").addEventListener("click", function (e) {
+                    e.stopPropagation();
+                    chip.classList.remove("is-main");
+                    chip.innerHTML = '<span class="cvx-cp-cat-dot"></span>' + chip.dataset.catName;
+                    if (hidMainCat) hidMainCat.value = "";
+                    if (footerHint) footerHint.textContent = "Selecciona una categoría";
+                    currentMainColor = null;
+                    applyGradient();
+                });
+            } else {
+                chip.innerHTML = '<span class="cvx-cp-cat-dot"></span>' + chip.dataset.catName;
+            }
+        }
+
         mainChips.forEach(function (chip) {
+            chip.dataset.catName = chip.textContent.trim();
             chip.addEventListener("click", function () {
-                mainChips.forEach(function (c) { c.classList.remove("is-main"); });
+                // Si ya está seleccionado, el click en el chip (no en la X) no hace nada
+                if (chip.classList.contains("is-main")) return;
+
+                // Deseleccionar el anterior
+                mainChips.forEach(function (c) {
+                    c.classList.remove("is-main");
+                    updateMainChipLabel(c, false);
+                });
+
                 chip.classList.add("is-main");
+                updateMainChipLabel(chip, true);
                 if (hidMainCat) hidMainCat.value = chip.dataset.catId;
-                if (footerHint) footerHint.textContent = "Categoría: " + chip.textContent.trim();
+                if (footerHint) footerHint.textContent = "Principal: " + chip.dataset.catName;
+                currentMainColor = getChipColor(chip);
+                applyGradient();
             });
         });
 
-        // Chips de categorías extra
+        // ── Helpers para el orden de extras ─────────────────────
+        var extraOrder = [];   // array de catId en orden de selección
+
+        function getExtraCount() { return extraOrder.length; }
+
+        function rebuildExtraChips() {
+            // Reconstruir labels de todos los chips extra activos
+            document.querySelectorAll("#cvxCatsExtra .cvx-cp-cat-chip.is-extra").forEach(function (chip) {
+                var idx = extraOrder.indexOf(chip.dataset.catId);
+                updateExtraChipLabel(chip, idx + 1);
+            });
+
+            // Actualizar contador
+            var counter = document.getElementById("cvxExtraCounter");
+            var counterNum = document.getElementById("cvxExtraCounterNum");
+            if (counter && counterNum) {
+                counterNum.textContent = getExtraCount() + " / " + MAX_EXTRA;
+                counter.classList.toggle("is-max", getExtraCount() >= MAX_EXTRA);
+            }
+
+            // Deshabilitar chips sin seleccionar si llegamos al límite
+            document.querySelectorAll("#cvxCatsExtra .cvx-cp-cat-chip:not(.is-extra)").forEach(function (chip) {
+                chip.classList.toggle("is-disabled", getExtraCount() >= MAX_EXTRA);
+            });
+
+            // Gradiente: primera extra activa
+            if (extraOrder.length > 0) {
+                var firstChip = document.querySelector(
+                    "#cvxCatsExtra .cvx-cp-cat-chip[data-cat-id='" + extraOrder[0] + "']"
+                );
+                currentExtraColor = firstChip ? getChipColor(firstChip) : null;
+            } else {
+                currentExtraColor = null;
+            }
+            applyGradient();
+        }
+
+        function updateExtraChipLabel(chip, orderNum) {
+            // Limpiar contenido anterior (dot, número, texto, X)
+            chip.innerHTML =
+                '<span class="cvx-cp-extra-order">' + orderNum + '</span>' +
+                chip.dataset.catName +
+                '<span class="cvx-cp-extra-remove" title="Quitar">✕</span>';
+
+            // Listener en la X
+            chip.querySelector(".cvx-cp-extra-remove").addEventListener("click", function (e) {
+                e.stopPropagation();
+                deselecExtra(chip);
+            });
+        }
+
+        function deselecExtra(chip) {
+            chip.classList.remove("is-extra");
+            var catId = chip.dataset.catId;
+            extraOrder = extraOrder.filter(function (id) { return id !== catId; });
+
+            // Restaurar contenido del chip a su estado base
+            chip.innerHTML =
+                '<span class="cvx-cp-cat-dot"></span>' +
+                chip.dataset.catName;
+
+            // Desmarcar checkbox
+            var cb = document.getElementById("eck_" + catId);
+            if (cb) cb.checked = false;
+
+            rebuildExtraChips();
+        }
+
+        // ── Chips extra ──────────────────────────────────────────
         var extraChips = document.querySelectorAll("#cvxCatsExtra .cvx-cp-cat-chip");
+
+        // Guardar el nombre original en data-cat-name para reconstruir el label
+        extraChips.forEach(function (chip) {
+            chip.dataset.catName = chip.textContent.trim();
+        });
+
         extraChips.forEach(function (chip) {
             chip.addEventListener("click", function () {
-                var active = chip.classList.toggle("is-extra");
-                var cb = document.getElementById("eck_" + chip.dataset.catId);
-                if (cb) cb.checked = active;
+                if (chip.classList.contains("is-extra")) {
+                    // Ya seleccionado → deseleccionar
+                    deselecExtra(chip);
+                    return;
+                }
+
+                // Límite de 5
+                if (getExtraCount() >= MAX_EXTRA) return;
+
+                chip.classList.add("is-extra");
+                var catId = chip.dataset.catId;
+                extraOrder.push(catId);
+
+                updateExtraChipLabel(chip, extraOrder.length);
+
+                var cb = document.getElementById("eck_" + catId);
+                if (cb) cb.checked = true;
+
+                rebuildExtraChips();
             });
         });
 
@@ -272,130 +400,55 @@ else
                             footerHint.style.color = "";
                         }, 2500);
                     }
-                    // scroll al selector de categorías
                     var catsSection = document.getElementById("cvxCatsMain");
                     if (catsSection) catsSection.scrollIntoView({ behavior: "smooth", block: "center" });
                 }
             });
         }
 
-        // ── CANCELAR ────────────────────────────────────────────
-        window.CvxCreatePost = {
-            cancel: function () {
-                if (window.self !== window.top && window.top.CorvaxDashboard) {
-                    window.top.CorvaxDashboard.closeCreatePost();
-                } else {
-                    window.history.back();
-                }
+        // ── GRADIENTE EN TIEMPO REAL ─────────────────────────────
+        var currentMainColor = null;
+        var currentExtraColor = null;
+
+        function getChipColor(chip) {
+            // color-mix no expone la variable, leemos del style inline
+            var raw = chip.getAttribute("style") || "";
+            var match = raw.match(/--chip-color:\s*([^;]+)/);
+            return match ? match[1].trim() : null;
+        }
+
+        function hexToRgba(hex, alpha) {
+            if (!hex) return "transparent";
+            hex = hex.trim().replace("#", "");
+            if (hex.length === 3) hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+            var r = parseInt(hex.substring(0, 2), 16);
+            var g = parseInt(hex.substring(2, 4), 16);
+            var b = parseInt(hex.substring(4, 6), 16);
+            return "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
+        }
+
+        function applyGradient() {
+            var wrapper = document.querySelector(".cvx-cp-wrapper");
+            if (!wrapper) return;
+
+            if (!currentMainColor) {
+                wrapper.style.backgroundImage = "";
+                return;
             }
-        };
 
-        // ── EDITOR MARKDOWN ─────────────────────────────────────
-        window.CvxEditor = {
-            ta: document.getElementById("cvxContentTa"),
-
-            wrap: function (before, after) {
-                var ta = this.ta;
-                if (!ta) return;
-                var s = ta.selectionStart, e = ta.selectionEnd;
-                var sel = ta.value.substring(s, e) || "texto";
-                ta.value = ta.value.substring(0, s) + before + sel + after + ta.value.substring(e);
-                ta.selectionStart = s + before.length;
-                ta.selectionEnd = s + before.length + sel.length;
-                ta.focus();
-            },
-
-            prefix: function (pfx) {
-                var ta = this.ta;
-                if (!ta) return;
-                var s = ta.selectionStart;
-                var lineStart = ta.value.lastIndexOf("\n", s - 1) + 1;
-                ta.value = ta.value.substring(0, lineStart) + pfx + ta.value.substring(lineStart);
-                ta.selectionStart = ta.selectionEnd = s + pfx.length;
-                ta.focus();
-            },
-
-            insertLink: function () {
-                var ta = this.ta;
-                if (!ta) return;
-                var url = prompt("URL del enlace:");
-                if (!url) return;
-                var s = ta.selectionStart, e = ta.selectionEnd;
-                var sel = ta.value.substring(s, e) || "texto del enlace";
-                var md = "[" + sel + "](" + url + ")";
-                ta.value = ta.value.substring(0, s) + md + ta.value.substring(e);
-                ta.focus();
+            if (!currentExtraColor) {
+                wrapper.style.backgroundImage =
+                    "radial-gradient(ellipse at 20% 0%, " +
+                    hexToRgba(currentMainColor, 0.13) + " 0%, transparent 60%)";
+                return;
             }
-        };
 
+            wrapper.style.backgroundImage =
+                "radial-gradient(ellipse at 15% 0%, " +
+                hexToRgba(currentMainColor, 0.15) + " 0%, transparent 50%), " +
+                "radial-gradient(ellipse at 85% 0%, " +
+                hexToRgba(currentExtraColor, 0.11) + " 0%, transparent 50%)";
+        }
     })
-    ();
-    // ── GRADIENTE EN TIEMPO REAL ────────────────────────────────
-    var chipColors = {};
-
-    // Leer colores de los chips desde data attributes
-    document.querySelectorAll(".cvx-cp-cat-chip").forEach(function (chip) {
-        chipColors[chip.dataset.catId] = chip.style.getPropertyValue("--chip-color");
-    });
-
-    var currentMainColor = null;
-    var currentExtraColor = null;
-
-    function applyGradient() {
-        var wrapper = document.querySelector(".cvx-cp-wrapper");
-        if (!wrapper) return;
-
-        if (!currentMainColor) {
-            // Sin selección — fondo por defecto
-            wrapper.style.background = "";
-            return;
-        }
-
-        if (!currentExtraColor) {
-            // Solo main — fondo sólido suave
-            wrapper.style.background =
-                "radial-gradient(ellipse at 20% 0%, " +
-                hexToRgba(currentMainColor, 0.12) + " 0%, transparent 65%)";
-            return;
-        }
-
-        // Main + extra — gradiente entre los dos colores
-        wrapper.style.background =
-            "radial-gradient(ellipse at 15% 0%, " +
-            hexToRgba(currentMainColor, 0.14) + " 0%, transparent 55%), " +
-            "radial-gradient(ellipse at 85% 0%, " +
-            hexToRgba(currentExtraColor, 0.10) + " 0%, transparent 55%)";
-    }
-
-    function hexToRgba(hex, alpha) {
-        hex = hex.trim().replace("#", "");
-        var r = parseInt(hex.substring(0, 2), 16);
-        var g = parseInt(hex.substring(2, 4), 16);
-        var b = parseInt(hex.substring(4, 6), 16);
-        return "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
-    }
-
-    // Sobreescribir los listeners de categorías para incluir gradiente
-
-    // Main
-    mainChips.forEach(function (chip) {
-        chip.addEventListener("click", function () {
-            currentMainColor = chipColors[chip.dataset.catId] || null;
-            applyGradient();
-        });
-    });
-
-    // Extra — solo toma el color de la PRIMERA extra activa
-    extraChips.forEach(function (chip) {
-        chip.addEventListener("click", function () {
-            // Calcular primera extra activa DESPUÉS del toggle
-            setTimeout(function () {
-                var firstActive = document.querySelector("#cvxCatsExtra .cvx-cp-cat-chip.is-extra");
-                currentExtraColor = firstActive
-                    ? (chipColors[firstActive.dataset.catId] || null)
-                    : null;
-                applyGradient();
-            }, 0);
-        });
-    });
-    </script>
+        ();
+</script>

@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Foro_Militar.Models
 {
     public class CreatePostViewModel
     {
-        // Contexto de la comunidad (se pasa desde el GET)
         public int CommunityId { get; set; }
         public string CommunitySlug { get; set; }
         public string CommunityName { get; set; }
@@ -21,16 +17,18 @@ namespace Foro_Militar.Models
         public string Content { get; set; }
 
         [MaxLength(500)]
-        public string Image { get; set; }   // URL opcional
+        public string Image { get; set; }
 
         [Required(ErrorMessage = "Selecciona una categoría principal")]
         public int MainCategoryId { get; set; }
 
-        // Categorías adicionales (opcional)
         public List<int> ExtraCategoryIds { get; set; } = new List<int>();
-
-        // Para poblar el select/checkboxes en la vista
+        public string PostType { get; set; }
+        // Categorías de la comunidad — para la sección "Categoría principal"
         public List<CategoryOption> AvailableCategories { get; set; } = new List<CategoryOption>();
+
+        // Todas las categorías de la BD — para la sección "Categorías adicionales"
+        public List<CategoryOption> AllCategories { get; set; } = new List<CategoryOption>();
     }
 
     public class CategoryOption

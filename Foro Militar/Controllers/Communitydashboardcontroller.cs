@@ -479,10 +479,12 @@ namespace Foro.API.Controllers
                     CommentCount = p.Comments.Count(c => !c.IsDeleted),
                     MainCategoryName = p.MainCategory.Name,
                     MainCategoryColor = p.MainCategory.ColorHex,
+                    PostType = p.PostType,
                     ExtraCategories = p.PostCategories
+
                         .Where(pc => pc.CategoryId != p.MainCategoryId)
-                        .Select(pc => pc.Category.Name)
-                        .Take(2)
+                        .Select(pc => new { pc.Category.Name, pc.Category.ColorHex })
+                        .Take(5)
                         .ToList(),
                     CurrentUserVote = currentUserId == null
                         ? 0
@@ -512,7 +514,10 @@ namespace Foro.API.Controllers
                 CommentCount = p.CommentCount,
                 MainCategoryName = p.MainCategoryName,
                 MainCategoryColor = p.MainCategoryColor,
-                ExtraCategories = p.ExtraCategories,
+                PostType = p.PostType,
+                ExtraCategories = p.ExtraCategories
+                    .Select(c => new CategoryTagDto { Name = c.Name, ColorHex = c.ColorHex })
+                    .ToList(),
                 CurrentUserVote = p.CurrentUserVote,
 
                 // ✅ Resuelto en memoria, sin problema con EF6

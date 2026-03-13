@@ -26,14 +26,11 @@
                 const downCounter = widget.querySelector(".down-counter span");
 
                 function sendVote(type) {
-
                     const id = widget.dataset.id;
 
                     fetch("/Communities/VoteCommunity", {
                         method: "POST",
-                        headers: {
-                            "Content-Type": "application/x-www-form-urlencoded"
-                        },
+                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
                         body: "id=" + id + "&voteType=" + type
                     })
                         .then(r => r.json())
@@ -41,8 +38,11 @@
 
                             if (!data.success) return;
 
-                            upCounter.innerText = data.upVotes;
-                            downCounter.innerText = data.downVotes;
+                            const upCounter = widget.querySelector(".up-counter");
+                            const downCounter = widget.querySelector(".down-counter");
+
+                            if (upCounter) upCounter.innerHTML = CorvaxDashboard.renderVoteTier(data.upVotes);
+                            if (downCounter) downCounter.innerHTML = CorvaxDashboard.renderDownvoteTier(data.downVotes);
 
                             if (type === 1) {
 

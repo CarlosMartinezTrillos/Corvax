@@ -1,0 +1,2 @@
+﻿ALTER TABLE Posts ADD PostType NVARCHAR(20) NOT NULL DEFAULT 'debate';
+GO

@@ -90,6 +90,22 @@
             + '</div>';
     }
 
+        function parseNetDate(val) {
+            if (!val) return null;
+            var match = /\/Date\((\d+)\)\//.exec(val);
+            if (match) return new Date(parseInt(match[1], 10));
+            return new Date(val);
+        }
+        function hexToRgbaCard(hex, alpha) {
+            if (!hex) return "transparent";
+            hex = hex.trim().replace("#", "");
+            if (hex.length === 3) hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+            var r = parseInt(hex.substring(0, 2), 16);
+            var g = parseInt(hex.substring(2, 4), 16);
+            var b = parseInt(hex.substring(4, 6), 16);
+            return "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
+        }
+
     function renderPostCard(post) {
 
         const upActive = post.CurrentUserVote === 1 ? "is-active" : "";
@@ -119,29 +135,46 @@
         // ── Tags / Categorías ─────────────────────────────────────────────────────
         // Tag principal con color CSS variable + hasta 2 categorías extra,
         // igual que el foreach con .Take(2) del Razor.
+        // ── Tags / Categorías ─────────────────────────────────────────────────────
         let tagsHtml = "";
+
+        // Tag de tipo de post
+        const typeConfig = {
+            debate: { icon: "fa-fire-flame-curved", label: "Debate", color: "#e74c3c" },
+            analisis: { icon: "fa-chart-line", label: "Análisis", color: "#3b82f6" },
+            noticia: { icon: "fa-satellite-dish", label: "Noticia", color: "#10b981" },
+            pregunta: { icon: "fa-circle-question", label: "Pregunta", color: "#f59e0b" }
+        };
+        const postType = (post.PostType || post.postType || "debate").toLowerCase();
+        const typeCfg = typeConfig[postType] || typeConfig["debate"];
+        tagsHtml += `<span class="cvx-post-tag cvx-post-tag-type"
+                   style="--tag-color:${typeCfg.color}">
+                <i class="fa-solid ${typeCfg.icon}"></i>
+                ${typeCfg.label}
+             </span>`;
 
         if (post.MainCategoryName) {
             const color = post.MainCategoryColor || "#7c3aed";
-            tagsHtml += `
-                <span class="cvx-post-tag cvx-post-tag-main"
+            tagsHtml += `<span class="cvx-post-tag cvx-post-tag-main"
                       style="--tag-color:${color}">
                     <i class="fa-solid fa-tag"></i>
                     ${post.MainCategoryName}
-                </span>`;
+                 </span>`;
         }
 
         if (Array.isArray(post.ExtraCategories)) {
-            post.ExtraCategories.slice(0, 2).forEach(function (cat) {
-                tagsHtml += `<span class="cvx-post-tag">${cat}</span>`;
+            post.ExtraCategories.slice(0, 5).forEach(function (cat) {
+                const name = cat.Name || cat.name || "";
+                const color = cat.ColorHex || cat.colorHex || "#7c3aed";
+                tagsHtml += `<span class="cvx-post-tag cvx-post-tag-extra"
+                          style="--tag-color:${color}">${name}</span>`;
             });
         }
-
         // ── Fecha formateada ──────────────────────────────────────────────────────
         // El Razor usa ToString("g") → fecha + hora corta.
         // En JS lo replicamos con toLocaleString() que da el mismo resultado.
         const dateStr = post.CreatedAt
-            ? new Date(post.CreatedAt).toLocaleString([], {
+            ? parseNetDate(post.CreatedAt).toLocaleString([], {
                 year: "numeric",
                 month: "numeric",
                 day: "numeric",
@@ -158,10 +191,30 @@
                </figure>`
             : "";
 
-        // ─────────────────────────────────────────────────────────────────────────
+        // ── Gradiente blob estilo glassmorphism ───────────────────────────────────
+        const mainColor = post.MainCategoryColor || null;
+        const extraColor = (Array.isArray(post.ExtraCategories) && post.ExtraCategories.length > 0)
+            ? (post.ExtraCategories[0].ColorHex || post.ExtraCategories[0].colorHex || null)
+            : null;
+
+        let cardGradient = "";
+        if (mainColor && extraColor) {
+            cardGradient = `
+        radial-gradient(ellipse 80% 120% at 20% 50%, ${hexToRgbaCard(mainColor, 0.18)} 0%, transparent 70%),
+        radial-gradient(ellipse 80% 120% at 80% 50%, ${hexToRgbaCard(extraColor, 0.14)} 0%, transparent 70%)
+    `;
+        } else if (mainColor) {
+            cardGradient = `
+        radial-gradient(ellipse 100% 150% at 15% 50%, ${hexToRgbaCard(mainColor, 0.18)} 0%, transparent 65%)
+    `;
+        }
+
+        const cardStyle = cardGradient
+            ? `style="background-image:${cardGradient}"`
+            : "";
+
         return `
-        <article class="cvx-post-card" data-post-id="${post.Id}">
- 
+        <article class="cvx-post-card" data-post-id="${post.Id}" ${cardStyle}> 
             <!-- ── Columna de votos ────────────────────────────────────────── -->
             <aside class="cvx-post-vote">
  
@@ -334,7 +387,7 @@
                 const upBtn = widget.querySelector(".btn-vote.up");
                 const downBtn = widget.querySelector(".btn-vote.down");
                 const upCount = widget.querySelector(".up-counter");
-                const downCount = widget.querySelector(".down-counter span");
+                const downCount = widget.querySelector(".down-counter");
 
                 // leer ANTES de quitar la clase
                 const wasActive = (voteType === 1 && upBtn.classList.contains("active"))
@@ -343,8 +396,8 @@
                 upBtn.classList.remove("active");
                 downBtn.classList.remove("active");
 
-                upCount.innerHTML = data.upVotes;
-                if (downCount) downCount.textContent = data.downVotes;
+                upCount.innerHTML = renderVoteTier(data.upVotes);
+                if (downCount) downCount.innerHTML = renderDownvoteTier(data.downVotes);
 
                 if (!wasActive) {
                     if (voteType === 1) upBtn.classList.add("active");
@@ -709,7 +762,8 @@
         </div>`;
             }
 
-
+    CorvaxDashboard.renderVoteTier = renderVoteTier;
+    CorvaxDashboard.renderDownvoteTier = renderDownvoteTier;
     CorvaxDashboard.loadPosts = loadPosts;
 
     if (document.readyState === "loading") {

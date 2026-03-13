@@ -358,7 +358,8 @@ html, body {
         border-color: rgba(124,58,237,0.45);
     }
 
-/* ── CATEGORÍAS ────────────────────────────────────────────── */
+/* ── CATEGORÍAS —─ */
+
 .cvx-cp-cats-label {
     font-family: var(--font-label);
     font-size: 0.68rem;
@@ -376,6 +377,7 @@ html, body {
     margin-bottom: 8px;
 }
 
+/* ── Chip base ── */
 .cvx-cp-cat-chip {
     display: inline-flex;
     align-items: center;
@@ -388,45 +390,134 @@ html, body {
     letter-spacing: 0.06em;
     text-transform: uppercase;
     cursor: pointer;
-    transition: all 0.18s;
+    transition: all 0.18s ease;
     border: 1px solid transparent;
-    color: rgba(255,255,255,0.7);
-    background: color-mix(in srgb, var(--chip-color, #7c3aed) 14%, transparent);
-    border-color: color-mix(in srgb, var(--chip-color, #7c3aed) 35%, transparent);
+    color: rgba(255,255,255,0.45);
+    background: rgba(255,255,255,0.04);
+    border-color: rgba(255,255,255,0.07);
     user-select: none;
+    position: relative;
 }
 
 @supports not (color: color-mix(in srgb, red 10%, blue)) {
     .cvx-cp-cat-chip {
-        background: rgba(124,58,237,0.14);
-        border-color: rgba(124,58,237,0.35);
+        background: rgba(124,58,237,0.08);
+        border-color: rgba(124,58,237,0.2);
     }
 }
 
 .cvx-cp-cat-chip:hover {
-    background: color-mix(in srgb, var(--chip-color, #7c3aed) 25%, transparent);
-    color: #fff;
-}
-
-.cvx-cp-cat-chip.is-main {
-    background: color-mix(in srgb, var(--chip-color, #7c3aed) 30%, transparent);
-    border-color: color-mix(in srgb, var(--chip-color, #7c3aed) 70%, transparent);
-    color: #fff;
-    box-shadow: 0 0 14px color-mix(in srgb, var(--chip-color, #7c3aed) 35%, transparent);
-}
-
-.cvx-cp-cat-chip.is-extra {
-    background: color-mix(in srgb, var(--chip-color, #7c3aed) 20%, transparent);
-    border-color: color-mix(in srgb, var(--chip-color, #7c3aed) 50%, transparent);
+    background: color-mix(in srgb, var(--chip-color, #7c3aed) 18%, transparent);
+    border-color: color-mix(in srgb, var(--chip-color, #7c3aed) 45%, transparent);
     color: rgba(255,255,255,0.85);
+    transform: translateY(-1px);
 }
 
+/* ── Chip MAIN seleccionado — muy visible ── */
+.cvx-cp-cat-chip.is-main {
+    background: color-mix(in srgb, var(--chip-color, #7c3aed) 28%, transparent);
+    border-color: var(--chip-color, #7c3aed);
+    color: #fff;
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--chip-color, #7c3aed) 60%, transparent), 0 0 16px color-mix(in srgb, var(--chip-color, #7c3aed) 30%, transparent), inset 0 1px 0 rgba(255,255,255,0.10);
+    transform: translateY(-1px);
+}
+
+    /* Dot del chip main — sólido con color */
+    .cvx-cp-cat-chip.is-main .cvx-cp-cat-dot {
+        background: var(--chip-color, #7c3aed);
+        box-shadow: 0 0 6px var(--chip-color, #7c3aed);
+    }
+
+
+/* ── Chip EXTRA seleccionado ── */
+.cvx-cp-cat-chip.is-extra {
+    background: color-mix(in srgb, var(--chip-color, #7c3aed) 18%, transparent);
+    border-color: color-mix(in srgb, var(--chip-color, #7c3aed) 55%, transparent);
+    color: rgba(255,255,255,0.90);
+    box-shadow: 0 0 10px color-mix(in srgb, var(--chip-color, #7c3aed) 18%, transparent);
+}
+
+    /* Número de orden en extra */
+    .cvx-cp-cat-chip.is-extra .cvx-cp-extra-order {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--chip-color, #7c3aed);
+        color: #fff;
+        font-size: 0.60rem;
+        font-weight: 900;
+        margin-right: 1px;
+        flex-shrink: 0;
+    }
+
+    /* X para deseleccionar extra */
+    .cvx-cp-cat-chip.is-extra .cvx-cp-extra-remove {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.12);
+        color: rgba(255,255,255,0.7);
+        font-size: 0.60rem;
+        margin-left: 2px;
+        flex-shrink: 0;
+        transition: background 0.15s;
+    }
+
+        .cvx-cp-main-remove {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.12);
+            color: rgba(255,255,255,0.7);
+            font-size: 0.60rem;
+            margin-left: 4px;
+            flex-shrink: 0;
+            transition: background 0.15s;
+        }
+
+        .cvx-cp-main-remove:hover {
+            background: rgba(239,68,68,0.35);
+            color: #fca5a5;
+        }
+
+        
+        .cvx-cp-cat-chip.is-extra .cvx-cp-extra-remove:hover {
+            background: rgba(239,68,68,0.35);
+            color: #fca5a5;
+        }
+
+
+
+
+    /* Dot oculto cuando está en modo extra seleccionado (lo reemplaza el número) */
+    .cvx-cp-cat-chip.is-extra .cvx-cp-cat-dot {
+        display: none;
+    }
+
+/* Dot base */
 .cvx-cp-cat-dot {
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: currentColor;
+    background: rgba(255,255,255,0.3);
     flex-shrink: 0;
+    transition: background 0.18s, box-shadow 0.18s;
+}
+
+/* ── Chip deshabilitado (cuando se llega al límite de 5 extras) ── */
+.cvx-cp-cat-chip.is-disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
 .cvx-cp-cats-hint {
@@ -546,4 +637,63 @@ html, body {
     .cvx-cp-footer-right {
         justify-content: flex-end;
     }
+}
+
+/* ── CONTADOR EXTRAS ───────────────────────────────────── */
+.cvx-cp-extra-counter {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    background: var(--cvx-bg-surface);
+    border: 1px solid var(--cvx-border-dim);
+    font-family: var(--font-label);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--cvx-text-2);
+}
+/* ── CONTADOR EXTRAS — fix de ancho ── */
+#cvxExtraCounter {
+    display: flex !important;
+    width: 100% !important;
+    box-sizing: border-box;
+}
+    .cvx-cp-extra-counter::before {
+        content: "";
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--cvx-text-muted);
+        flex-shrink: 0;
+        transition: background 0.2s, box-shadow 0.2s;
+    }
+
+    .cvx-cp-extra-counter.is-max {
+        border-color: rgba(244,183,48,0.25);
+        background: rgba(244,183,48,0.05);
+    }
+
+        .cvx-cp-extra-counter.is-max::before {
+            background: #f4b730;
+            box-shadow: 0 0 6px rgba(244,183,48,0.5);
+        }
+
+.cvx-cp-extra-counter-num {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--cvx-text);
+    letter-spacing: 0.04em;
+    margin-left: auto;
+    transition: color 0.2s;
+}
+
+.cvx-cp-extra-counter.is-max .cvx-cp-extra-counter-num {
+    color: #f4b730;
 }

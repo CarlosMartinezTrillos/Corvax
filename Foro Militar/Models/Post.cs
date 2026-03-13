@@ -47,6 +47,9 @@ namespace Foro.Entities.Models
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
+        [MaxLength(20)]
+        public string PostType { get; set; } = "debate";
+
         public DateTime? UpdatedAt { get; set; }
         
         [MaxLength(300)]
