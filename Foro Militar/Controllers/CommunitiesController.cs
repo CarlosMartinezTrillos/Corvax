@@ -71,6 +71,10 @@ namespace Foro_Militar.Controllers
                          }))
                 .ToDictionary(x => x.CommunityId, x => x.Position);
 
+            var allRanks = _context.CommunityRanks
+                .OrderBy(r => r.MinScore)
+                .ToList();
+
             var model = communities.Select(c => new CommunityViewModel
             {
                 Id = c.Id,
@@ -96,7 +100,21 @@ namespace Foro_Militar.Controllers
                 GlobalPosition = globalRanking.ContainsKey(c.Id) ? globalRanking[c.Id] : 0,
                 CountryPosition = countryRanking.ContainsKey(c.Id) ? countryRanking[c.Id] : 0,
                 PowerScore = c.PowerScore,
+                Level = c.Rank != null ? c.Rank.Level : 0,
 
+                CurrentXP = c.Rank != null
+                    ? c.PowerScore - c.Rank.MinScore
+                    : c.PowerScore,
+
+                    NextLevelXP = c.Rank != null
+                    ? (allRanks
+                        .Where(r => r.MinScore > c.Rank.MinScore)
+                        .OrderBy(r => r.MinScore)
+                        .Select(r => (double?)r.MinScore)
+                        .FirstOrDefault()
+                        ?? (c.Rank.MinScore + 100.0))
+                      - c.Rank.MinScore
+                    : 100.0,
                 UpVotes = c.Votes.Count(v => v.VoteType == 1),
 
                 DownVotes = c.Votes.Count(v => v.VoteType == -1),

@@ -22,6 +22,8 @@
     var mainColor = string.IsNullOrEmpty(Model.ColorBaseCalculated)
         ? "#7c3aed"
         : Model.ColorBaseCalculated;
+    // al inicio del archivo en el bloque @{ }
+    var xpWidth = Model.LevelProgressPercent + "%";
 }
 
 <div class="community-card-pro reveal @rankClass"
@@ -100,22 +102,17 @@
         </div>
 
     </div>
-
     <!-- XP BAR -->
     <div class="xp-wrapper">
-        <div class="xp-bar"
-             style="width:@Model.LevelProgressPercent"></div>
+        <div class="xp-bar" style="width:@xpWidth"></div>
     </div>
 
     <!-- NOMBRE + BOTONES -->
     <div class="community-header-row">
-
         <div class="community-name">
             <h3>@name</h3>
         </div>
-
         <div class="community-actions">
-
             <button class="btn-follow tooltip-container"
                     data-id="@Model.Id"
                     data-following="@(Model.IsFollowing.ToString().ToLower())">
@@ -124,54 +121,42 @@
                     @(Model.IsFollowing ? "Dejar de seguir" : "Seguir comunidad")
                 </div>
             </button>
-
             <div class="vote-widget" data-id="@Model.Id">
-
                 <button class="btn-vote up @(Model.CurrentUserVote == 1 ? "active" : "")">
                     <i class="fa-solid fa-caret-up"></i>
                 </button>
-
                 <div class="vote-counter up-counter">
                     @Html.Partial("_VoteTier", Model.UpVotes)
                 </div>
-
                 <button class="btn-vote down @(Model.CurrentUserVote == -1 ? "active" : "")">
                     <i class="fa-solid fa-caret-down"></i>
                 </button>
-
                 <div class="vote-counter down-counter">
                     @Html.Partial("_DownVoteTier", Model.DownVotes)
                 </div>
-
             </div>
-
         </div>
-
     </div>
 
     <!-- STATS -->
     <div class="community-stats-row">
-
         <div class="stat-box tooltip-container">
             <i class="fa-solid fa-users"></i>
             <strong>@Model.TotalFollowers</strong>
             <span>Seguidores</span>
             <div class="tooltip-content">Comunidad activa</div>
         </div>
-
         <div class="stat-box tooltip-container">
             <i class="fa-solid fa-fire-flame-curved"></i>
             <strong>@Model.TotalPosts</strong>
             <span>Posts</span>
             <div class="tooltip-content">Actividad acumulada</div>
         </div>
-
         <div class="stat-box tooltip-container">
             <i class="fa-solid fa-layer-group"></i>
             <strong>@categories.Count</strong>
             <span>Categorías</span>
         </div>
-
     </div>
 
     <!-- TAGS -->
@@ -195,15 +180,11 @@
 
     <!-- BOTÓN ENTRAR -->
     <div class="enter-row">
-
         <a href="@Url.Action("Dashboard","Communities", new { slug = Model.Slug })"
            class="btn-enter">
-
             Entrar
             <i class="fa-solid fa-arrow-right"></i>
-
         </a>
-
     </div>
 
 </div>
